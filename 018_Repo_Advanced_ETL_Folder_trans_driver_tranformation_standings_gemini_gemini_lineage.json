@@ -1,0 +1,365 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:40:05Z",
+    "run": {
+      "runId": "1fb3c44e-a1b2-4d1e-8452-f1e98d8c32d4"
+    },
+    "job": {
+      "namespace": "retail_analytics_etl",
+      "name": "step_1_extract_sales_facts"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/retail/monthly_sales_facts",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "revenue_generated", "type": "double"},
+              {"name": "customer_rating", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "sales_facts_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "revenue_generated", "type": "double"},
+              {"name": "customer_rating", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sales_year": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "sales_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "associate_name": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "associate_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_region": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "store_region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_branch": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "store_branch", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "revenue_generated": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "revenue_generated", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "customer_rating": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/retail/monthly_sales_facts", "field": "customer_rating", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:40:05Z",
+    "run": {
+      "runId": "9b1a5e78-c0b3-4f9d-8c46-9d3e8f1b2c45"
+    },
+    "job": {
+      "namespace": "retail_analytics_etl",
+      "name": "step_2_aggregate_associate_performance"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "sales_facts_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "revenue_generated", "type": "double"},
+              {"name": "customer_rating", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "associate_performance_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "total_revenue", "type": "double"},
+              {"name": "top_ratings_count", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "sales_facts_df",
+                "field": "sales_year",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "groupBy(sales_year, associate_name, store_region, store_branch)"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "sales_facts_df",
+                "field": "associate_name",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "groupBy(sales_year, associate_name, store_region, store_branch)"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "sales_facts_df",
+                "field": "store_region",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "groupBy(sales_year, associate_name, store_region, store_branch)"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "sales_facts_df",
+                "field": "store_branch",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "groupBy(sales_year, associate_name, store_region, store_branch)"}]
+              }
+            ],
+            "fields": {
+              "sales_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "sales_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "associate_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "associate_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "store_region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_branch": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "store_branch", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "total_revenue": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "revenue_generated", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "sum(revenue_generated)", "masking": false}]}]
+              },
+              "top_ratings_count": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "sales_facts_df", "field": "customer_rating", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "count(when(customer_rating == 5, true))", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:40:05Z",
+    "run": {
+      "runId": "4c3d8f9a-1b5e-47a3-b2d4-0e6c5f1a3b8d"
+    },
+    "job": {
+      "namespace": "retail_analytics_etl",
+      "name": "step_3_rank_associates"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "associate_performance_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "total_revenue", "type": "double"},
+              {"name": "top_ratings_count", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "associate_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "total_revenue", "type": "double"},
+              {"name": "top_ratings_count", "type": "integer"},
+              {"name": "regional_rank", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "associate_performance_df",
+                "field": "sales_year",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "Window.partitionBy(sales_year).orderBy(desc(total_revenue), desc(top_ratings_count))"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "associate_performance_df",
+                "field": "total_revenue",
+                "transformations": [{"type": "INDIRECT", "subtype": "ORDER_BY", "description": "Window.partitionBy(sales_year).orderBy(desc(total_revenue), desc(top_ratings_count))"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "associate_performance_df",
+                "field": "top_ratings_count",
+                "transformations": [{"type": "INDIRECT", "subtype": "ORDER_BY", "description": "Window.partitionBy(sales_year).orderBy(desc(total_revenue), desc(top_ratings_count))"}]
+              }
+            ],
+            "fields": {
+              "sales_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "sales_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "associate_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "associate_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "store_region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_branch": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "store_branch", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "total_revenue": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "total_revenue", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "top_ratings_count": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_performance_df", "field": "top_ratings_count", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "regional_rank": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:40:05Z",
+    "run": {
+      "runId": "6f2b5a19-e93d-4c8f-a7b2-3e4c8f1d2c5e"
+    },
+    "job": {
+      "namespace": "retail_analytics_etl",
+      "name": "step_4_load_associate_rankings"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "associate_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "total_revenue", "type": "double"},
+              {"name": "top_ratings_count", "type": "integer"},
+              {"name": "regional_rank", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/retail/associate_rankings",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "sales_year", "type": "integer"},
+              {"name": "associate_name", "type": "string"},
+              {"name": "store_region", "type": "string"},
+              {"name": "store_branch", "type": "string"},
+              {"name": "total_revenue", "type": "double"},
+              {"name": "top_ratings_count", "type": "integer"},
+              {"name": "regional_rank", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sales_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "sales_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "associate_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "associate_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "store_region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "store_branch": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "store_branch", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "total_revenue": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "total_revenue", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "top_ratings_count": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "top_ratings_count", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "regional_rank": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "associate_ranked_df", "field": "regional_rank", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,1763 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "32c440fa-9a9d-4a49-90b5-23af9bac268f"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_01_extract_facility_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/logistics/facility_master.csv"
+              ],
+              "output": "facility_landing_df",
+              "columns": [
+                "facilityId",
+                "facilityCode",
+                "facilityName",
+                "cityName",
+                "countryName",
+                "geoLatitude",
+                "geoLongitude",
+                "elevationMeters",
+                "siteUrl"
+              ],
+              "expression": "spark.read.option('header', True).schema(facility_landing_schema).csv('data/landing/logistics/facility_master.csv')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/logistics/facility_master.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facilityId",
+                "type": "integer"
+              },
+              {
+                "name": "facilityCode",
+                "type": "string"
+              },
+              {
+                "name": "facilityName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "geoLatitude",
+                "type": "double"
+              },
+              {
+                "name": "geoLongitude",
+                "type": "double"
+              },
+              {
+                "name": "elevationMeters",
+                "type": "integer"
+              },
+              {
+                "name": "siteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facilityId",
+                "type": "integer"
+              },
+              {
+                "name": "facilityCode",
+                "type": "string"
+              },
+              {
+                "name": "facilityName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "geoLatitude",
+                "type": "double"
+              },
+              {
+                "name": "geoLongitude",
+                "type": "double"
+              },
+              {
+                "name": "elevationMeters",
+                "type": "integer"
+              },
+              {
+                "name": "siteUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facilityId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "facilityId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facilityCode": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "facilityCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityCode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facilityName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "facilityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cityName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "cityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cityName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "countryName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "countryName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "countryName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "geoLatitude": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "geoLatitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "geoLatitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "geoLongitude": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "geoLongitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "geoLongitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevationMeters": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "elevationMeters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevationMeters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "siteUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/logistics/facility_master.csv",
+                    "field": "siteUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "siteUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "b523dbcb-3a96-4fa8-835d-9ef3c20224c7"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_02_register_facility_landing_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "facility_landing_df"
+              ],
+              "output": "vw_facility_landing",
+              "columns": [
+                "facilityId",
+                "facilityCode",
+                "facilityName",
+                "cityName",
+                "countryName",
+                "geoLatitude",
+                "geoLongitude",
+                "elevationMeters",
+                "siteUrl"
+              ],
+              "expression": "facility_landing_df.createOrReplaceTempView('vw_facility_landing')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facilityId",
+                "type": "integer"
+              },
+              {
+                "name": "facilityCode",
+                "type": "string"
+              },
+              {
+                "name": "facilityName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "geoLatitude",
+                "type": "double"
+              },
+              {
+                "name": "geoLongitude",
+                "type": "double"
+              },
+              {
+                "name": "elevationMeters",
+                "type": "integer"
+              },
+              {
+                "name": "siteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_facility_landing",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facilityId",
+                "type": "integer"
+              },
+              {
+                "name": "facilityCode",
+                "type": "string"
+              },
+              {
+                "name": "facilityName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "geoLatitude",
+                "type": "double"
+              },
+              {
+                "name": "geoLongitude",
+                "type": "double"
+              },
+              {
+                "name": "elevationMeters",
+                "type": "integer"
+              },
+              {
+                "name": "siteUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facilityId": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "facilityId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facilityCode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "facilityCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityCode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facilityName": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "facilityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facilityName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cityName": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "cityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cityName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "countryName": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "countryName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "countryName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "geoLatitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "geoLatitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "geoLatitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "geoLongitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "geoLongitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "geoLongitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevationMeters": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "elevationMeters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevationMeters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "siteUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_landing_df",
+                    "field": "siteUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "siteUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "6cbbfb24-ec1d-4d77-8b13-6404110450ea"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_03_standardize_facility_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputs": [
+                "vw_facility_landing"
+              ],
+              "output": "facility_standardized_df",
+              "columns": [
+                "facility_id",
+                "facility_code",
+                "facility_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_meters"
+              ],
+              "expression": "spark.sql('SELECT facilityId AS facility_id, facilityCode AS facility_code, facilityName AS facility_name, cityName AS city_name, countryName AS country_name, geoLatitude AS latitude, geoLongitude AS longitude, elevationMeters AS elevation_meters FROM vw_facility_landing')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_facility_landing",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facilityId",
+                "type": "integer"
+              },
+              {
+                "name": "facilityCode",
+                "type": "string"
+              },
+              {
+                "name": "facilityName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "geoLatitude",
+                "type": "double"
+              },
+              {
+                "name": "geoLongitude",
+                "type": "double"
+              },
+              {
+                "name": "elevationMeters",
+                "type": "integer"
+              },
+              {
+                "name": "siteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facility_id": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "facilityId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "facilityId AS facility_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_code": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "facilityCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "facilityCode AS facility_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_name": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "facilityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "facilityName AS facility_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "cityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "cityName AS city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "countryName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "countryName AS country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "geoLatitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "geoLatitude AS latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "geoLongitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "geoLongitude AS longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_meters": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_facility_landing",
+                    "field": "elevationMeters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "elevationMeters AS elevation_meters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "747536b7-ef7a-4594-b220-4bc7040064c1"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_04_apply_facility_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "FILTER_DEDUPLICATE",
+              "inputs": [
+                "facility_standardized_df"
+              ],
+              "output": "facility_validated_df",
+              "columns": [
+                "facility_id",
+                "facility_code",
+                "facility_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_meters"
+              ],
+              "filterExpression": "col('facility_id').isNotNull()",
+              "deduplicationKeys": [
+                "facility_id"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_validated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facility_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "facility_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "facility_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "facility_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_meters": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_standardized_df",
+                    "field": "elevation_meters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_meters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "facility_standardized_df",
+                "field": "facility_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('facility_id').isNotNull())",
+                    "masking": false
+                  },
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "dropDuplicates(['facility_id'])",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "1626219f-22f3-4772-ba2d-59d14988aea1"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_05_build_facility_reference_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "facility_validated_df"
+              ],
+              "output": "facility_reference_df",
+              "columns": [
+                "facility_id",
+                "facility_code",
+                "facility_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_meters",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_validated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facility_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "facility_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "facility_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "facility_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_meters": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_validated_df",
+                    "field": "elevation_meters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_meters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:06Z",
+    "run": {
+      "runId": "43a87871-d14a-4485-b98d-cf7ad4cbe198"
+    },
+    "job": {
+      "namespace": "logistics_reference_ingestion",
+      "name": "step_06_load_facility_reference_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "facility_reference_df"
+              ],
+              "output": "warehouse/reference/logistics/facility_reference",
+              "columns": [
+                "facility_id",
+                "facility_code",
+                "facility_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_meters",
+                "ingestion_timestamp"
+              ],
+              "expression": "facility_reference_df.write.mode('overwrite').parquet('warehouse/reference/logistics/facility_reference')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "facility_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/reference/logistics/facility_reference",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "facility_id",
+                "type": "integer"
+              },
+              {
+                "name": "facility_code",
+                "type": "string"
+              },
+              {
+                "name": "facility_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_meters",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "facility_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "facility_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "facility_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "facility_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "facility_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "facility_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_meters": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "elevation_meters",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_meters",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "facility_reference_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

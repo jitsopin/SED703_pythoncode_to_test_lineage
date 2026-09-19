@@ -1,0 +1,476 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:25:42Z",
+    "run": {
+      "runId": "6f2a8934-1c57-428e-8a1a-7b3b382d6199"
+    },
+    "job": {
+      "namespace": "real_estate_etl",
+      "name": "step_1_extract_listings"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/real_estate/raw_listings.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "property_desc": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "property_desc", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_id_raw": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "broker_id_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_name": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "broker_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_city": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "broker_city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_state": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "broker_state", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_zip": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "broker_zip", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region_code": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "region_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "asking_price_raw": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "asking_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "closing_price_raw": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "closing_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tax_assessment_raw": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/real_estate/raw_listings.csv", "field": "tax_assessment_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:25:42Z",
+    "run": {
+      "runId": "48b61c73-f1e9-4e5a-8b17-09a4563a9b1c"
+    },
+    "job": {
+      "namespace": "real_estate_etl",
+      "name": "step_2_cast_and_filter_records"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_filtered_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"},
+              {"name": "broker_id", "type": "long"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "listings_raw_df",
+                "field": "broker_id_raw",
+                "transformations": [{"type": "INDIRECT", "subtype": "FILTER", "description": "col(broker_id).isNotNull()"}]
+              }
+            ],
+            "fields": {
+              "property_desc": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "property_desc", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_id_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_id_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_state": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_state", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_zip": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_zip", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "region_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "asking_price_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "asking_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "closing_price_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "closing_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tax_assessment_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "tax_assessment_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_raw_df", "field": "broker_id_raw", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "cast(broker_id_raw as long)", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:25:42Z",
+    "run": {
+      "runId": "9b1c73f1-e94e-5a8b-1709-a4563a9b1c48"
+    },
+    "job": {
+      "namespace": "real_estate_etl",
+      "name": "step_3_clean_currency_symbols"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_filtered_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"},
+              {"name": "broker_id", "type": "long"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"},
+              {"name": "broker_id", "type": "long"},
+              {"name": "clean_asking", "type": "string"},
+              {"name": "clean_closing", "type": "string"},
+              {"name": "clean_tax", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "property_desc": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "property_desc", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_id_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_id_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_state": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_state", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_zip": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_zip", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "region_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "asking_price_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "asking_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "closing_price_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "closing_price_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tax_assessment_raw": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "tax_assessment_raw", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "broker_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "clean_asking": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "asking_price_raw", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "substring(asking_price_raw, 2, length(asking_price_raw))", "masking": false}]}]
+              },
+              "clean_closing": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "closing_price_raw", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "substring(closing_price_raw, 2, length(closing_price_raw))", "masking": false}]}]
+              },
+              "clean_tax": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_filtered_df", "field": "tax_assessment_raw", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "substring(tax_assessment_raw, 2, length(tax_assessment_raw))", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:25:42Z",
+    "run": {
+      "runId": "e5c20d7f-2b13-4c91-9e7f-b8c16a3f4e8b"
+    },
+    "job": {
+      "namespace": "real_estate_etl",
+      "name": "step_4_nest_and_cast_fields"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_desc", "type": "string"},
+              {"name": "broker_id_raw", "type": "string"},
+              {"name": "broker_name", "type": "string"},
+              {"name": "broker_city", "type": "string"},
+              {"name": "broker_state", "type": "string"},
+              {"name": "broker_zip", "type": "string"},
+              {"name": "region_code", "type": "string"},
+              {"name": "asking_price_raw", "type": "string"},
+              {"name": "closing_price_raw", "type": "string"},
+              {"name": "tax_assessment_raw", "type": "string"},
+              {"name": "broker_id", "type": "long"},
+              {"name": "clean_asking", "type": "string"},
+              {"name": "clean_closing", "type": "string"},
+              {"name": "clean_tax", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_nested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_type", "type": "string"},
+              {"name": "operating_region", "type": "string"},
+              {"name": "broker", "type": "struct"},
+              {"name": "pricing", "type": "struct"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "property_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "property_desc", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(property_type)", "masking": false}]}]
+              },
+              "operating_region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "region_code", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(operating_region)", "masking": false}]}]
+              },
+              "broker": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "broker_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(broker_id, broker_name, broker_city, broker_state, cast(broker_zip as long))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "broker_name", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(broker_id, broker_name, broker_city, broker_state, cast(broker_zip as long))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "broker_city", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(broker_id, broker_name, broker_city, broker_state, cast(broker_zip as long))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "broker_state", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(broker_id, broker_name, broker_city, broker_state, cast(broker_zip as long))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "broker_zip", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(broker_id, broker_name, broker_city, broker_state, cast(broker_zip as long))", "masking": false}]}
+                ]
+              },
+              "pricing": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "clean_asking", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(cast(clean_asking as double), cast(clean_closing as double), cast(clean_tax as double))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "clean_closing", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(cast(clean_asking as double), cast(clean_closing as double), cast(clean_tax as double))", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "listings_cleaned_df", "field": "clean_tax", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "struct(cast(clean_asking as double), cast(clean_closing as double), cast(clean_tax as double))", "masking": false}]}
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:25:42Z",
+    "run": {
+      "runId": "c3f81e5d-161b-4298-b8d9-a35c1b6a1e94"
+    },
+    "job": {
+      "namespace": "real_estate_etl",
+      "name": "step_5_load_curated_listings"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "listings_nested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_type", "type": "string"},
+              {"name": "operating_region", "type": "string"},
+              {"name": "broker", "type": "struct"},
+              {"name": "pricing", "type": "struct"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/real_estate/nested_listings",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "property_type", "type": "string"},
+              {"name": "operating_region", "type": "string"},
+              {"name": "broker", "type": "struct"},
+              {"name": "pricing", "type": "struct"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "property_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_nested_df", "field": "property_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "operating_region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_nested_df", "field": "operating_region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "broker": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_nested_df", "field": "broker", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "pricing": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "listings_nested_df", "field": "pricing", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

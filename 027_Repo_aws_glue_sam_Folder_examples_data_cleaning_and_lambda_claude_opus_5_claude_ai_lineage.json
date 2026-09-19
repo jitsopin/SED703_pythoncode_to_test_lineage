@@ -1,0 +1,1792 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "52e432c4-6f6c-4c91-98c5-e5372d6df0b4"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_01_read_workshop_charge_summary",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "claims.workshop_charge_summary"
+              ],
+              "output": "workshop_charge_landing_df",
+              "columns": [
+                "repair code",
+                "workshop id",
+                "workshop name",
+                "workshop city",
+                "workshop region",
+                "workshop postcode",
+                "service area description",
+                "average quoted charge",
+                "average total paid",
+                "average insurer paid"
+              ],
+              "expression": "spark.table('claims.workshop_charge_summary').select(...)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "claims.workshop_charge_summary",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair code",
+                "type": "string"
+              },
+              {
+                "name": "workshop id",
+                "type": "string"
+              },
+              {
+                "name": "workshop name",
+                "type": "string"
+              },
+              {
+                "name": "workshop city",
+                "type": "string"
+              },
+              {
+                "name": "workshop region",
+                "type": "string"
+              },
+              {
+                "name": "workshop postcode",
+                "type": "string"
+              },
+              {
+                "name": "service area description",
+                "type": "string"
+              },
+              {
+                "name": "average quoted charge",
+                "type": "string"
+              },
+              {
+                "name": "average total paid",
+                "type": "string"
+              },
+              {
+                "name": "average insurer paid",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair code",
+                "type": "string"
+              },
+              {
+                "name": "workshop id",
+                "type": "string"
+              },
+              {
+                "name": "workshop name",
+                "type": "string"
+              },
+              {
+                "name": "workshop city",
+                "type": "string"
+              },
+              {
+                "name": "workshop region",
+                "type": "string"
+              },
+              {
+                "name": "workshop postcode",
+                "type": "string"
+              },
+              {
+                "name": "service area description",
+                "type": "string"
+              },
+              {
+                "name": "average quoted charge",
+                "type": "string"
+              },
+              {
+                "name": "average total paid",
+                "type": "string"
+              },
+              {
+                "name": "average insurer paid",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair code": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "repair code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "repair code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "workshop id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop name": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "workshop name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop city": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "workshop city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop city",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop region": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "workshop region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop region",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop postcode": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "workshop postcode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop postcode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service area description": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "service area description",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service area description",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average quoted charge": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "average quoted charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "average quoted charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average total paid": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "average total paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "average total paid",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average insurer paid": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "claims.workshop_charge_summary",
+                    "field": "average insurer paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "average insurer paid",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "d58e0144-b939-4202-9129-a377379b3298"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_02_standardize_and_cast_workshop_charge",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "workshop_charge_landing_df"
+              ],
+              "output": "workshop_charge_typed_df",
+              "columns": [
+                "repair_code",
+                "workshop_id",
+                "workshop_name",
+                "workshop_city",
+                "workshop_region",
+                "workshop_postcode",
+                "service_area",
+                "quoted_charge_text",
+                "total_paid_text",
+                "insurer_paid_text"
+              ],
+              "renamedColumns": {
+                "repair_code": "repair code",
+                "workshop_id": "workshop id",
+                "workshop_name": "workshop name",
+                "workshop_city": "workshop city",
+                "workshop_region": "workshop region",
+                "workshop_postcode": "workshop postcode",
+                "service_area": "service area description",
+                "quoted_charge_text": "average quoted charge",
+                "total_paid_text": "average total paid",
+                "insurer_paid_text": "average insurer paid"
+              },
+              "castColumns": {
+                "workshop_id": "string -> long",
+                "workshop_postcode": "string -> long"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair code",
+                "type": "string"
+              },
+              {
+                "name": "workshop id",
+                "type": "string"
+              },
+              {
+                "name": "workshop name",
+                "type": "string"
+              },
+              {
+                "name": "workshop city",
+                "type": "string"
+              },
+              {
+                "name": "workshop region",
+                "type": "string"
+              },
+              {
+                "name": "workshop postcode",
+                "type": "string"
+              },
+              {
+                "name": "service area description",
+                "type": "string"
+              },
+              {
+                "name": "average quoted charge",
+                "type": "string"
+              },
+              {
+                "name": "average total paid",
+                "type": "string"
+              },
+              {
+                "name": "average insurer paid",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "repair code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`repair code`').alias('repair_code')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "workshop id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`workshop id`').cast('long').alias('workshop_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "workshop name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`workshop name`').alias('workshop_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "workshop city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`workshop city`').alias('workshop_city')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "workshop region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`workshop region`').alias('workshop_region')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_postcode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "workshop postcode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`workshop postcode`').cast('long').alias('workshop_postcode')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "service area description",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`service area description`').alias('service_area')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quoted_charge_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "average quoted charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`average quoted charge`').alias('quoted_charge_text')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "average total paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`average total paid`').alias('total_paid_text')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "insurer_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_landing_df",
+                    "field": "average insurer paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('`average insurer paid`').alias('insurer_paid_text')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "d53b7987-70cf-43ad-bb2e-57fe56affa19"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_03_apply_workshop_charge_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "workshop_charge_typed_df"
+              ],
+              "output": "workshop_charge_eligible_df",
+              "columns": [
+                "repair_code",
+                "workshop_id",
+                "workshop_name",
+                "workshop_city",
+                "workshop_region",
+                "workshop_postcode",
+                "service_area",
+                "quoted_charge_text",
+                "total_paid_text",
+                "insurer_paid_text"
+              ],
+              "filterExpression": "col('workshop_id').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "repair_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "repair_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "workshop_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "workshop_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "workshop_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_city",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "workshop_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_region",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_postcode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "workshop_postcode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_postcode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "service_area",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quoted_charge_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "quoted_charge_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quoted_charge_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "total_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_paid_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "insurer_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_typed_df",
+                    "field": "insurer_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "insurer_paid_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "workshop_charge_typed_df",
+                "field": "workshop_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('workshop_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "3bb05ee6-edda-4eff-a00b-4add4451f297"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_04_strip_currency_symbol_from_amounts",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "workshop_charge_eligible_df"
+              ],
+              "output": "workshop_charge_cleaned_df",
+              "columns": [
+                "repair_code",
+                "workshop_id",
+                "workshop_name",
+                "workshop_city",
+                "workshop_region",
+                "workshop_postcode",
+                "service_area",
+                "quoted_charge_text",
+                "total_paid_text",
+                "insurer_paid_text"
+              ],
+              "derivedColumns": {
+                "quoted_charge_text": "regexp_replace(col('quoted_charge_text'), '^\\\\$', '')",
+                "total_paid_text": "regexp_replace(col('total_paid_text'), '^\\\\$', '')",
+                "insurer_paid_text": "regexp_replace(col('insurer_paid_text'), '^\\\\$', '')"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "repair_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "repair_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "workshop_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "workshop_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "workshop_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_city",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "workshop_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_region",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop_postcode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "workshop_postcode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop_postcode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "service_area",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quoted_charge_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "quoted_charge_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "regexp_replace(col('quoted_charge_text'), '^\\\\$', '')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "total_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "regexp_replace(col('total_paid_text'), '^\\\\$', '')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "insurer_paid_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_eligible_df",
+                    "field": "insurer_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "regexp_replace(col('insurer_paid_text'), '^\\\\$', '')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "359fe753-adcf-4797-9967-7348db2e2324"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_05_nest_workshop_and_charge_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "workshop_charge_cleaned_df"
+              ],
+              "output": "workshop_charge_nested_df",
+              "columns": [
+                "repair_code",
+                "workshop",
+                "service_area",
+                "charges"
+              ],
+              "nestedColumns": {
+                "workshop": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                "charges": "struct(quoted_charge_text CAST double AS quoted, total_paid_text CAST double AS total_paid, insurer_paid_text CAST double AS insurer_paid).alias('charges')"
+              },
+              "castColumns": {
+                "charges.quoted": "string -> double",
+                "charges.total_paid": "string -> double",
+                "charges.insurer_paid": "string -> double"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop_id",
+                "type": "long"
+              },
+              {
+                "name": "workshop_name",
+                "type": "string"
+              },
+              {
+                "name": "workshop_city",
+                "type": "string"
+              },
+              {
+                "name": "workshop_region",
+                "type": "string"
+              },
+              {
+                "name": "workshop_postcode",
+                "type": "long"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "quoted_charge_text",
+                "type": "string"
+              },
+              {
+                "name": "total_paid_text",
+                "type": "string"
+              },
+              {
+                "name": "insurer_paid_text",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_nested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop",
+                "type": "struct<id:long,name:string,city:string,region:string,postcode:long>"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "charges",
+                "type": "struct<quoted:double,total_paid:double,insurer_paid:double>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "repair_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "repair_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "service_area",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "workshop_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "workshop_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "workshop_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "workshop_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "workshop_postcode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(workshop_id AS id, workshop_name AS name, workshop_city AS city, workshop_region AS region, workshop_postcode AS postcode).alias('workshop')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "quoted_charge_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(quoted_charge_text CAST double AS quoted, total_paid_text CAST double AS total_paid, insurer_paid_text CAST double AS insurer_paid).alias('charges')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "total_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(quoted_charge_text CAST double AS quoted, total_paid_text CAST double AS total_paid, insurer_paid_text CAST double AS insurer_paid).alias('charges')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_cleaned_df",
+                    "field": "insurer_paid_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(quoted_charge_text CAST double AS quoted, total_paid_text CAST double AS total_paid, insurer_paid_text CAST double AS insurer_paid).alias('charges')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:05:31Z",
+    "run": {
+      "runId": "f97a0758-cbfc-46a1-aaf9-8b267dfc798e"
+    },
+    "job": {
+      "namespace": "claims_curated_cleaning",
+      "name": "step_06_load_workshop_charges_dataset",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "workshop_charge_nested_df"
+              ],
+              "output": "warehouse/curated/claims/workshop_charges",
+              "columns": [
+                "repair_code",
+                "workshop",
+                "service_area",
+                "charges"
+              ],
+              "writeMode": "overwrite",
+              "format": "parquet",
+              "expression": "workshop_charge_nested_df.write.mode('overwrite').parquet('warehouse/curated/claims/workshop_charges')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "workshop_charge_nested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop",
+                "type": "struct<id:long,name:string,city:string,region:string,postcode:long>"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "charges",
+                "type": "struct<quoted:double,total_paid:double,insurer_paid:double>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/claims/workshop_charges",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "repair_code",
+                "type": "string"
+              },
+              {
+                "name": "workshop",
+                "type": "struct<id:long,name:string,city:string,region:string,postcode:long>"
+              },
+              {
+                "name": "service_area",
+                "type": "string"
+              },
+              {
+                "name": "charges",
+                "type": "struct<quoted:double,total_paid:double,insurer_paid:double>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "repair_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_nested_df",
+                    "field": "repair_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "repair_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workshop": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_nested_df",
+                    "field": "workshop",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workshop",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_nested_df",
+                    "field": "service_area",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "workshop_charge_nested_df",
+                    "field": "charges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "charges",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

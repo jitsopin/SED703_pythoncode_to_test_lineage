@@ -1,0 +1,1307 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "32c6c5ae-06b9-4af8-a4d6-13c8bf9d1982"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_01_create_range",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "range_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "b73ca00f-2bf7-42e2-a21b-c224b61d216f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_02_apply_retry_flag",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "range_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "retry_flagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "range_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fail": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "range_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "runtime is_retry flag; initial attempt marks id=10"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "3c239707-ddd0-456f-bee9-b6ded4b46776"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_03_materialize_validation_guard",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "retry_flagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_retry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "failure_guard",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "retry_flagged_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fail": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "retry_flagged_df",
+                    "field": "fail",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "failure_guard": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "retry_flagged_df",
+                    "field": "fail",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "when(fail, null).otherwise(1)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "dd81e874-2c62-4e91-8a23-6cca07b101b5"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_04_identify_failing_rows",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_retry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "failure_guard",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "failing_rows_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "failure_guard",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_retry_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fail": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_retry_df",
+                    "field": "fail",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "failure_guard": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_retry_df",
+                    "field": "failure_guard",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "validated_retry_df",
+                  "field": "fail",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "fail == true",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "fff0ace5-7773-4337-85cd-e35c180a14b8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_05_assert_retry_semantics",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "failing_rows_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "failure_guard",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "c422a76e-e058-413d-abc1-51ae64098221"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_06_prepare_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_retry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "failure_guard",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_retry_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fail": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_retry_df",
+                    "field": "fail",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:04:52.375Z",
+    "run": {
+      "runId": "df2bf019-855c-4a38-ad24-53fecca8816d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/retry-failure-demo",
+      "name": "step_07_write_retry_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "range_df",
+              "selectedColumns": [
+                "id"
+              ],
+              "expression": "spark.range(0, 1024, 1, numPartitions=4)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "range_df"
+              ],
+              "outputDataFrame": "retry_flagged_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "fail=false on retry; otherwise id==10"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "retry_flagged_df"
+              ],
+              "outputDataFrame": "validated_retry_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "materialize retry validation guard"
+            },
+            {
+              "sequence": 4,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "failing_rows_df",
+              "selectedColumns": [
+                "id",
+                "fail",
+                "failure_guard"
+              ],
+              "expression": "fail == true"
+            },
+            {
+              "sequence": 5,
+              "statementType": "ASSERT",
+              "inputDataFrames": [
+                "failing_rows_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "assert retry or exactly one failing row"
+            },
+            {
+              "sequence": 6,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "validated_retry_df"
+              ],
+              "outputDataFrame": "output_df",
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "drop failure_guard"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "fail"
+              ],
+              "expression": "overwrite retry demo CSV target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/retry_demo/output",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "fail",
+                "type": "BOOLEAN"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "output_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fail": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "output_df",
+                    "field": "fail",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

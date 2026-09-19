@@ -1,0 +1,1634 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:47:13.816Z",
+    "run": {
+      "runId": "a97b819b-1d8e-4794-aeb4-2bebda692734"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/trade-risk-streaming",
+      "name": "step_01_read_kafka_trade_stream",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_KAFKA_STREAM",
+              "inputDataFrames": [],
+              "outputDataFrame": "kafka_raw_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "topic",
+                "partition",
+                "offset",
+                "timestamp",
+                "timestampType"
+              ],
+              "expression": "spark.readStream.format('kafka').option(...).load()"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "kafka_raw_df"
+              ],
+              "outputDataFrame": "trade_json_df",
+              "selectedColumns": [
+                "json_str"
+              ],
+              "expression": "col(\"value\").cast(\"string\").alias(\"json_str\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "trade_json_df"
+              ],
+              "outputDataFrame": "trade_parsed_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "region"
+              ],
+              "expression": "extract trade fields with get_json_object; cast numeric risk fields to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_DEFAULTS",
+              "inputDataFrames": [
+                "trade_parsed_df"
+              ],
+              "outputDataFrame": "published_trade_stream_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "apply UNKNOWN/0.0/1.0/EMEA defaults and current_date trade_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_STREAM_APPEND_PARTITIONED",
+              "inputDataFrames": [
+                "published_trade_stream_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "writeStream parquet append with checkpoint; partitionBy trade_date and asset_class; trigger every 10 seconds"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "kafka://cluster",
+        "name": "kafka://trade-risk-vectors",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "BINARY"
+              },
+              {
+                "name": "value",
+                "type": "BINARY"
+              },
+              {
+                "name": "topic",
+                "type": "STRING"
+              },
+              {
+                "name": "partition",
+                "type": "INTEGER"
+              },
+              {
+                "name": "offset",
+                "type": "BIGINT"
+              },
+              {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "timestampType",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "kafka_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "BINARY"
+              },
+              {
+                "name": "value",
+                "type": "BINARY"
+              },
+              {
+                "name": "topic",
+                "type": "STRING"
+              },
+              {
+                "name": "partition",
+                "type": "INTEGER"
+              },
+              {
+                "name": "offset",
+                "type": "BIGINT"
+              },
+              {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "timestampType",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "key": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "topic": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "topic",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "partition": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "partition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offset": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "offset",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "timestampType": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka://cluster",
+                    "name": "kafka://trade-risk-vectors",
+                    "field": "timestampType",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:47:13.816Z",
+    "run": {
+      "runId": "09537002-db9b-4f3b-8d41-90ca5cc8ed8d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/trade-risk-streaming",
+      "name": "step_02_decode_kafka_value",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_KAFKA_STREAM",
+              "inputDataFrames": [],
+              "outputDataFrame": "kafka_raw_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "topic",
+                "partition",
+                "offset",
+                "timestamp",
+                "timestampType"
+              ],
+              "expression": "spark.readStream.format('kafka').option(...).load()"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "kafka_raw_df"
+              ],
+              "outputDataFrame": "trade_json_df",
+              "selectedColumns": [
+                "json_str"
+              ],
+              "expression": "col(\"value\").cast(\"string\").alias(\"json_str\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "trade_json_df"
+              ],
+              "outputDataFrame": "trade_parsed_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "region"
+              ],
+              "expression": "extract trade fields with get_json_object; cast numeric risk fields to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_DEFAULTS",
+              "inputDataFrames": [
+                "trade_parsed_df"
+              ],
+              "outputDataFrame": "published_trade_stream_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "apply UNKNOWN/0.0/1.0/EMEA defaults and current_date trade_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_STREAM_APPEND_PARTITIONED",
+              "inputDataFrames": [
+                "published_trade_stream_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "writeStream parquet append with checkpoint; partitionBy trade_date and asset_class; trigger every 10 seconds"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "kafka_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "BINARY"
+              },
+              {
+                "name": "value",
+                "type": "BINARY"
+              },
+              {
+                "name": "topic",
+                "type": "STRING"
+              },
+              {
+                "name": "partition",
+                "type": "INTEGER"
+              },
+              {
+                "name": "offset",
+                "type": "BIGINT"
+              },
+              {
+                "name": "timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "timestampType",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_json_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "json_str": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "kafka_raw_df",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"value\").cast(\"string\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:47:13.816Z",
+    "run": {
+      "runId": "753eb97c-ea90-4269-b680-8b52558a00ff"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/trade-risk-streaming",
+      "name": "step_03_parse_trade_payload",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_KAFKA_STREAM",
+              "inputDataFrames": [],
+              "outputDataFrame": "kafka_raw_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "topic",
+                "partition",
+                "offset",
+                "timestamp",
+                "timestampType"
+              ],
+              "expression": "spark.readStream.format('kafka').option(...).load()"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "kafka_raw_df"
+              ],
+              "outputDataFrame": "trade_json_df",
+              "selectedColumns": [
+                "json_str"
+              ],
+              "expression": "col(\"value\").cast(\"string\").alias(\"json_str\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "trade_json_df"
+              ],
+              "outputDataFrame": "trade_parsed_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "region"
+              ],
+              "expression": "extract trade fields with get_json_object; cast numeric risk fields to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_DEFAULTS",
+              "inputDataFrames": [
+                "trade_parsed_df"
+              ],
+              "outputDataFrame": "published_trade_stream_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "apply UNKNOWN/0.0/1.0/EMEA defaults and current_date trade_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_STREAM_APPEND_PARTITIONED",
+              "inputDataFrames": [
+                "published_trade_stream_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "writeStream parquet append with checkpoint; partitionBy trade_date and asset_class; trigger every 10 seconds"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_json_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "execution_time",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.trade_id)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.book_id)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.desk)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.asset_class)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "execution_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.execution_time)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.pricing_vector)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.var_contribution).cast(double)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.risk_weight).cast(double)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_json_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.region)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:47:13.816Z",
+    "run": {
+      "runId": "31f5d71d-c168-44a1-aec7-5db73acc0e29"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/trade-risk-streaming",
+      "name": "step_04_apply_stream_defaults",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_KAFKA_STREAM",
+              "inputDataFrames": [],
+              "outputDataFrame": "kafka_raw_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "topic",
+                "partition",
+                "offset",
+                "timestamp",
+                "timestampType"
+              ],
+              "expression": "spark.readStream.format('kafka').option(...).load()"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "kafka_raw_df"
+              ],
+              "outputDataFrame": "trade_json_df",
+              "selectedColumns": [
+                "json_str"
+              ],
+              "expression": "col(\"value\").cast(\"string\").alias(\"json_str\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "trade_json_df"
+              ],
+              "outputDataFrame": "trade_parsed_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "region"
+              ],
+              "expression": "extract trade fields with get_json_object; cast numeric risk fields to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_DEFAULTS",
+              "inputDataFrames": [
+                "trade_parsed_df"
+              ],
+              "outputDataFrame": "published_trade_stream_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "apply UNKNOWN/0.0/1.0/EMEA defaults and current_date trade_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_STREAM_APPEND_PARTITIONED",
+              "inputDataFrames": [
+                "published_trade_stream_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "writeStream parquet append with checkpoint; partitionBy trade_date and asset_class; trigger every 10 seconds"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "execution_time",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_trade_stream_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "execution_time",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "trade_date",
+                "type": "DATE"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(asset_class, \"UNKNOWN\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "execution_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "execution_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(var_contribution, 0.0)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(risk_weight, 1.0)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": []
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_parsed_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(region, \"EMEA\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:47:13.816Z",
+    "run": {
+      "runId": "30106d8b-334a-4802-aa41-4fef69ffff79"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/trade-risk-streaming",
+      "name": "step_05_append_trade_stream",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_KAFKA_STREAM",
+              "inputDataFrames": [],
+              "outputDataFrame": "kafka_raw_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "topic",
+                "partition",
+                "offset",
+                "timestamp",
+                "timestampType"
+              ],
+              "expression": "spark.readStream.format('kafka').option(...).load()"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "kafka_raw_df"
+              ],
+              "outputDataFrame": "trade_json_df",
+              "selectedColumns": [
+                "json_str"
+              ],
+              "expression": "col(\"value\").cast(\"string\").alias(\"json_str\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "trade_json_df"
+              ],
+              "outputDataFrame": "trade_parsed_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "region"
+              ],
+              "expression": "extract trade fields with get_json_object; cast numeric risk fields to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_DEFAULTS",
+              "inputDataFrames": [
+                "trade_parsed_df"
+              ],
+              "outputDataFrame": "published_trade_stream_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "apply UNKNOWN/0.0/1.0/EMEA defaults and current_date trade_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_STREAM_APPEND_PARTITIONED",
+              "inputDataFrames": [
+                "published_trade_stream_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "execution_time",
+                "pricing_payload_json",
+                "var_contribution",
+                "risk_weight",
+                "trade_date",
+                "region"
+              ],
+              "expression": "writeStream parquet append with checkpoint; partitionBy trade_date and asset_class; trigger every 10 seconds"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_trade_stream_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "execution_time",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "trade_date",
+                "type": "DATE"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/risk_stream/trade_risk_vectors",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "execution_time",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "trade_date",
+                "type": "DATE"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "execution_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "execution_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_trade_stream_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "published_trade_stream_df",
+                  "field": "trade_date",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(\"trade_date\", \"asset_class\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "published_trade_stream_df",
+                  "field": "asset_class",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(\"trade_date\", \"asset_class\")",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

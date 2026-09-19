@@ -1,0 +1,1992 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "8a7f1574-6b32-4490-b865-d820280151c6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_01_read_rides_stream",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/rides_stream",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/rides_stream",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "776222f2-c577-4eb4-9a78-b77124d1c791"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_02_split_messages",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_split_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              },
+              {
+                "name": "_parts",
+                "type": "ARRAY<STRING>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_raw_df",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_parts": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_raw_df",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "split(value, ', ')"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "98aab9a8-6aa6-4b07-9a9b-ec3a4341c147"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_03_parse_runtime_schema",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_split_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              },
+              {
+                "name": "_parts",
+                "type": "ARRAY<STRING>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "schema_defined_fields",
+                "type": "RUNTIME_SCHEMA"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vendor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_split_df",
+                    "field": "_parts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "runtime schema ordinal extraction and cast"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_split_df",
+                    "field": "_parts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "runtime schema ordinal extraction and cast"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "schema_defined_fields": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_split_df",
+                    "field": "_parts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "remaining runtime schema fields"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "dce51977-2473-47b0-80fd-53fe3c38bf3e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_04_console_raw_rides",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "schema_defined_fields",
+                "type": "RUNTIME_SCHEMA"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "console://stdout",
+        "name": "raw_rides",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "schema_defined_fields",
+                "type": "RUNTIME_SCHEMA"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "09f31b3e-6865-45a4-af1d-afad506f549c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_05_count_by_vendor",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "schema_defined_fields",
+                "type": "RUNTIME_SCHEMA"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vendor_count_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vendor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_parsed_df",
+                    "field": "vendor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "count": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "rides_parsed_df",
+                  "field": "vendor_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "group by vendor_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "c565e593-4ef8-4401-b9f4-34283a64b2aa"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_06_console_vendor_counts",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vendor_count_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "console://stdout",
+        "name": "vendor_counts",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "9fe092ab-e438-456a-a5ad-ee0bfc24227f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_07_window_vendor_counts",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rides_parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "schema_defined_fields",
+                "type": "RUNTIME_SCHEMA"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "windowed_vendor_count_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "pickup_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              },
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "pickup_window": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_parsed_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "window(10 minutes, 5 minutes)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vendor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rides_parsed_df",
+                    "field": "vendor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "count": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "rides_parsed_df",
+                  "field": "tpep_pickup_datetime",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "group by sliding pickup window",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "rides_parsed_df",
+                  "field": "vendor_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "group by vendor_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "47b02b6f-0661-40f8-847e-7bac7666981f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_08_format_window_messages",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "windowed_vendor_count_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "pickup_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              },
+              {
+                "name": "vendor_id",
+                "type": "RUNTIME_SCHEMA"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "windowed_messages_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "STRING"
+              },
+              {
+                "name": "value",
+                "type": "STRING"
+              },
+              {
+                "name": "pickup_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_vendor_count_df",
+                    "field": "vendor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast vendor_id to string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_vendor_count_df",
+                    "field": "count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast count to string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_window": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_vendor_count_df",
+                    "field": "pickup_window",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:57:48.023Z",
+    "run": {
+      "runId": "98cb20f1-6bdd-49b8-9a8d-c3d20791a08b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/rides-streaming",
+      "name": "step_09_write_complete_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "rides_raw_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "rides_raw_df"
+              ],
+              "outputDataFrame": "rides_split_df",
+              "selectedColumns": [
+                "value",
+                "_parts"
+              ],
+              "expression": "split(value, ', ')"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DYNAMIC_SCHEMA",
+              "inputDataFrames": [
+                "rides_split_df"
+              ],
+              "outputDataFrame": "rides_parsed_df",
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "cast split elements to runtime StructType fields by ordinal position"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_CONSOLE_APPEND",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "runtime ride_schema fields"
+              ],
+              "expression": "diagnostic append console sink every 5 seconds"
+            },
+            {
+              "sequence": 5,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "vendor_count_df",
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by vendor_id; count(*)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_CONSOLE_COMPLETE",
+              "inputDataFrames": [
+                "vendor_count_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "vendor_id",
+                "count"
+              ],
+              "expression": "diagnostic complete console sink every 5 seconds"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "rides_parsed_df"
+              ],
+              "outputDataFrame": "windowed_vendor_count_df",
+              "selectedColumns": [
+                "pickup_window",
+                "vendor_id",
+                "count"
+              ],
+              "expression": "group by window(tpep_pickup_datetime, 10 minutes, 5 minutes) and vendor_id; count(*)"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_FORMAT",
+              "inputDataFrames": [
+                "windowed_vendor_count_df"
+              ],
+              "outputDataFrame": "windowed_messages_df",
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "key=cast(vendor_id as string); value=cast(count as string)"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "windowed_messages_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "key",
+                "value",
+                "pickup_window"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "windowed_messages_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "STRING"
+              },
+              {
+                "name": "value",
+                "type": "STRING"
+              },
+              {
+                "name": "pickup_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/rides_stream/windowed_vendor_counts",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "key",
+                "type": "STRING"
+              },
+              {
+                "name": "value",
+                "type": "STRING"
+              },
+              {
+                "name": "pickup_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_messages_df",
+                    "field": "key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_messages_df",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_window": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "windowed_messages_df",
+                    "field": "pickup_window",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

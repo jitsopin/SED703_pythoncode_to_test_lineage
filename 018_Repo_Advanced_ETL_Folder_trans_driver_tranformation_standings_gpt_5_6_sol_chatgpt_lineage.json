@@ -1,0 +1,1210 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:39:55.941Z",
+    "run": {
+      "runId": "699e6076-4199-44d3-bf85-a051aa8c7a20"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-standings",
+      "name": "step_01_read_event_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(source_path).select(season_year, participant_name, participant_nationality, team_name, points_awarded, finish_position)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "event_result_df"
+              ],
+              "outputDataFrame": "participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins"
+              ],
+              "groupByExpression": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+              "expression": "sum(\"points_awarded\").alias(\"total_points\"), count(when(col(\"finish_position\") == 1, True)).alias(\"wins\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "participant_standings_df"
+              ],
+              "outputDataFrame": "ranked_participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "windowExpression": "Window.partitionBy(\"season_year\").orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+              "expression": "withColumn(\"standing_rank\", rank().over(participant_rank_spec))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "ranked_participant_standings_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "expression": "ranked_participant_standings_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/presentation/competition/published_event_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/presentation/competition/published_event_results",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:39:55.941Z",
+    "run": {
+      "runId": "985e5168-ffd4-4f44-8486-0474514be38b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-standings",
+      "name": "step_02_aggregate_participant_standings",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(source_path).select(season_year, participant_name, participant_nationality, team_name, points_awarded, finish_position)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "event_result_df"
+              ],
+              "outputDataFrame": "participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins"
+              ],
+              "groupByExpression": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+              "expression": "sum(\"points_awarded\").alias(\"total_points\"), count(when(col(\"finish_position\") == 1, True)).alias(\"wins\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "participant_standings_df"
+              ],
+              "outputDataFrame": "ranked_participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "windowExpression": "Window.partitionBy(\"season_year\").orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+              "expression": "withColumn(\"standing_rank\", rank().over(participant_rank_spec))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "ranked_participant_standings_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "expression": "ranked_participant_standings_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "total_points",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "wins",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "sum(\"points_awarded\").alias(\"total_points\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "count(when(col(\"finish_position\") == 1, True)).alias(\"wins\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_result_df",
+                  "field": "season_year",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_result_df",
+                  "field": "participant_name",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_result_df",
+                  "field": "participant_nationality",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_result_df",
+                  "field": "team_name",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:39:55.941Z",
+    "run": {
+      "runId": "2166725f-ffd3-42d7-9431-7350052f18b5"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-standings",
+      "name": "step_03_rank_participant_standings",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(source_path).select(season_year, participant_name, participant_nationality, team_name, points_awarded, finish_position)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "event_result_df"
+              ],
+              "outputDataFrame": "participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins"
+              ],
+              "groupByExpression": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+              "expression": "sum(\"points_awarded\").alias(\"total_points\"), count(when(col(\"finish_position\") == 1, True)).alias(\"wins\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "participant_standings_df"
+              ],
+              "outputDataFrame": "ranked_participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "windowExpression": "Window.partitionBy(\"season_year\").orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+              "expression": "withColumn(\"standing_rank\", rank().over(participant_rank_spec))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "ranked_participant_standings_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "expression": "ranked_participant_standings_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "total_points",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "wins",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "ranked_participant_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "total_points",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "wins",
+                "type": "BIGINT"
+              },
+              {
+                "name": "standing_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "total_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_standings_df",
+                    "field": "wins",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "standing_rank": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_standings_df",
+                  "field": "season_year",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "Window.partitionBy(\"season_year\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_standings_df",
+                  "field": "total_points",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_standings_df",
+                  "field": "wins",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:39:55.941Z",
+    "run": {
+      "runId": "c8342ed6-513b-422a-986d-b4adaf593ff1"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-standings",
+      "name": "step_04_write_participant_standings",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(source_path).select(season_year, participant_name, participant_nationality, team_name, points_awarded, finish_position)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "event_result_df"
+              ],
+              "outputDataFrame": "participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins"
+              ],
+              "groupByExpression": "groupBy(\"season_year\", \"participant_name\", \"participant_nationality\", \"team_name\")",
+              "expression": "sum(\"points_awarded\").alias(\"total_points\"), count(when(col(\"finish_position\") == 1, True)).alias(\"wins\")"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "participant_standings_df"
+              ],
+              "outputDataFrame": "ranked_participant_standings_df",
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "windowExpression": "Window.partitionBy(\"season_year\").orderBy(col(\"total_points\").desc(), col(\"wins\").desc())",
+              "expression": "withColumn(\"standing_rank\", rank().over(participant_rank_spec))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "ranked_participant_standings_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "participant_name",
+                "participant_nationality",
+                "team_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "expression": "ranked_participant_standings_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "ranked_participant_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "total_points",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "wins",
+                "type": "BIGINT"
+              },
+              {
+                "name": "standing_rank",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/presentation/competition/annual_participant_standings",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "total_points",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "wins",
+                "type": "BIGINT"
+              },
+              {
+                "name": "standing_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "total_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "wins",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "standing_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "ranked_participant_standings_df",
+                    "field": "standing_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

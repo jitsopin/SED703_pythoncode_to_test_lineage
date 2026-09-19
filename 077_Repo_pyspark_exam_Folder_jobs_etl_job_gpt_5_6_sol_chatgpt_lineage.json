@@ -1,0 +1,790 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:53:50.205Z",
+    "run": {
+      "runId": "6576c2b4-25dd-48b0-b063-e1c7f7d30698"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/employee-etl",
+      "name": "step_01_read_employees",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "employees_raw_df",
+              "selectedColumns": [
+                "id",
+                "first_name",
+                "second_name",
+                "floor"
+              ],
+              "expression": "read employee Parquet dataset"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_TRANSFORM",
+              "inputDataFrames": [
+                "employees_raw_df"
+              ],
+              "outputDataFrame": "employees_transformed_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "name = concat_ws(' ', first_name, second_name); steps_to_desk = floor * steps_per_floor"
+            },
+            {
+              "sequence": 3,
+              "statementType": "COALESCE",
+              "inputDataFrames": [
+                "employees_transformed_df"
+              ],
+              "outputDataFrame": "employees_single_partition_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "coalesce(1)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "employees_single_partition_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "overwrite CSV with header=true"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/employees",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "first_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "second_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "floor",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "first_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "second_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "floor",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/employees",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "first_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/employees",
+                    "field": "first_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "second_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/employees",
+                    "field": "second_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "floor": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/employees",
+                    "field": "floor",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:53:50.205Z",
+    "run": {
+      "runId": "d7741af4-d506-49d3-ac0c-5756f8e44088"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/employee-etl",
+      "name": "step_02_transform_employees",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "employees_raw_df",
+              "selectedColumns": [
+                "id",
+                "first_name",
+                "second_name",
+                "floor"
+              ],
+              "expression": "read employee Parquet dataset"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_TRANSFORM",
+              "inputDataFrames": [
+                "employees_raw_df"
+              ],
+              "outputDataFrame": "employees_transformed_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "name = concat_ws(' ', first_name, second_name); steps_to_desk = floor * steps_per_floor"
+            },
+            {
+              "sequence": 3,
+              "statementType": "COALESCE",
+              "inputDataFrames": [
+                "employees_transformed_df"
+              ],
+              "outputDataFrame": "employees_single_partition_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "coalesce(1)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "employees_single_partition_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "overwrite CSV with header=true"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "first_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "second_name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "floor",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_transformed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "steps_to_desk",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_raw_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_raw_df",
+                    "field": "first_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat first_name and second_name with space"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_raw_df",
+                    "field": "second_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat first_name and second_name with space"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "steps_to_desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_raw_df",
+                    "field": "floor",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "floor * runtime steps_per_floor"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:53:50.205Z",
+    "run": {
+      "runId": "c04ccb63-341f-43db-8940-b187893274e5"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/employee-etl",
+      "name": "step_03_coalesce_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "employees_raw_df",
+              "selectedColumns": [
+                "id",
+                "first_name",
+                "second_name",
+                "floor"
+              ],
+              "expression": "read employee Parquet dataset"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_TRANSFORM",
+              "inputDataFrames": [
+                "employees_raw_df"
+              ],
+              "outputDataFrame": "employees_transformed_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "name = concat_ws(' ', first_name, second_name); steps_to_desk = floor * steps_per_floor"
+            },
+            {
+              "sequence": 3,
+              "statementType": "COALESCE",
+              "inputDataFrames": [
+                "employees_transformed_df"
+              ],
+              "outputDataFrame": "employees_single_partition_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "coalesce(1)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "employees_single_partition_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "overwrite CSV with header=true"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_transformed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "steps_to_desk",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_single_partition_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "steps_to_desk",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_transformed_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_transformed_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "steps_to_desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_transformed_df",
+                    "field": "steps_to_desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "employees_transformed_df",
+                  "field": "id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITIONING",
+                      "description": "coalesce to one partition",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:53:50.205Z",
+    "run": {
+      "runId": "c9bae348-75a8-48ee-8fa2-b933d801e8d5"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/employee-etl",
+      "name": "step_04_write_employee_report",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "employees_raw_df",
+              "selectedColumns": [
+                "id",
+                "first_name",
+                "second_name",
+                "floor"
+              ],
+              "expression": "read employee Parquet dataset"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_TRANSFORM",
+              "inputDataFrames": [
+                "employees_raw_df"
+              ],
+              "outputDataFrame": "employees_transformed_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "name = concat_ws(' ', first_name, second_name); steps_to_desk = floor * steps_per_floor"
+            },
+            {
+              "sequence": 3,
+              "statementType": "COALESCE",
+              "inputDataFrames": [
+                "employees_transformed_df"
+              ],
+              "outputDataFrame": "employees_single_partition_df",
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "coalesce(1)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "employees_single_partition_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "id",
+                "name",
+                "steps_to_desk"
+              ],
+              "expression": "overwrite CSV with header=true"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "employees_single_partition_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "steps_to_desk",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/employees_report",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "id",
+                "type": "INFERRED"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "steps_to_desk",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_single_partition_df",
+                    "field": "id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_single_partition_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "steps_to_desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "employees_single_partition_df",
+                    "field": "steps_to_desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

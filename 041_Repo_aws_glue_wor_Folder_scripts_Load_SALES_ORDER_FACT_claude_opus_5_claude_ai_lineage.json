@@ -1,0 +1,1995 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "5a225472-326f-4919-aafe-6f450045ea05"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_read_rental_agreement_lines",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "rental_staging.rental_agreement_line"
+              ],
+              "output": "agreement_line_df",
+              "columns": [
+                "agreement_id",
+                "line_id",
+                "line_number",
+                "asset_id",
+                "quantity",
+                "daily_rate",
+                "discount",
+                "tax"
+              ],
+              "expression": "spark.table('rental_staging.rental_agreement_line').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "rental_staging.rental_agreement_line",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agreement_line_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "asset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "asset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "daily_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "daily_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "daily_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement_line",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "059d7d09-4c9a-48d9-91fc-fbd8a34cfe93"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_read_rental_agreement_headers",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "rental_staging.rental_agreement"
+              ],
+              "output": "agreement_header_df",
+              "columns": [
+                "agreement_id",
+                "branch_id",
+                "agreement_date",
+                "delivery_mode"
+              ],
+              "expression": "spark.table('rental_staging.rental_agreement').select(...)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "rental_staging.rental_agreement",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agreement_header_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement",
+                    "field": "branch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "branch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agreement_date": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement",
+                    "field": "agreement_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "delivery_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "rental_staging.rental_agreement",
+                    "field": "delivery_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "delivery_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "96d76017-6c58-4737-8738-21b819b1c597"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_register_agreement_line_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "agreement_line_df"
+              ],
+              "output": "vw_rental_agreement_line",
+              "columns": [
+                "agreement_id",
+                "line_id",
+                "line_number",
+                "asset_id",
+                "quantity",
+                "daily_rate",
+                "discount",
+                "tax"
+              ],
+              "expression": "agreement_line_df.createOrReplaceTempView('vw_rental_agreement_line')",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agreement_line_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_rental_agreement_line",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "asset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "asset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "daily_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "daily_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "daily_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_line_df",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "a4fa2c65-f47a-44ee-aacb-ca760618a55b"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_register_agreement_header_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "agreement_header_df"
+              ],
+              "output": "vw_rental_agreement_header",
+              "columns": [
+                "agreement_id",
+                "branch_id",
+                "agreement_date",
+                "delivery_mode"
+              ],
+              "expression": "agreement_header_df.createOrReplaceTempView('vw_rental_agreement_header')",
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agreement_header_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_rental_agreement_header",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_header_df",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_header_df",
+                    "field": "branch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "branch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agreement_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_header_df",
+                    "field": "agreement_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "delivery_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agreement_header_df",
+                    "field": "delivery_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "delivery_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "cd9240e6-90ba-4993-9576-31263bfc566c"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_join_header_context_to_lines",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SQL_SELECT_WITH_JOIN",
+              "inputs": [
+                "vw_rental_agreement_header",
+                "vw_rental_agreement_line"
+              ],
+              "output": "rental_agreement_fact_df",
+              "columns": [
+                "agreement_id",
+                "line_id",
+                "line_number",
+                "asset_id",
+                "quantity",
+                "daily_rate",
+                "discount",
+                "tax",
+                "branch_id",
+                "agreement_date",
+                "delivery_mode"
+              ],
+              "joinType": "inner",
+              "joinCondition": "line.agreement_id = header.agreement_id",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_rental_agreement_line",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_rental_agreement_header",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rental_agreement_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "asset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.asset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "daily_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "daily_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.daily_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_line",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line.tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_header",
+                    "field": "branch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "header.branch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agreement_date": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_header",
+                    "field": "agreement_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "header.agreement_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "delivery_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_rental_agreement_header",
+                    "field": "delivery_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "header.delivery_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_rental_agreement_line",
+                "field": "agreement_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "WHERE line.agreement_id = header.agreement_id",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_rental_agreement_header",
+                "field": "agreement_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "WHERE line.agreement_id = header.agreement_id",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "a5f233e8-4d6d-431b-b3c0-3adc73001e98"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_coalesce_fact_to_single_file",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "COALESCE",
+              "inputs": [
+                "rental_agreement_fact_df"
+              ],
+              "output": "rental_agreement_fact_single_df",
+              "columns": [
+                "agreement_id",
+                "line_id",
+                "line_number",
+                "asset_id",
+                "quantity",
+                "daily_rate",
+                "discount",
+                "tax",
+                "branch_id",
+                "agreement_date",
+                "delivery_mode"
+              ],
+              "partitionCount": 1,
+              "expression": "rental_agreement_fact_df.coalesce(1)",
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rental_agreement_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rental_agreement_fact_single_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "asset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "asset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "daily_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "daily_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "daily_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "branch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "branch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agreement_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "agreement_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "delivery_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_df",
+                    "field": "delivery_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "delivery_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:47:00Z",
+    "run": {
+      "runId": "67c7b2a2-5360-472d-abae-408ac1d71f3c"
+    },
+    "job": {
+      "namespace": "rental_curated_build",
+      "name": "step_write_rental_agreement_fact",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "rental_agreement_fact_single_df"
+              ],
+              "output": "warehouse/curated/rental/rental_agreement_fact",
+              "columns": [
+                "agreement_id",
+                "line_id",
+                "line_number",
+                "asset_id",
+                "quantity",
+                "daily_rate",
+                "discount",
+                "tax",
+                "branch_id",
+                "agreement_date",
+                "delivery_mode"
+              ],
+              "writeMode": "overwrite",
+              "format": "parquet",
+              "expression": "rental_agreement_fact_single_df.write.mode('overwrite').parquet('warehouse/curated/rental/rental_agreement_fact')",
+              "sequence": 7
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "rental_agreement_fact_single_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/rental/rental_agreement_fact",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "agreement_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "asset_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "daily_rate",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "branch_id",
+                "type": "integer"
+              },
+              {
+                "name": "agreement_date",
+                "type": "date"
+              },
+              {
+                "name": "delivery_mode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "agreement_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "agreement_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "asset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "asset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "daily_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "daily_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "daily_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "branch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "branch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agreement_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "agreement_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agreement_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "delivery_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "rental_agreement_fact_single_df",
+                    "field": "delivery_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "delivery_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

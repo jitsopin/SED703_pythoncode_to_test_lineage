@@ -1,0 +1,294 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:08:49Z",
+    "run": {
+      "runId": "e1a72d4c-9f81-4b8b-81d3-3c6f4a8b1c11"
+    },
+    "job": {
+      "namespace": "pharma_etl",
+      "name": "step_1_extract_suppliers"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/pharma/suppliers.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplierId", "type": "integer"},
+              {"name": "supplierCode", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "websiteUrl", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplierId", "type": "integer"},
+              {"name": "supplierCode", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "websiteUrl", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplierId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/pharma/suppliers.json", "field": "supplierId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplierCode": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/pharma/suppliers.json", "field": "supplierCode", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplierName": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/pharma/suppliers.json", "field": "supplierName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "originCountry": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/pharma/suppliers.json", "field": "originCountry", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "websiteUrl": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/pharma/suppliers.json", "field": "websiteUrl", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:08:49Z",
+    "run": {
+      "runId": "b2f83e5d-0a92-4c9c-92e4-4d705b9c2d22"
+    },
+    "job": {
+      "namespace": "pharma_etl",
+      "name": "step_2_drop_website_url"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplierId", "type": "integer"},
+              {"name": "supplierCode", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "websiteUrl", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_dropped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplierId", "type": "integer"},
+              {"name": "supplierCode", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplierId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_raw_df", "field": "supplierId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplierCode": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_raw_df", "field": "supplierCode", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplierName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_raw_df", "field": "supplierName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "originCountry": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_raw_df", "field": "originCountry", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:08:49Z",
+    "run": {
+      "runId": "c3094f6e-1b03-4dad-a3f5-5e816cad3e33"
+    },
+    "job": {
+      "namespace": "pharma_etl",
+      "name": "step_3_rename_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_dropped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplierId", "type": "integer"},
+              {"name": "supplierCode", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplier_id", "type": "integer"},
+              {"name": "supplier_code", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "data_source", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_dropped_df", "field": "supplierId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(supplierId, supplier_id)", "masking": false}]}]
+              },
+              "supplier_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_dropped_df", "field": "supplierCode", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(supplierCode, supplier_code)", "masking": false}]}]
+              },
+              "supplierName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_dropped_df", "field": "supplierName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "originCountry": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_dropped_df", "field": "originCountry", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": []
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:08:49Z",
+    "run": {
+      "runId": "d41a507f-2c14-4ebe-b406-6f927dbe4f44"
+    },
+    "job": {
+      "namespace": "pharma_etl",
+      "name": "step_4_load_curated_suppliers"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplier_id", "type": "integer"},
+              {"name": "supplier_code", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "data_source", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/pharma/suppliers_processed",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "supplier_id", "type": "integer"},
+              {"name": "supplier_code", "type": "string"},
+              {"name": "supplierName", "type": "string"},
+              {"name": "originCountry", "type": "string"},
+              {"name": "data_source", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "supplier_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplier_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "supplier_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "supplierName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "supplierName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "originCountry": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "originCountry", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "data_source", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "supplier_final_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

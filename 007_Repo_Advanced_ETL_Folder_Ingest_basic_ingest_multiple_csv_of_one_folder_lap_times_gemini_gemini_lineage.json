@@ -1,0 +1,242 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:47:24Z",
+    "run": {
+      "runId": "f7d3a2e1-456b-48c2-9e3d-8f903a4b6c12"
+    },
+    "job": {
+      "namespace": "manufacturing_etl",
+      "name": "step_1_extract_cycle_times"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/manufacturing/cycle_times",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "plant_id", "type": "integer"},
+              {"name": "station_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cycle_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "plant_id", "type": "integer"},
+              {"name": "station_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "plant_id": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "plant_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "station_id": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "station_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "cycle_number": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "cycle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "quality_rating": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "quality_rating", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "cycle_duration_str": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "cycle_duration_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/manufacturing/cycle_times", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:47:24Z",
+    "run": {
+      "runId": "651f8a70-34a9-4d82-b1c3-2e457f09da99"
+    },
+    "job": {
+      "namespace": "manufacturing_etl",
+      "name": "step_2_standardize_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cycle_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "plant_id", "type": "integer"},
+              {"name": "station_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cycle_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "factory_id", "type": "integer"},
+              {"name": "workstation_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "factory_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "plant_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(plant_id, factory_id)", "masking": false}]}]
+              },
+              "workstation_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "station_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(station_id, workstation_id)", "masking": false}]}]
+              },
+              "cycle_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "cycle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "quality_rating": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "quality_rating", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "cycle_duration_str": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "cycle_duration_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_raw_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:47:24Z",
+    "run": {
+      "runId": "48b1d9c2-5e12-42da-a99f-7f8e02d4c88a"
+    },
+    "job": {
+      "namespace": "manufacturing_etl",
+      "name": "step_3_load_curated_cycle_times"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cycle_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "factory_id", "type": "integer"},
+              {"name": "workstation_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/manufacturing/cycle_times_processed",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "factory_id", "type": "integer"},
+              {"name": "workstation_id", "type": "integer"},
+              {"name": "cycle_number", "type": "integer"},
+              {"name": "quality_rating", "type": "integer"},
+              {"name": "cycle_duration_str", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "factory_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "factory_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "workstation_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "workstation_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "cycle_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "cycle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "quality_rating": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "quality_rating", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "cycle_duration_str": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "cycle_duration_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "cycle_standardized_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

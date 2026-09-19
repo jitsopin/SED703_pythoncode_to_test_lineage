@@ -1,0 +1,815 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:46:56Z",
+    "run": {
+      "runId": "5a4effae-e391-4600-a5c3-b1a8772cb209"
+    },
+    "job": {
+      "namespace": "auction_presentation_build",
+      "name": "step_01_read_lot_sale_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "warehouse/presentation/auction/lot_sale_results"
+              ],
+              "output": "lot_sale_results_df",
+              "columns": [
+                "sale_year",
+                "agency_name",
+                "score_points",
+                "final_place"
+              ],
+              "expression": "spark.read.parquet('warehouse/presentation/auction/lot_sale_results').select(...)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/presentation/auction/lot_sale_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "score_points",
+                "type": "float"
+              },
+              {
+                "name": "final_place",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lot_sale_results_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "score_points",
+                "type": "float"
+              },
+              {
+                "name": "final_place",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sale_year": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "warehouse/presentation/auction/lot_sale_results",
+                    "field": "sale_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sale_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "warehouse/presentation/auction/lot_sale_results",
+                    "field": "agency_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "score_points": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "warehouse/presentation/auction/lot_sale_results",
+                    "field": "score_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "score_points",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "final_place": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "warehouse/presentation/auction/lot_sale_results",
+                    "field": "final_place",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "final_place",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:46:56Z",
+    "run": {
+      "runId": "3e454658-9a39-4989-8659-8a7b25a6459f"
+    },
+    "job": {
+      "namespace": "auction_presentation_build",
+      "name": "step_02_aggregate_agency_totals",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "GROUP_BY_AGGREGATE",
+              "inputs": [
+                "lot_sale_results_df"
+              ],
+              "output": "agency_totals_df",
+              "columns": [
+                "sale_year",
+                "agency_name",
+                "total_points",
+                "wins"
+              ],
+              "groupByColumns": [
+                "sale_year",
+                "agency_name"
+              ],
+              "aggregations": {
+                "total_points": "sum('score_points')",
+                "wins": "count(when(col('final_place') == 1, True))"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lot_sale_results_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "score_points",
+                "type": "float"
+              },
+              {
+                "name": "final_place",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agency_totals_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "total_points",
+                "type": "double"
+              },
+              {
+                "name": "wins",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sale_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lot_sale_results_df",
+                    "field": "sale_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sale_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lot_sale_results_df",
+                    "field": "agency_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lot_sale_results_df",
+                    "field": "score_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "sum('score_points').alias('total_points')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lot_sale_results_df",
+                    "field": "final_place",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "count(when(col('final_place') == 1, True)).alias('wins')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "lot_sale_results_df",
+                "field": "sale_year",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy('sale_year', 'agency_name')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "lot_sale_results_df",
+                "field": "agency_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy('sale_year', 'agency_name')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:46:56Z",
+    "run": {
+      "runId": "6b664f39-503e-435d-9b3f-9d4c85a2a097"
+    },
+    "job": {
+      "namespace": "auction_presentation_build",
+      "name": "step_03_rank_agency_standings",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "WINDOW_FUNCTION",
+              "inputs": [
+                "agency_totals_df"
+              ],
+              "output": "agency_standings_df",
+              "columns": [
+                "sale_year",
+                "agency_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "windowPartitionColumns": [
+                "sale_year"
+              ],
+              "windowOrderColumns": [
+                "total_points DESC"
+              ],
+              "derivedColumns": {
+                "standing_rank": "rank().over(Window.partitionBy('sale_year').orderBy(desc('total_points')))"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agency_totals_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "total_points",
+                "type": "double"
+              },
+              {
+                "name": "wins",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agency_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "total_points",
+                "type": "double"
+              },
+              {
+                "name": "wins",
+                "type": "long"
+              },
+              {
+                "name": "standing_rank",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sale_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "sale_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sale_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "agency_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "total_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_points",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "wins",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "wins",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "standing_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "sale_year",
+                    "transformations": [
+                      {
+                        "type": "INDIRECT",
+                        "subtype": "WINDOW",
+                        "description": "rank().over(Window.partitionBy('sale_year').orderBy(desc('total_points')))",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_totals_df",
+                    "field": "total_points",
+                    "transformations": [
+                      {
+                        "type": "INDIRECT",
+                        "subtype": "WINDOW",
+                        "description": "rank().over(Window.partitionBy('sale_year').orderBy(desc('total_points')))",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "agency_totals_df",
+                "field": "sale_year",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "WINDOW",
+                    "description": "rank().over(Window.partitionBy('sale_year').orderBy(desc('total_points')))",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "agency_totals_df",
+                "field": "total_points",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "WINDOW",
+                    "description": "rank().over(Window.partitionBy('sale_year').orderBy(desc('total_points')))",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:46:56Z",
+    "run": {
+      "runId": "f7240f64-247f-408c-b4d5-73e2da939757"
+    },
+    "job": {
+      "namespace": "auction_presentation_build",
+      "name": "step_04_load_agency_standings_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "WRITE",
+              "inputs": [
+                "agency_standings_df"
+              ],
+              "output": "warehouse/presentation/auction/agency_standings",
+              "columns": [
+                "sale_year",
+                "agency_name",
+                "total_points",
+                "wins",
+                "standing_rank"
+              ],
+              "writeMode": "overwrite",
+              "expression": "agency_standings_df.write.mode('overwrite').parquet('warehouse/presentation/auction/agency_standings')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "agency_standings_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "total_points",
+                "type": "double"
+              },
+              {
+                "name": "wins",
+                "type": "long"
+              },
+              {
+                "name": "standing_rank",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/presentation/auction/agency_standings",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "sale_year",
+                "type": "integer"
+              },
+              {
+                "name": "agency_name",
+                "type": "string"
+              },
+              {
+                "name": "total_points",
+                "type": "double"
+              },
+              {
+                "name": "wins",
+                "type": "long"
+              },
+              {
+                "name": "standing_rank",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "sale_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_standings_df",
+                    "field": "sale_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sale_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_standings_df",
+                    "field": "agency_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_standings_df",
+                    "field": "total_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_points",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "wins": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_standings_df",
+                    "field": "wins",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "wins",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "standing_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "agency_standings_df",
+                    "field": "standing_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "standing_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

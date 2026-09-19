@@ -1,0 +1,283 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:05:10Z",
+    "run": {
+      "runId": "a1b2c3d4-1111-4a1a-8111-1a1a1a1a1a1a"
+    },
+    "job": {
+      "namespace": "nyc_taxi_etl",
+      "name": "step_1_extract_taxi_trips"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/taxis/yellow_tripdata.parquet",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tpep_pickup_datetime": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/taxis/yellow_tripdata.parquet", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/taxis/yellow_tripdata.parquet", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_distance": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/taxis/yellow_tripdata.parquet", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:05:10Z",
+    "run": {
+      "runId": "b2c3d4e5-2222-4b2b-8222-2b2b2b2b2b2b"
+    },
+    "job": {
+      "namespace": "nyc_taxi_etl",
+      "name": "step_2_remove_nulls"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "taxis_raw_df",
+                "field": "*",
+                "transformations": [{"type": "INDIRECT", "subtype": "FILTER", "description": "na.drop()"}]
+              }
+            ],
+            "fields": {
+              "tpep_pickup_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_raw_df", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_raw_df", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_distance": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_raw_df", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:05:10Z",
+    "run": {
+      "runId": "c3d4e5f6-3333-4c3c-8333-3c3c3c3c3c3c"
+    },
+    "job": {
+      "namespace": "nyc_taxi_etl",
+      "name": "step_3_derive_metrics"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "trip_duration", "type": "double"},
+              {"name": "average_speed", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tpep_pickup_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_distance": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_duration": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "(unix_timestamp(tpep_dropoff_datetime) - unix_timestamp(tpep_pickup_datetime)) / 60.0", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "(unix_timestamp(tpep_dropoff_datetime) - unix_timestamp(tpep_pickup_datetime)) / 60.0", "masking": false}]}
+                ]
+              },
+              "average_speed": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "trip_distance / (trip_duration / 60.0)", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "trip_distance / (trip_duration / 60.0)", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "taxis_clean_df", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "trip_distance / (trip_duration / 60.0)", "masking": false}]}
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:05:10Z",
+    "run": {
+      "runId": "d4e5f6a7-4444-4d4d-8444-4d4d4d4d4d4d"
+    },
+    "job": {
+      "namespace": "nyc_taxi_etl",
+      "name": "step_4_load_curated_trips"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxis_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "trip_duration", "type": "double"},
+              {"name": "average_speed", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://db-analytical-prod.internal:5432",
+        "name": "public.taxi_trips_curated",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tpep_pickup_datetime", "type": "timestamp"},
+              {"name": "tpep_dropoff_datetime", "type": "timestamp"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "trip_duration", "type": "double"},
+              {"name": "average_speed", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tpep_pickup_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_enriched_df", "field": "tpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_enriched_df", "field": "tpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_distance": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_enriched_df", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "trip_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_enriched_df", "field": "trip_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "average_speed": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "taxis_enriched_df", "field": "average_speed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

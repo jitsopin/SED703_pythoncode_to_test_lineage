@@ -1,0 +1,3301 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "d94523ff-e54e-4bef-a327-6aab7e2a7e4c"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_read_regional_journeys",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/curated/rail/regional_journeys"
+              ],
+              "output": "regional_journey_df",
+              "columns": [
+                "operator_id",
+                "regional_boarding_time",
+                "regional_alighting_time",
+                "offline_flag",
+                "fare_class_id",
+                "departure_station_id",
+                "arrival_station_id",
+                "passenger_count",
+                "journey_distance_km",
+                "fare_amount",
+                "extra_charge",
+                "network_levy",
+                "tip_amount",
+                "access_fee",
+                "station_surcharge",
+                "total_amount",
+                "payment_type_id",
+                "peak_surcharge"
+              ],
+              "format": "parquet",
+              "runtimeArguments": [
+                "argv[1] -> regional journeys path"
+              ],
+              "expression": "spark.read.parquet('data/curated/rail/regional_journeys').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/rail/regional_journeys",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "regional_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "regional_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "regional_journey_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "regional_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "regional_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "regional_boarding_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "regional_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "regional_boarding_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "regional_alighting_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "regional_alighting_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "regional_alighting_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "offline_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offline_flag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_class_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "fare_class_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_class_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "departure_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "departure_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "arrival_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "arrival_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "arrival_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "journey_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "journey_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extra_charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tip_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "payment_type_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payment_type_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/regional_journeys",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "ed890100-4970-422c-879e-f2ef06dcd19a"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_register_regional_journey_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "regional_journey_df"
+              ],
+              "output": "vw_regional_journey",
+              "columns": [
+                "operator_id",
+                "regional_boarding_time",
+                "regional_alighting_time",
+                "offline_flag",
+                "fare_class_id",
+                "departure_station_id",
+                "arrival_station_id",
+                "passenger_count",
+                "journey_distance_km",
+                "fare_amount",
+                "extra_charge",
+                "network_levy",
+                "tip_amount",
+                "access_fee",
+                "station_surcharge",
+                "total_amount",
+                "payment_type_id",
+                "peak_surcharge"
+              ],
+              "expression": "regional_journey_df.createOrReplaceTempView('vw_regional_journey')",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "regional_journey_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "regional_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "regional_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_regional_journey",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "regional_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "regional_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "regional_boarding_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "regional_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "regional_boarding_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "regional_alighting_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "regional_alighting_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "regional_alighting_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "offline_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offline_flag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_class_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "fare_class_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_class_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "departure_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "departure_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "arrival_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "arrival_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "arrival_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "journey_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "journey_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extra_charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tip_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "payment_type_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payment_type_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "regional_journey_df",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "b7fd6a67-306c-40de-a0c9-d93d30d945fc"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_read_intercity_journeys",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/curated/rail/intercity_journeys"
+              ],
+              "output": "intercity_journey_df",
+              "columns": [
+                "operator_id",
+                "intercity_boarding_time",
+                "intercity_alighting_time",
+                "offline_flag",
+                "fare_class_id",
+                "departure_station_id",
+                "arrival_station_id",
+                "passenger_count",
+                "journey_distance_km",
+                "fare_amount",
+                "extra_charge",
+                "network_levy",
+                "tip_amount",
+                "access_fee",
+                "station_surcharge",
+                "total_amount",
+                "payment_type_id",
+                "peak_surcharge"
+              ],
+              "format": "parquet",
+              "runtimeArguments": [
+                "argv[2] -> intercity journeys path"
+              ],
+              "expression": "spark.read.parquet('data/curated/rail/intercity_journeys').select(...)",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/rail/intercity_journeys",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "intercity_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "intercity_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "intercity_journey_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "intercity_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "intercity_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "intercity_boarding_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "intercity_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "intercity_boarding_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "intercity_alighting_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "intercity_alighting_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "intercity_alighting_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "offline_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offline_flag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_class_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "fare_class_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_class_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "departure_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "departure_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "arrival_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "arrival_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "arrival_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "journey_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "journey_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extra_charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tip_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "payment_type_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payment_type_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/rail/intercity_journeys",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "61e38956-6040-42f9-b89b-32e607260c70"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_register_intercity_journey_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "intercity_journey_df"
+              ],
+              "output": "vw_intercity_journey",
+              "columns": [
+                "operator_id",
+                "intercity_boarding_time",
+                "intercity_alighting_time",
+                "offline_flag",
+                "fare_class_id",
+                "departure_station_id",
+                "arrival_station_id",
+                "passenger_count",
+                "journey_distance_km",
+                "fare_amount",
+                "extra_charge",
+                "network_levy",
+                "tip_amount",
+                "access_fee",
+                "station_surcharge",
+                "total_amount",
+                "payment_type_id",
+                "peak_surcharge"
+              ],
+              "expression": "intercity_journey_df.createOrReplaceTempView('vw_intercity_journey')",
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "intercity_journey_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "intercity_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "intercity_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_intercity_journey",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "intercity_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "intercity_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "intercity_boarding_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "intercity_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "intercity_boarding_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "intercity_alighting_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "intercity_alighting_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "intercity_alighting_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "offline_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offline_flag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_class_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "fare_class_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_class_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "departure_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "departure_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "arrival_station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "arrival_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "arrival_station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "journey_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "journey_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extra_charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tip_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "payment_type_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payment_type_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "intercity_journey_df",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "2a85b527-aa44-4d3c-b136-510df1aff3c5"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_union_and_aggregate_station_revenue",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SQL_UNION_GROUP_BY_AGGREGATE",
+              "inputs": [
+                "vw_regional_journey",
+                "vw_intercity_journey"
+              ],
+              "output": "station_monthly_revenue_df",
+              "columns": [
+                "revenue_station",
+                "revenue_month",
+                "service_type",
+                "revenue_monthly_fare",
+                "revenue_monthly_extra",
+                "revenue_monthly_network_levy",
+                "revenue_monthly_tip",
+                "revenue_monthly_access_fee",
+                "revenue_monthly_station_surcharge",
+                "revenue_monthly_total",
+                "revenue_monthly_peak_surcharge",
+                "avg_monthly_passenger_count",
+                "avg_monthly_journey_distance"
+              ],
+              "unionType": "UNION ALL inside the statement",
+              "unionDescription": "UNION ALL of vw_regional_journey and vw_intercity_journey",
+              "groupByColumns": [
+                "revenue_station",
+                "revenue_month",
+                "service_type"
+              ],
+              "derivedColumns": {
+                "revenue_month": "date_trunc('month', journey.boarding_time) AS revenue_month",
+                "service_type": "literal per union branch"
+              },
+              "aggregations": {
+                "revenue_monthly_fare": "SUM(fare_amount)",
+                "revenue_monthly_extra": "SUM(extra_charge)",
+                "revenue_monthly_network_levy": "SUM(network_levy)",
+                "revenue_monthly_tip": "SUM(tip_amount)",
+                "revenue_monthly_access_fee": "SUM(access_fee)",
+                "revenue_monthly_station_surcharge": "SUM(station_surcharge)",
+                "revenue_monthly_total": "SUM(total_amount)",
+                "revenue_monthly_peak_surcharge": "SUM(peak_surcharge)",
+                "avg_monthly_passenger_count": "AVG(passenger_count)",
+                "avg_monthly_journey_distance": "AVG(journey_distance_km)"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_regional_journey",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "regional_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "regional_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_intercity_journey",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "intercity_boarding_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "intercity_alighting_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "fare_class_id",
+                "type": "integer"
+              },
+              {
+                "name": "departure_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "arrival_station_id",
+                "type": "integer"
+              },
+              {
+                "name": "passenger_count",
+                "type": "integer"
+              },
+              {
+                "name": "journey_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "network_levy",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "access_fee",
+                "type": "double"
+              },
+              {
+                "name": "station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "peak_surcharge",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "station_monthly_revenue_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "revenue_station",
+                "type": "integer"
+              },
+              {
+                "name": "revenue_month",
+                "type": "timestamp"
+              },
+              {
+                "name": "service_type",
+                "type": "string"
+              },
+              {
+                "name": "revenue_monthly_fare",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_extra",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_network_levy",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_tip",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_access_fee",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_total",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_peak_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_passenger_count",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_journey_distance",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "revenue_station": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "departure_station_id AS revenue_station",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "departure_station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "departure_station_id AS revenue_station",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_month": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "regional_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "date_trunc('month', journey.boarding_time) AS revenue_month",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "intercity_boarding_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "date_trunc('month', journey.boarding_time) AS revenue_month",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_fare": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(fare_amount) AS revenue_monthly_fare",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(fare_amount) AS revenue_monthly_fare",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_extra": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(extra_charge) AS revenue_monthly_extra",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(extra_charge) AS revenue_monthly_extra",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(network_levy) AS revenue_monthly_network_levy",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(network_levy) AS revenue_monthly_network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_tip": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(tip_amount) AS revenue_monthly_tip",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(tip_amount) AS revenue_monthly_tip",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(access_fee) AS revenue_monthly_access_fee",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(access_fee) AS revenue_monthly_access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(station_surcharge) AS revenue_monthly_station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(station_surcharge) AS revenue_monthly_station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_total": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(total_amount) AS revenue_monthly_total",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(total_amount) AS revenue_monthly_total",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(peak_surcharge) AS revenue_monthly_peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "SUM(peak_surcharge) AS revenue_monthly_peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "avg_monthly_passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "AVG(passenger_count) AS avg_monthly_passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "AVG(passenger_count) AS avg_monthly_passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "avg_monthly_journey_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_regional_journey",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "AVG(journey_distance_km) AS avg_monthly_journey_distance",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_intercity_journey",
+                    "field": "journey_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "AVG(journey_distance_km) AS avg_monthly_journey_distance",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_type": {
+                "inputFields": [],
+                "transformationDescription": "'regional' and 'intercity' literals, one per union branch"
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_regional_journey",
+                "field": "departure_station_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "GROUP BY revenue_station, revenue_month, service_type",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_intercity_journey",
+                "field": "departure_station_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "GROUP BY revenue_station, revenue_month, service_type",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_regional_journey",
+                "field": "regional_boarding_time",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "GROUP BY revenue_station, revenue_month, service_type",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "spark://temporary-view",
+                "name": "vw_intercity_journey",
+                "field": "intercity_boarding_time",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "GROUP BY revenue_station, revenue_month, service_type",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:24:03Z",
+    "run": {
+      "runId": "4487f25d-70b5-40c5-916e-24da01031515"
+    },
+    "job": {
+      "namespace": "rail_presentation_build",
+      "name": "step_write_station_monthly_revenue",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "station_monthly_revenue_df"
+              ],
+              "output": "warehouse/presentation/rail/station_monthly_revenue",
+              "columns": [
+                "revenue_station",
+                "revenue_month",
+                "service_type",
+                "revenue_monthly_fare",
+                "revenue_monthly_extra",
+                "revenue_monthly_network_levy",
+                "revenue_monthly_tip",
+                "revenue_monthly_access_fee",
+                "revenue_monthly_station_surcharge",
+                "revenue_monthly_total",
+                "revenue_monthly_peak_surcharge",
+                "avg_monthly_passenger_count",
+                "avg_monthly_journey_distance"
+              ],
+              "writeMode": "overwrite",
+              "format": "parquet",
+              "partitionColumns": [
+                "revenue_month"
+              ],
+              "runtimeArguments": [
+                "argv[3] -> target path"
+              ],
+              "expression": "station_monthly_revenue_df.write.mode('overwrite').partitionBy('revenue_month').parquet('warehouse/presentation/rail/station_monthly_revenue')",
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "station_monthly_revenue_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "revenue_station",
+                "type": "integer"
+              },
+              {
+                "name": "revenue_month",
+                "type": "timestamp"
+              },
+              {
+                "name": "service_type",
+                "type": "string"
+              },
+              {
+                "name": "revenue_monthly_fare",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_extra",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_network_levy",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_tip",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_access_fee",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_total",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_peak_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_passenger_count",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_journey_distance",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/presentation/rail/station_monthly_revenue",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "revenue_station",
+                "type": "integer"
+              },
+              {
+                "name": "revenue_month",
+                "type": "timestamp"
+              },
+              {
+                "name": "service_type",
+                "type": "string"
+              },
+              {
+                "name": "revenue_monthly_fare",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_extra",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_network_levy",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_tip",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_access_fee",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_station_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_total",
+                "type": "double"
+              },
+              {
+                "name": "revenue_monthly_peak_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_passenger_count",
+                "type": "double"
+              },
+              {
+                "name": "avg_monthly_journey_distance",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "revenue_station": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_station",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_station",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_month",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_month",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "service_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_fare": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_fare",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_fare",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_extra",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_network_levy": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_network_levy",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_network_levy",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_tip": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_tip",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_tip",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_access_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_access_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_access_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_station_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_station_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_station_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_total": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_total",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_total",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "revenue_monthly_peak_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "revenue_monthly_peak_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "revenue_monthly_peak_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "avg_monthly_passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "avg_monthly_passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "avg_monthly_passenger_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "avg_monthly_journey_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "station_monthly_revenue_df",
+                    "field": "avg_monthly_journey_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "avg_monthly_journey_distance",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "station_monthly_revenue_df",
+                "field": "revenue_month",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.mode('overwrite').partitionBy('revenue_month').parquet('warehouse/presentation/rail/station_monthly_revenue')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,678 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T08:07:32Z",
+    "run": {
+      "runId": "eecefbd2-5565-419a-ae97-c6ff84067e6b"
+    },
+    "job": {
+      "namespace": "parking_curated_ingestion",
+      "name": "step_read_parking_session_drops",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ_STREAM",
+              "inputs": [
+                "data/landing/parking/session_events"
+              ],
+              "output": "session_event_df",
+              "columns": [
+                "session_id",
+                "car_park_code",
+                "entry_time",
+                "exit_time",
+                "vehicle_class",
+                "amount_paid"
+              ],
+              "format": "json",
+              "readOptions": {
+                "maxFilesPerTrigger": 5
+              },
+              "incrementalMode": "checkpointed file stream, five files per trigger",
+              "expression": "spark.readStream.schema(session_event_schema).option('maxFilesPerTrigger', 5).json('data/landing/parking/session_events')",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/parking/session_events",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "session_event_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "session_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "session_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "session_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_park_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "car_park_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "car_park_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "entry_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exit_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "exit_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exit_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_class": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "vehicle_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_class",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount_paid": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/parking/session_events",
+                    "field": "amount_paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "amount_paid",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T08:07:32Z",
+    "run": {
+      "runId": "6f73c23e-de01-4709-8d75-ba988f642324"
+    },
+    "job": {
+      "namespace": "parking_curated_ingestion",
+      "name": "step_coalesce_session_events",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "COALESCE",
+              "inputs": [
+                "session_event_df"
+              ],
+              "output": "session_event_single_df",
+              "columns": [
+                "session_id",
+                "car_park_code",
+                "entry_time",
+                "exit_time",
+                "vehicle_class",
+                "amount_paid"
+              ],
+              "partitionCount": 1,
+              "expression": "session_event_df.coalesce(1)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "session_event_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "session_event_single_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "session_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "session_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "session_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_park_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "car_park_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "car_park_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "entry_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exit_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "exit_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exit_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "vehicle_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_class",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount_paid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_df",
+                    "field": "amount_paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "amount_paid",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T08:07:32Z",
+    "run": {
+      "runId": "b7603d2c-4653-4164-8e92-4f391378f49f"
+    },
+    "job": {
+      "namespace": "parking_curated_ingestion",
+      "name": "step_write_parking_session_events",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE_STREAM",
+              "inputs": [
+                "session_event_single_df"
+              ],
+              "output": "warehouse/curated/parking/session_events",
+              "columns": [
+                "session_id",
+                "car_park_code",
+                "entry_time",
+                "exit_time",
+                "vehicle_class",
+                "amount_paid"
+              ],
+              "outputMode": "append",
+              "format": "json",
+              "trigger": "availableNow",
+              "checkpointLocation": "warehouse/checkpoints/parking_session_events",
+              "expression": "session_event_single_df.writeStream.format('json').outputMode('append').trigger(availableNow=True).start()",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "session_event_single_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/parking/session_events",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "car_park_code",
+                "type": "string"
+              },
+              {
+                "name": "entry_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "exit_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "vehicle_class",
+                "type": "string"
+              },
+              {
+                "name": "amount_paid",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "session_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "session_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "session_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_park_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "car_park_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "car_park_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "entry_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exit_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "exit_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exit_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "vehicle_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_class",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount_paid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "session_event_single_df",
+                    "field": "amount_paid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "amount_paid",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

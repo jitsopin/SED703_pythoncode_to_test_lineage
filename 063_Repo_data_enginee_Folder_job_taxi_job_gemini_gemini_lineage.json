@@ -1,0 +1,203 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T09:20:15Z",
+    "run": {
+      "runId": "b1a2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d"
+    },
+    "job": {
+      "namespace": "kafka_streaming_etl",
+      "name": "step_1_extract_and_parse_taxis"
+    },
+    "inputs": [
+      {
+        "namespace": "kafka://redpanda-1:29092",
+        "name": "green-data",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "key", "type": "binary"},
+              {"name": "value", "type": "binary"},
+              {"name": "topic", "type": "string"},
+              {"name": "partition", "type": "integer"},
+              {"name": "offset", "type": "long"},
+              {"name": "timestamp", "type": "timestamp"},
+              {"name": "timestampType", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "parsed_taxi_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "VendorID", "type": "integer"},
+              {"name": "lpep_pickup_datetime", "type": "string"},
+              {"name": "lpep_dropoff_datetime", "type": "string"},
+              {"name": "store_and_fwd_flag", "type": "string"},
+              {"name": "RatecodeID", "type": "integer"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "DOLocationID", "type": "integer"},
+              {"name": "passenger_count", "type": "integer"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "fare_amount", "type": "double"},
+              {"name": "extra", "type": "double"},
+              {"name": "mta_tax", "type": "double"},
+              {"name": "tip_amount", "type": "double"},
+              {"name": "tolls_amount", "type": "double"},
+              {"name": "ehail_fee", "type": "double"},
+              {"name": "improvement_surcharge", "type": "double"},
+              {"name": "total_amount", "type": "double"},
+              {"name": "payment_type", "type": "integer"},
+              {"name": "trip_type", "type": "integer"},
+              {"name": "congestion_surcharge", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).VendorID", "masking": false}]}]},
+              "lpep_pickup_datetime": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).lpep_pickup_datetime", "masking": false}]}]},
+              "lpep_dropoff_datetime": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).lpep_dropoff_datetime", "masking": false}]}]},
+              "store_and_fwd_flag": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).store_and_fwd_flag", "masking": false}]}]},
+              "RatecodeID": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).RatecodeID", "masking": false}]}]},
+              "PULocationID": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).PULocationID", "masking": false}]}]},
+              "DOLocationID": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).DOLocationID", "masking": false}]}]},
+              "passenger_count": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).passenger_count", "masking": false}]}]},
+              "trip_distance": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).trip_distance", "masking": false}]}]},
+              "fare_amount": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).fare_amount", "masking": false}]}]},
+              "extra": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).extra", "masking": false}]}]},
+              "mta_tax": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).mta_tax", "masking": false}]}]},
+              "tip_amount": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).tip_amount", "masking": false}]}]},
+              "tolls_amount": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).tolls_amount", "masking": false}]}]},
+              "ehail_fee": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).ehail_fee", "masking": false}]}]},
+              "improvement_surcharge": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).improvement_surcharge", "masking": false}]}]},
+              "total_amount": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).total_amount", "masking": false}]}]},
+              "payment_type": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).payment_type", "masking": false}]}]},
+              "trip_type": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).trip_type", "masking": false}]}]},
+              "congestion_surcharge": {"inputFields": [{"namespace": "kafka://redpanda-1:29092", "name": "green-data", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).congestion_surcharge", "masking": false}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T09:20:15Z",
+    "run": {
+      "runId": "4c8f2b3e-7a1d-4e5c-9f6b-0d3a2c5e8b1d"
+    },
+    "job": {
+      "namespace": "kafka_streaming_etl",
+      "name": "step_2_load_postgres"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "parsed_taxi_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "VendorID", "type": "integer"},
+              {"name": "lpep_pickup_datetime", "type": "string"},
+              {"name": "lpep_dropoff_datetime", "type": "string"},
+              {"name": "store_and_fwd_flag", "type": "string"},
+              {"name": "RatecodeID", "type": "integer"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "DOLocationID", "type": "integer"},
+              {"name": "passenger_count", "type": "integer"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "fare_amount", "type": "double"},
+              {"name": "extra", "type": "double"},
+              {"name": "mta_tax", "type": "double"},
+              {"name": "tip_amount", "type": "double"},
+              {"name": "tolls_amount", "type": "double"},
+              {"name": "ehail_fee", "type": "double"},
+              {"name": "improvement_surcharge", "type": "double"},
+              {"name": "total_amount", "type": "double"},
+              {"name": "payment_type", "type": "integer"},
+              {"name": "trip_type", "type": "integer"},
+              {"name": "congestion_surcharge", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://postgres:5432",
+        "name": "public.taxi_events",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "VendorID", "type": "integer"},
+              {"name": "lpep_pickup_datetime", "type": "string"},
+              {"name": "lpep_dropoff_datetime", "type": "string"},
+              {"name": "store_and_fwd_flag", "type": "string"},
+              {"name": "RatecodeID", "type": "integer"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "DOLocationID", "type": "integer"},
+              {"name": "passenger_count", "type": "integer"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "fare_amount", "type": "double"},
+              {"name": "extra", "type": "double"},
+              {"name": "mta_tax", "type": "double"},
+              {"name": "tip_amount", "type": "double"},
+              {"name": "tolls_amount", "type": "double"},
+              {"name": "ehail_fee", "type": "double"},
+              {"name": "improvement_surcharge", "type": "double"},
+              {"name": "total_amount", "type": "double"},
+              {"name": "payment_type", "type": "integer"},
+              {"name": "trip_type", "type": "integer"},
+              {"name": "congestion_surcharge", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "VendorID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "lpep_pickup_datetime": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "lpep_pickup_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "lpep_dropoff_datetime": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "lpep_dropoff_datetime", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "store_and_fwd_flag": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "store_and_fwd_flag", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "RatecodeID": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "RatecodeID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "PULocationID": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "PULocationID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "DOLocationID": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "DOLocationID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "passenger_count": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "passenger_count", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "trip_distance": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "trip_distance", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "fare_amount": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "fare_amount", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "extra": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "extra", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "mta_tax": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "mta_tax", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "tip_amount": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "tip_amount", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "tolls_amount": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "tolls_amount", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "ehail_fee": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "ehail_fee", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "improvement_surcharge": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "improvement_surcharge", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "total_amount": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "total_amount", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "payment_type": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "payment_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "trip_type": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "trip_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "congestion_surcharge": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_taxi_df", "field": "congestion_surcharge", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

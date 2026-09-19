@@ -1,0 +1,365 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:52Z",
+    "run": {
+      "runId": "f51b68ce-9488-44fa-a83a-7db073bf3589"
+    },
+    "job": {
+      "namespace": "motorsport_etl",
+      "name": "step_1_extract_track_venues"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/inbox/motorsport/track_venues.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "venue_id", "type": "integer"},
+              {"name": "venue_ref", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city_location", "type": "string"},
+              {"name": "nation", "type": "string"},
+              {"name": "geo_lat", "type": "double"},
+              {"name": "geo_lon", "type": "double"},
+              {"name": "elevation_m", "type": "integer"},
+              {"name": "website_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "venue_id", "type": "integer"},
+              {"name": "venue_ref", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city_location", "type": "string"},
+              {"name": "nation", "type": "string"},
+              {"name": "geo_lat", "type": "double"},
+              {"name": "geo_lon", "type": "double"},
+              {"name": "elevation_m", "type": "integer"},
+              {"name": "website_url", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "venue_id": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "venue_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "venue_ref": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "venue_ref", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "venue_name": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "venue_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city_location": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "city_location", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "nation": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "nation", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "geo_lat": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "geo_lat", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "geo_lon": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "geo_lon", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "elevation_m": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "elevation_m", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "website_url": {
+                "inputFields": [{"namespace": "file", "name": "data/inbox/motorsport/track_venues.csv", "field": "website_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:52Z",
+    "run": {
+      "runId": "a0b12ca8-3f59-4530-ab0d-327baeb538c2"
+    },
+    "job": {
+      "namespace": "motorsport_etl",
+      "name": "step_2_select_venue_columns"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "venue_id", "type": "integer"},
+              {"name": "venue_ref", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city_location", "type": "string"},
+              {"name": "nation", "type": "string"},
+              {"name": "geo_lat", "type": "double"},
+              {"name": "geo_lon", "type": "double"},
+              {"name": "elevation_m", "type": "integer"},
+              {"name": "website_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "venue_id", "type": "integer"},
+              {"name": "venue_ref", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city_location", "type": "string"},
+              {"name": "nation", "type": "string"},
+              {"name": "geo_lat", "type": "double"},
+              {"name": "geo_lon", "type": "double"},
+              {"name": "elevation_m", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "venue_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "venue_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "venue_ref": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "venue_ref", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "venue_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "venue_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city_location": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "city_location", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "nation": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "nation", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "geo_lat": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "geo_lat", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "geo_lon": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "geo_lon", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "elevation_m": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_raw_df", "field": "elevation_m", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:52Z",
+    "run": {
+      "runId": "6db91a13-43bb-4033-b1d5-bc4404616215"
+    },
+    "job": {
+      "namespace": "motorsport_etl",
+      "name": "step_3_standardize_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "venue_id", "type": "integer"},
+              {"name": "venue_ref", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city_location", "type": "string"},
+              {"name": "nation", "type": "string"},
+              {"name": "geo_lat", "type": "double"},
+              {"name": "geo_lon", "type": "double"},
+              {"name": "elevation_m", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "track_id", "type": "integer"},
+              {"name": "track_code", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "country", "type": "string"},
+              {"name": "latitude", "type": "double"},
+              {"name": "longitude", "type": "double"},
+              {"name": "altitude", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "track_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "venue_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(venue_id, track_id)", "masking": false}]}]
+              },
+              "track_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "venue_ref", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(venue_ref, track_code)", "masking": false}]}]
+              },
+              "venue_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "venue_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "city_location", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(city_location, city)", "masking": false}]}]
+              },
+              "country": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "nation", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(nation, country)", "masking": false}]}]
+              },
+              "latitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "geo_lat", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(geo_lat, latitude)", "masking": false}]}]
+              },
+              "longitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "geo_lon", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(geo_lon, longitude)", "masking": false}]}]
+              },
+              "altitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_selected_df", "field": "elevation_m", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(elevation_m, altitude)", "masking": false}]}]
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:20:52Z",
+    "run": {
+      "runId": "d2fae6f4-c9f2-4414-b1eb-cc86eeb1e345"
+    },
+    "job": {
+      "namespace": "motorsport_etl",
+      "name": "step_4_load_cleansed_venues"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "track_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "track_id", "type": "integer"},
+              {"name": "track_code", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "country", "type": "string"},
+              {"name": "latitude", "type": "double"},
+              {"name": "longitude", "type": "double"},
+              {"name": "altitude", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/cleansed/motorsport/track_venues_parquet",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "track_id", "type": "integer"},
+              {"name": "track_code", "type": "string"},
+              {"name": "venue_name", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "country", "type": "string"},
+              {"name": "latitude", "type": "double"},
+              {"name": "longitude", "type": "double"},
+              {"name": "altitude", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "track_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "track_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "track_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "track_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "venue_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "venue_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "country", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "latitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "latitude", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "longitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "longitude", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "altitude": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "altitude", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "track_standardized_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

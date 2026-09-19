@@ -1,0 +1,2283 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "a5cfa986-c959-47a8-916b-6bca4c29f015"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_01_read_provider_payments",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/healthcare_payments/provider_payments",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg_definition": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "drg_definition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "provider_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_city": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "provider_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_state": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "provider_state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_zip_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "provider_zip_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "referral_region": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "referral_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_covered_charges_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "average_covered_charges_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_total_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "average_total_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_medicare_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_payments/provider_payments",
+                    "field": "average_medicare_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "49c0e332-46f3-4a1d-be91-6b3fc4312648"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_02_cast_provider_identifier",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg_definition": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "drg_definition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"provider_id_raw\").cast(\"long\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_zip_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_zip_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "referral_region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "referral_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_covered_charges_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "average_covered_charges_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_total_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "average_total_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_medicare_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "average_medicare_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "acd622bc-471f-4bf8-88df-0ca2c0a3d881"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_03_filter_invalid_providers",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_valid_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg_definition": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "drg_definition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "provider_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "provider_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "provider_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "provider_state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_zip_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "provider_zip_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "referral_region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "referral_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_covered_charges_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "average_covered_charges_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_total_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "average_total_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_medicare_payments_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_typed_df",
+                    "field": "average_medicare_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "provider_typed_df",
+                  "field": "provider_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "col(\"provider_id\").isNotNull()",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "908e2225-3635-4f33-ac6a-31113f94fb0e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_04_clean_payment_values",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_valid_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg_definition",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "referral_region",
+                "type": "STRING"
+              },
+              {
+                "name": "average_covered_charges_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_total_payments_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "average_medicare_payments_raw",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "rr",
+                "type": "STRING"
+              },
+              {
+                "name": "covered_charges",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_payments",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "medicare_payments",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "drg_definition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"drg_definition\").alias(\"drg\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "provider_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "provider_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "provider_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "provider_state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_zip_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "provider_zip_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rr": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "referral_region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"referral_region\").alias(\"rr\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "covered_charges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "average_covered_charges_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "regexp_replace(..., r\"^.\", \"\").cast(DoubleType())"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_payments": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "average_total_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "regexp_replace(..., r\"^.\", \"\").cast(DoubleType())"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "medicare_payments": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_valid_df",
+                    "field": "average_medicare_payments_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "regexp_replace(..., r\"^.\", \"\").cast(DoubleType())"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "3048ca00-160c-4648-93d3-c2ad3256e84d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_05_build_nested_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_cleaned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_name",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_city",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_state",
+                "type": "STRING"
+              },
+              {
+                "name": "provider_zip_code",
+                "type": "BIGINT"
+              },
+              {
+                "name": "rr",
+                "type": "STRING"
+              },
+              {
+                "name": "covered_charges",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_payments",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "medicare_payments",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_payment_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg",
+                "type": "STRING"
+              },
+              {
+                "name": "provider",
+                "type": "STRUCT<id:BIGINT,name:STRING,city:STRING,state:STRING,zip:BIGINT>"
+              },
+              {
+                "name": "rr",
+                "type": "STRING"
+              },
+              {
+                "name": "charges",
+                "type": "STRUCT<covered:DOUBLE,total_pay:DOUBLE,medicare_pay:DOUBLE>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "drg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "provider_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(provider_id as id, provider_name as name, provider_city as city, provider_state as state, provider_zip_code as zip)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "provider_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(provider_id as id, provider_name as name, provider_city as city, provider_state as state, provider_zip_code as zip)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "provider_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(provider_id as id, provider_name as name, provider_city as city, provider_state as state, provider_zip_code as zip)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "provider_state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(provider_id as id, provider_name as name, provider_city as city, provider_state as state, provider_zip_code as zip)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "provider_zip_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(provider_id as id, provider_name as name, provider_city as city, provider_state as state, provider_zip_code as zip)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rr": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "rr",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "covered_charges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(covered_charges as covered, total_payments as total_pay, medicare_payments as medicare_pay)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "total_payments",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(covered_charges as covered, total_payments as total_pay, medicare_payments as medicare_pay)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_cleaned_df",
+                    "field": "medicare_payments",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(covered_charges as covered, total_payments as total_pay, medicare_payments as medicare_pay)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:27:03.996Z",
+    "run": {
+      "runId": "f98cff1c-948d-438c-8958-06de5d4e9a52"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-payment-cleaning",
+      "name": "step_06_write_payment_summary",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id_raw",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_typed_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "cast provider_id_raw to long; preserve other fields"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "provider_typed_df"
+              ],
+              "outputDataFrame": "provider_valid_df",
+              "selectedColumns": [
+                "drg_definition",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "referral_region",
+                "average_covered_charges_raw",
+                "average_total_payments_raw",
+                "average_medicare_payments_raw"
+              ],
+              "expression": "filter provider_id is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_CAST",
+              "inputDataFrames": [
+                "provider_valid_df"
+              ],
+              "outputDataFrame": "payment_cleaned_df",
+              "selectedColumns": [
+                "drg",
+                "provider_id",
+                "provider_name",
+                "provider_city",
+                "provider_state",
+                "provider_zip_code",
+                "rr",
+                "covered_charges",
+                "total_payments",
+                "medicare_payments"
+              ],
+              "expression": "rename fields; strip leading currency symbol and cast monetary strings to double"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT",
+              "inputDataFrames": [
+                "payment_cleaned_df"
+              ],
+              "outputDataFrame": "published_payment_df",
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "build nested provider and charges structs"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_payment_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "drg",
+                "provider",
+                "rr",
+                "charges"
+              ],
+              "expression": "published_payment_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_payment_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg",
+                "type": "STRING"
+              },
+              {
+                "name": "provider",
+                "type": "STRUCT<id:BIGINT,name:STRING,city:STRING,state:STRING,zip:BIGINT>"
+              },
+              {
+                "name": "rr",
+                "type": "STRING"
+              },
+              {
+                "name": "charges",
+                "type": "STRUCT<covered:DOUBLE,total_pay:DOUBLE,medicare_pay:DOUBLE>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_payments/provider_payment_summary",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "drg",
+                "type": "STRING"
+              },
+              {
+                "name": "provider",
+                "type": "STRUCT<id:BIGINT,name:STRING,city:STRING,state:STRING,zip:BIGINT>"
+              },
+              {
+                "name": "rr",
+                "type": "STRING"
+              },
+              {
+                "name": "charges",
+                "type": "STRUCT<covered:DOUBLE,total_pay:DOUBLE,medicare_pay:DOUBLE>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "drg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_payment_df",
+                    "field": "drg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_payment_df",
+                    "field": "provider",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rr": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_payment_df",
+                    "field": "rr",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_payment_df",
+                    "field": "charges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

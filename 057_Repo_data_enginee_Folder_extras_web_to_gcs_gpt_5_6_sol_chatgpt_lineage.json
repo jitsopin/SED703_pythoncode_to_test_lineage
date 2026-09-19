@@ -1,0 +1,4634 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "80fcaf28-42d5-4bda-9ce2-a04646fcae4a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_01_read_monthly_taxi_files",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "STRING"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "STRING"
+              },
+              {
+                "name": "PULocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "passenger_count",
+                "type": "STRING"
+              },
+              {
+                "name": "payment_type",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_type",
+                "type": "STRING"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "STRING"
+              },
+              {
+                "name": "fare_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "extra",
+                "type": "STRING"
+              },
+              {
+                "name": "mta_tax",
+                "type": "STRING"
+              },
+              {
+                "name": "tip_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "ehailfee",
+                "type": "STRING"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "total_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "STRING"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "STRING"
+              },
+              {
+                "name": "PULocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "passenger_count",
+                "type": "STRING"
+              },
+              {
+                "name": "payment_type",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_type",
+                "type": "STRING"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "STRING"
+              },
+              {
+                "name": "fare_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "extra",
+                "type": "STRING"
+              },
+              {
+                "name": "mta_tax",
+                "type": "STRING"
+              },
+              {
+                "name": "tip_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "ehailfee",
+                "type": "STRING"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "total_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/nyc_taxi/green/{2019,2020,2021}/green_tripdata_*.csv.gz",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_source_file": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "e403e857-8ec2-4b28-9212-319daa309111"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_02_derive_partitions",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "STRING"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "STRING"
+              },
+              {
+                "name": "PULocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "passenger_count",
+                "type": "STRING"
+              },
+              {
+                "name": "payment_type",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_type",
+                "type": "STRING"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "STRING"
+              },
+              {
+                "name": "fare_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "extra",
+                "type": "STRING"
+              },
+              {
+                "name": "mta_tax",
+                "type": "STRING"
+              },
+              {
+                "name": "tip_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "ehailfee",
+                "type": "STRING"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "total_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "STRING"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "STRING"
+              },
+              {
+                "name": "PULocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "passenger_count",
+                "type": "STRING"
+              },
+              {
+                "name": "payment_type",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_type",
+                "type": "STRING"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "STRING"
+              },
+              {
+                "name": "fare_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "extra",
+                "type": "STRING"
+              },
+              {
+                "name": "mta_tax",
+                "type": "STRING"
+              },
+              {
+                "name": "tip_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "ehailfee",
+                "type": "STRING"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "total_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_source_file": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "derive service from source path"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "derive year from source path"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_raw_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "derive month from source path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "ea0169c0-87e3-456b-89b6-b6ca98bf4af9"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_03_cast_taxi_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "STRING"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "STRING"
+              },
+              {
+                "name": "PULocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "STRING"
+              },
+              {
+                "name": "passenger_count",
+                "type": "STRING"
+              },
+              {
+                "name": "payment_type",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_type",
+                "type": "STRING"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "STRING"
+              },
+              {
+                "name": "fare_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "extra",
+                "type": "STRING"
+              },
+              {
+                "name": "mta_tax",
+                "type": "STRING"
+              },
+              {
+                "name": "tip_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "ehailfee",
+                "type": "STRING"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "total_amount",
+                "type": "STRING"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast VendorID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast RatecodeID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast PULocationID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast DOLocationID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast passenger_count"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast payment_type"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast trip_type"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast trip_distance"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast fare_amount"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast extra"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast mta_tax"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast tip_amount"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast tolls_amount"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast ehailfee"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast improvement_surcharge"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast total_amount"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast congestion_surcharge"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_source_file": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_partitioned_df",
+                    "field": "month",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "5520d668-397e-4cf9-9a41-f38654efd7b4"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_04_normalize_datetimes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_typed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_dates_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              },
+              {
+                "name": "pickup_datetime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "dropoff_datetime",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_source_file": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "_source_file",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "month",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "choose yellow tpep else lpep pickup"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_timestamp for yellow"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_timestamp otherwise"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "choose yellow tpep else lpep dropoff"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_timestamp for yellow"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_typed_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_timestamp otherwise"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "67662cf7-0a3e-4c6b-b7cd-59c8d276a54c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_05_prepare_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_dates_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "_source_file",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              },
+              {
+                "name": "pickup_datetime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "dropoff_datetime",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              },
+              {
+                "name": "pickup_datetime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "dropoff_datetime",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "month",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_dates_df",
+                    "field": "dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:25:12.664Z",
+    "run": {
+      "runId": "8f2b9eb1-c283-4979-b994-e7ab53ae6d07"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/monthly-taxi-ingest",
+      "name": "step_06_write_partitioned_parquet",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_GZIP",
+              "inputDataFrames": [],
+              "outputDataFrame": "taxi_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green taxi monthly CSV-gzip files for 2019-2021 and attach input_file_name"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_raw_df"
+              ],
+              "outputDataFrame": "taxi_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "service",
+                "year",
+                "month"
+              ],
+              "expression": "derive service/year/month from source file path"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CAST_COLUMNS",
+              "inputDataFrames": [
+                "taxi_partitioned_df"
+              ],
+              "outputDataFrame": "taxi_typed_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "cast taxi identifier/count columns to integer and monetary/distance columns to double"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WITH_COLUMNS",
+              "inputDataFrames": [
+                "taxi_typed_df"
+              ],
+              "outputDataFrame": "taxi_dates_df",
+              "selectedColumns": [
+                "*",
+                "pickup_datetime",
+                "dropoff_datetime"
+              ],
+              "expression": "normalize service-specific pickup/dropoff timestamps"
+            },
+            {
+              "sequence": 5,
+              "statementType": "DROP",
+              "inputDataFrames": [
+                "taxi_dates_df"
+              ],
+              "outputDataFrame": "taxi_output_df",
+              "selectedColumns": [
+                "* except _source_file"
+              ],
+              "expression": "drop source filename helper column"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "taxi_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite Parquet partitioned by service/year/month"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "taxi_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              },
+              {
+                "name": "pickup_datetime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "dropoff_datetime",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/nyc_taxi/trips",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "VendorID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "RatecodeID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "PULocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "DOLocationID",
+                "type": "INTEGER"
+              },
+              {
+                "name": "passenger_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "payment_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "trip_type",
+                "type": "INTEGER"
+              },
+              {
+                "name": "store_and_fwd_flag",
+                "type": "STRING"
+              },
+              {
+                "name": "trip_distance",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "fare_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "extra",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "mta_tax",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tip_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "ehailfee",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_amount",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "lpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "tpep_dropoff_datetime",
+                "type": "STRING"
+              },
+              {
+                "name": "service",
+                "type": "STRING"
+              },
+              {
+                "name": "year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "month",
+                "type": "INTEGER"
+              },
+              {
+                "name": "pickup_datetime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "dropoff_datetime",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "VendorID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "VendorID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "RatecodeID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "RatecodeID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PULocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "PULocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DOLocationID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "DOLocationID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "passenger_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "passenger_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "payment_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "trip_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "store_and_fwd_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "store_and_fwd_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trip_distance": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "trip_distance",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "extra",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "mta_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "mta_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ehailfee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "ehailfee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "lpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "tpep_dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "service",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "month": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "month",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "taxi_output_df",
+                    "field": "dropoff_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "taxi_output_df",
+                  "field": "service",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(service, year, month)",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "taxi_output_df",
+                  "field": "year",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(service, year, month)",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "taxi_output_df",
+                  "field": "month",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(service, year, month)",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

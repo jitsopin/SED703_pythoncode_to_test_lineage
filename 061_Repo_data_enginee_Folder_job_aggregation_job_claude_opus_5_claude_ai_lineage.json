@@ -1,0 +1,763 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:27:16Z",
+    "run": {
+      "runId": "bccf602d-c47d-4373-8da7-b85e7263baae"
+    },
+    "job": {
+      "namespace": "locker_curated_streaming",
+      "name": "step_subscribe_locker_pickup_topic",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ_STREAM",
+              "inputs": [
+                "locker-pickup-events"
+              ],
+              "output": "locker_raw_df",
+              "columns": [
+                "json_str"
+              ],
+              "readOptions": {
+                "subscribe": "locker-pickup-events",
+                "startingOffsets": "earliest"
+              },
+              "castColumns": {
+                "json_str": "binary -> string"
+              },
+              "runtimeArguments": [
+                "argv[1] -> kafka.bootstrap.servers"
+              ],
+              "expression": "spark.readStream.format('kafka').option('subscribe', 'locker-pickup-events').load().select(col('value').cast('string').alias('json_str'))",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "kafka",
+        "name": "locker-pickup-events",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "binary"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "json_str": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka",
+                    "name": "locker-pickup-events",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('value').cast('string').alias('json_str')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:27:16Z",
+    "run": {
+      "runId": "c466654e-7597-48b5-a5f8-90a7daafcfeb"
+    },
+    "job": {
+      "namespace": "locker_curated_streaming",
+      "name": "step_parse_pickup_event_and_watermark",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "locker_raw_df"
+              ],
+              "output": "locker_event_df",
+              "columns": [
+                "locker_bank_id",
+                "event_time"
+              ],
+              "jsonPaths": {
+                "locker_bank_id": "$.lockerBankId",
+                "event_time": "$.eventEpochMillis"
+              },
+              "derivedColumns": {
+                "locker_bank_id": "get_json_object(col('json_str'), '$.lockerBankId').cast('int')",
+                "event_time": "(get_json_object(col('json_str'), '$.eventEpochMillis').cast('long') / 1000).cast('timestamp')"
+              },
+              "watermark": {
+                "column": "event_time",
+                "delayThreshold": "1 second"
+              },
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_event_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "event_time",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "locker_bank_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.lockerBankId').cast('int')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "(get_json_object(col('json_str'), '$.eventEpochMillis').cast('long') / 1000).cast('timestamp')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "locker_raw_df",
+                "field": "json_str",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "CONDITION",
+                    "description": "withWatermark('event_time', '1 second')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:27:16Z",
+    "run": {
+      "runId": "c6b7eafe-dd99-415a-b874-5887004efc0a"
+    },
+    "job": {
+      "namespace": "locker_curated_streaming",
+      "name": "step_count_pickups_per_window",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WINDOWED_GROUP_BY_AGGREGATE",
+              "inputs": [
+                "locker_event_df"
+              ],
+              "output": "locker_windowed_df",
+              "columns": [
+                "window",
+                "locker_bank_id",
+                "pickup_count"
+              ],
+              "windowType": "tumbling",
+              "windowDuration": "1 minute",
+              "groupByColumns": [
+                "window",
+                "locker_bank_id"
+              ],
+              "aggregations": {
+                "pickup_count": "count('*')"
+              },
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_event_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "event_time",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_windowed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "window",
+                "type": "struct<start:timestamp,end:timestamp>"
+              },
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_count",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "window": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_event_df",
+                    "field": "event_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "window(col('event_time'), '1 minute')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "locker_bank_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_event_df",
+                    "field": "locker_bank_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "locker_bank_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_event_df",
+                    "field": "locker_bank_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "count('*').alias('pickup_count')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "locker_event_df",
+                "field": "event_time",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "WINDOW",
+                    "description": "window(col('event_time'), '1 minute')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "locker_event_df",
+                "field": "locker_bank_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy(window(event_time, '1 minute'), locker_bank_id)",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:27:16Z",
+    "run": {
+      "runId": "090498f0-8131-4d79-a677-24bdf2647646"
+    },
+    "job": {
+      "namespace": "locker_curated_streaming",
+      "name": "step_project_window_bounds",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT",
+              "inputs": [
+                "locker_windowed_df"
+              ],
+              "output": "locker_pickup_df",
+              "columns": [
+                "event_minute_start",
+                "event_minute_end",
+                "locker_bank_id",
+                "pickup_count"
+              ],
+              "flattenedColumns": {
+                "event_minute_start": "window.start",
+                "event_minute_end": "window.end"
+              },
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_windowed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "window",
+                "type": "struct<start:timestamp,end:timestamp>"
+              },
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_count",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_pickup_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_minute_start",
+                "type": "timestamp"
+              },
+              {
+                "name": "event_minute_end",
+                "type": "timestamp"
+              },
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_count",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_minute_start": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_windowed_df",
+                    "field": "window",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('window.start')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_minute_end": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_windowed_df",
+                    "field": "window",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('window.end')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "locker_bank_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_windowed_df",
+                    "field": "locker_bank_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "locker_bank_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_windowed_df",
+                    "field": "pickup_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickup_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T10:27:16Z",
+    "run": {
+      "runId": "794cf978-9163-443a-ab08-7079dca06e5a"
+    },
+    "job": {
+      "namespace": "locker_curated_streaming",
+      "name": "step_write_locker_pickup_per_minute",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE_STREAM",
+              "inputs": [
+                "locker_pickup_df"
+              ],
+              "output": "warehouse/curated/locker/pickup_per_minute",
+              "columns": [
+                "event_minute_start",
+                "event_minute_end",
+                "locker_bank_id",
+                "pickup_count"
+              ],
+              "outputMode": "append",
+              "format": "parquet",
+              "trigger": "processingTime=10 seconds",
+              "checkpointLocation": "warehouse/checkpoints/locker_pickup_per_minute",
+              "expression": "locker_pickup_df.writeStream.format('parquet').outputMode('append').trigger(processingTime='10 seconds').start()",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "locker_pickup_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_minute_start",
+                "type": "timestamp"
+              },
+              {
+                "name": "event_minute_end",
+                "type": "timestamp"
+              },
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_count",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/locker/pickup_per_minute",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_minute_start",
+                "type": "timestamp"
+              },
+              {
+                "name": "event_minute_end",
+                "type": "timestamp"
+              },
+              {
+                "name": "locker_bank_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_count",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_minute_start": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_pickup_df",
+                    "field": "event_minute_start",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "event_minute_start",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_minute_end": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_pickup_df",
+                    "field": "event_minute_end",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "event_minute_end",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "locker_bank_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_pickup_df",
+                    "field": "locker_bank_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "locker_bank_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "locker_pickup_df",
+                    "field": "pickup_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickup_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

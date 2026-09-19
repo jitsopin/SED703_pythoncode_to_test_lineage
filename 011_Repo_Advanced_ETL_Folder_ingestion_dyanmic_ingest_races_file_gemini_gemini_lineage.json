@@ -1,0 +1,376 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:05:15Z",
+    "run": {
+      "runId": "a90dfb14-c13f-4e08-bfb1-917c0dfc0a21"
+    },
+    "job": {
+      "namespace": "aerospace_etl",
+      "name": "step_1_extract_launches"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/aerospace/launches.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "launch_id", "type": "integer"},
+              {"name": "launch_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "site_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "scheduled_date", "type": "date"},
+              {"name": "scheduled_time", "type": "string"},
+              {"name": "stream_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "launch_id", "type": "integer"},
+              {"name": "launch_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "site_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "scheduled_date", "type": "date"},
+              {"name": "scheduled_time", "type": "string"},
+              {"name": "stream_url", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "launch_id": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "launch_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "launch_year": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "launch_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_phase": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "mission_phase", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "site_id": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "site_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_name": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "mission_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_date": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "scheduled_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_time": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "scheduled_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "stream_url": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/aerospace/launches.csv", "field": "stream_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:05:15Z",
+    "run": {
+      "runId": "6b37daec-1a0e-4514-9980-5a3eeb6d2235"
+    },
+    "job": {
+      "namespace": "aerospace_etl",
+      "name": "step_2_enrich_with_timestamps"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "launch_id", "type": "integer"},
+              {"name": "launch_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "site_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "scheduled_date", "type": "date"},
+              {"name": "scheduled_time", "type": "string"},
+              {"name": "stream_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "launch_id", "type": "integer"},
+              {"name": "launch_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "site_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "scheduled_date", "type": "date"},
+              {"name": "scheduled_time", "type": "string"},
+              {"name": "stream_url", "type": "string"},
+              {"name": "scheduled_timestamp", "type": "timestamp"},
+              {"name": "data_provider", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "launch_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "launch_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "launch_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "launch_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_phase": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "mission_phase", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "site_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "site_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "mission_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "scheduled_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "scheduled_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "stream_url": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "stream_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_timestamp": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "scheduled_date", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "to_timestamp(concat(scheduled_date, ' ', scheduled_time), 'yyyy-MM-dd HH:mm:ss')", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "launch_raw_df", "field": "scheduled_time", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "to_timestamp(concat(scheduled_date, ' ', scheduled_time), 'yyyy-MM-dd HH:mm:ss')", "masking": false}]}
+                ]
+              },
+              "data_provider": {
+                "inputFields": []
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:05:15Z",
+    "run": {
+      "runId": "d981a8b7-8ce6-42d6-bb4d-617a26f8dbb1"
+    },
+    "job": {
+      "namespace": "aerospace_etl",
+      "name": "step_3_select_and_rename_columns"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "launch_id", "type": "integer"},
+              {"name": "launch_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "site_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "scheduled_date", "type": "date"},
+              {"name": "scheduled_time", "type": "string"},
+              {"name": "stream_url", "type": "string"},
+              {"name": "scheduled_timestamp", "type": "timestamp"},
+              {"name": "data_provider", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_id", "type": "integer"},
+              {"name": "mission_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "launchpad_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "data_provider", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"},
+              {"name": "scheduled_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "launch_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(flight_id)", "masking": false}]}]
+              },
+              "mission_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "launch_year", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(mission_year)", "masking": false}]}]
+              },
+              "mission_phase": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "mission_phase", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "launchpad_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "site_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(launchpad_id)", "masking": false}]}]
+              },
+              "mission_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "mission_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_provider": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "data_provider", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_timestamp": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_enriched_df", "field": "scheduled_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T16:05:15Z",
+    "run": {
+      "runId": "6ed27521-1f9e-4c7f-94d7-bd1c94d1dfeb"
+    },
+    "job": {
+      "namespace": "aerospace_etl",
+      "name": "step_4_load_partitioned_launches"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "launch_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_id", "type": "integer"},
+              {"name": "mission_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "launchpad_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "data_provider", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"},
+              {"name": "scheduled_timestamp", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/aerospace/launches_partitioned",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_id", "type": "integer"},
+              {"name": "mission_year", "type": "integer"},
+              {"name": "mission_phase", "type": "integer"},
+              {"name": "launchpad_id", "type": "integer"},
+              {"name": "mission_name", "type": "string"},
+              {"name": "data_provider", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"},
+              {"name": "scheduled_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "launch_selected_df",
+                "field": "mission_year",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "partitionBy(mission_year)"}]
+              }
+            ],
+            "fields": {
+              "flight_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "flight_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_year": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "mission_year", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_phase": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "mission_phase", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "launchpad_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "launchpad_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "mission_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "mission_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_provider": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "data_provider", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scheduled_timestamp": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "launch_selected_df", "field": "scheduled_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

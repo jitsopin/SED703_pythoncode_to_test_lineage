@@ -1,0 +1,3176 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "455e2cb8-aa73-4edd-87b4-1a41d2aceb8c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_01_read_provider_records",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/healthcare_choice/provider_records",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_choice/provider_records",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_choice/provider_records",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/healthcare_choice/provider_records",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "2c3efca2-1714-49d2-9943-832756187cc9"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_02_cast_provider_id",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_cast_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast provider_id_raw to long"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "d83dc24a-8aa8-4804-acff-965686a3d33c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_03_project_provider_long",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_projected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast provider_id_raw to long"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "payment_raw_df",
+                  "field": "provider_id_raw",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "cast(provider_id_raw as long) is not null",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "639726b3-8bc9-43df-a952-2e567134f8f0"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_04_split_provider_choice",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_split_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_long",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_id_string",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_long": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "numeric branch cast to long"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id_string": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "non-numeric branch preserved as string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "d80faba8-a97c-48b2-9963-3a8405bec0d8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_05_struct_provider_choice",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_struct_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_choice",
+                "type": "STRUCT<long_value:BIGINT,string_value:STRING>"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_choice": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "struct(long_value, string_value)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "cf38c931-a4a9-4867-a1db-8853511fd43d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_06_filter_high_discharges",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "payment_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "high_discharge_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "payment_raw_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "payment_raw_df",
+                  "field": "total_discharges",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "total_discharges > 30",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "81ca82be-9f5c-4456-9215-2bbc1becba1a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_07_write_cast_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_cast_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_choice/provider_id_cast",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_cast_df",
+                    "field": "provider_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_cast_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_cast_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "75ba8ae3-3fdd-42ec-beae-0da1c0b3c4cb"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_08_write_project_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_projected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_choice/provider_id_projected_long",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_projected_df",
+                    "field": "provider_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_projected_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_projected_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "2e1ee66e-a7fc-4824-be04-9f9be2d4bc19"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_09_write_split_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_split_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_long",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_id_string",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_choice/provider_id_split_columns",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_long",
+                "type": "BIGINT"
+              },
+              {
+                "name": "provider_id_string",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_long": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_split_df",
+                    "field": "provider_id_long",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "provider_id_string": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_split_df",
+                    "field": "provider_id_string",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_split_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_split_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "795c6544-165a-476d-84ea-7a4bcd18aa70"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_10_write_struct_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "provider_struct_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_choice",
+                "type": "STRUCT<long_value:BIGINT,string_value:STRING>"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_choice/provider_id_struct",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_choice",
+                "type": "STRUCT<long_value:BIGINT,string_value:STRING>"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_choice": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_struct_df",
+                    "field": "provider_id_choice",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_struct_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "provider_struct_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T04:59:11.702Z",
+    "run": {
+      "runId": "14d852af-cf9c-45b9-a044-b715d629ea99"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/provider-choice-resolution",
+      "name": "step_11_write_filtered_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "payment_raw_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "spark.read.schema(payment_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_cast_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "cast provider_id_raw to long; invalid values become null"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER_SELECT_CAST",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_projected_df",
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "retain rows where provider_id_raw can cast to long"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_SPLIT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_split_df",
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "split numeric and string provider_id representations"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_STRUCT_CHOICE",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "provider_struct_df",
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "represent provider_id alternatives as struct"
+            },
+            {
+              "sequence": 6,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "payment_raw_df"
+              ],
+              "outputDataFrame": "high_discharge_df",
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "total_discharges > 30"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_cast_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write cast JSON"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_projected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write projected-long JSON"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_split_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_long",
+                "provider_id_string",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write split-column JSON"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "provider_struct_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_choice",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write struct JSON"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "high_discharge_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "provider_id_raw",
+                "total_discharges",
+                "record_payload"
+              ],
+              "expression": "write high-discharge JSON"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "high_discharge_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/healthcare_choice/high_discharge_records",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "provider_id_raw",
+                "type": "STRING"
+              },
+              {
+                "name": "total_discharges",
+                "type": "BIGINT"
+              },
+              {
+                "name": "record_payload",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "provider_id_raw": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "high_discharge_df",
+                    "field": "provider_id_raw",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_discharges": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "high_discharge_df",
+                    "field": "total_discharges",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "record_payload": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "high_discharge_df",
+                    "field": "record_payload",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

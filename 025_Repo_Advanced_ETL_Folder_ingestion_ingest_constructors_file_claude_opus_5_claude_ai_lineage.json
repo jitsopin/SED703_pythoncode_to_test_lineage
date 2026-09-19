@@ -1,0 +1,1262 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "70445281-9223-487a-a265-dd4ae800feb2"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_01_extract_supplier_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/procurement/supplier_registry"
+              ],
+              "output": "supplier_landing_df",
+              "columns": [
+                "supplierId",
+                "supplierCode",
+                "supplierName",
+                "originCountry",
+                "websiteUrl"
+              ],
+              "schemaDefinition": "supplierId INT, supplierCode STRING, supplierName STRING, originCountry STRING, websiteUrl STRING",
+              "sourcePathTemplate": "data/landing/procurement/supplier_registry/{file_date}/suppliers.json",
+              "runtimeArguments": [
+                "argv[2] -> file_date selects the daily folder"
+              ],
+              "expression": "spark.read.schema(supplier_landing_schema).json(f'data/landing/procurement/supplier_registry/{file_date}/suppliers.json')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/procurement/supplier_registry",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplierId",
+                "type": "integer"
+              },
+              {
+                "name": "supplierCode",
+                "type": "string"
+              },
+              {
+                "name": "supplierName",
+                "type": "string"
+              },
+              {
+                "name": "originCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplierId",
+                "type": "integer"
+              },
+              {
+                "name": "supplierCode",
+                "type": "string"
+              },
+              {
+                "name": "supplierName",
+                "type": "string"
+              },
+              {
+                "name": "originCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplierId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/procurement/supplier_registry",
+                    "field": "supplierId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplierId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplierCode": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/procurement/supplier_registry",
+                    "field": "supplierCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplierCode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplierName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/procurement/supplier_registry",
+                    "field": "supplierName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplierName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "originCountry": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/procurement/supplier_registry",
+                    "field": "originCountry",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "originCountry",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "websiteUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/procurement/supplier_registry",
+                    "field": "websiteUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "websiteUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "9888ae26-37db-415c-a8e2-9453996c1d4e"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_02_standardize_supplier_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "supplier_landing_df"
+              ],
+              "output": "supplier_standardized_df",
+              "columns": [
+                "supplier_id",
+                "supplier_code",
+                "supplier_name",
+                "origin_country"
+              ],
+              "renamedColumns": {
+                "supplier_id": "supplierId",
+                "supplier_code": "supplierCode",
+                "supplier_name": "supplierName",
+                "origin_country": "originCountry"
+              },
+              "droppedColumns": [
+                "websiteUrl"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplierId",
+                "type": "integer"
+              },
+              {
+                "name": "supplierCode",
+                "type": "string"
+              },
+              {
+                "name": "supplierName",
+                "type": "string"
+              },
+              {
+                "name": "originCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_landing_df",
+                    "field": "supplierId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('supplierId').alias('supplier_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_landing_df",
+                    "field": "supplierCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('supplierCode').alias('supplier_code')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_landing_df",
+                    "field": "supplierName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('supplierName').alias('supplier_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "origin_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_landing_df",
+                    "field": "originCountry",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('originCountry').alias('origin_country')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "56750b25-c29c-4bb7-a153-8abe73f2865a"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_03_apply_supplier_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "supplier_standardized_df"
+              ],
+              "output": "supplier_eligible_df",
+              "columns": [
+                "supplier_id",
+                "supplier_code",
+                "supplier_name",
+                "origin_country"
+              ],
+              "filterExpression": "col('supplier_id').isNotNull() & col('supplier_code').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_standardized_df",
+                    "field": "supplier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_standardized_df",
+                    "field": "supplier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_standardized_df",
+                    "field": "supplier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "origin_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_standardized_df",
+                    "field": "origin_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "origin_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "supplier_standardized_df",
+                "field": "supplier_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('supplier_id').isNotNull() & col('supplier_code').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "supplier_standardized_df",
+                "field": "supplier_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('supplier_id').isNotNull() & col('supplier_code').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "bac6bd2d-8177-450e-8367-1a5756238bd6"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_04_tag_supplier_source_and_file_date",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "supplier_eligible_df"
+              ],
+              "output": "supplier_tagged_df",
+              "columns": [
+                "supplier_id",
+                "supplier_code",
+                "supplier_name",
+                "origin_country",
+                "source_system",
+                "file_date"
+              ],
+              "derivedColumns": {
+                "source_system": "lit(source_system)",
+                "file_date": "lit(file_date)"
+              },
+              "runtimeArguments": [
+                "argv[1] -> source_system",
+                "argv[2] -> file_date"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_eligible_df",
+                    "field": "supplier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_eligible_df",
+                    "field": "supplier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_eligible_df",
+                    "field": "supplier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "origin_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_eligible_df",
+                    "field": "origin_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "origin_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [],
+                "transformationDescription": "lit(source_system) from runtime argument argv[1]"
+              },
+              "file_date": {
+                "inputFields": [],
+                "transformationDescription": "lit(file_date) from runtime argument argv[2]"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "8938dc3d-32c3-4e83-b315-79030878fafe"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_05_build_supplier_master_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "supplier_tagged_df"
+              ],
+              "output": "supplier_master_df",
+              "columns": [
+                "supplier_id",
+                "supplier_code",
+                "supplier_name",
+                "origin_country",
+                "source_system",
+                "file_date",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "supplier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "supplier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "supplier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "origin_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "origin_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "origin_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "file_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_tagged_df",
+                    "field": "file_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "file_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:40:52Z",
+    "run": {
+      "runId": "4f2ca2b0-5b1e-4ea7-b7fd-07f480910799"
+    },
+    "job": {
+      "namespace": "procurement_reference_ingestion",
+      "name": "step_06_load_supplier_master_table",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "supplier_master_df"
+              ],
+              "output": "procurement_curated.supplier_master",
+              "columns": [
+                "supplier_id",
+                "supplier_code",
+                "supplier_name",
+                "origin_country",
+                "source_system",
+                "file_date",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "writeTarget": "managed table",
+              "format": "parquet",
+              "expression": "supplier_master_df.write.mode('overwrite').format('parquet').saveAsTable('procurement_curated.supplier_master')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "supplier_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "procurement_curated.supplier_master",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "supplier_id",
+                "type": "integer"
+              },
+              {
+                "name": "supplier_code",
+                "type": "string"
+              },
+              {
+                "name": "supplier_name",
+                "type": "string"
+              },
+              {
+                "name": "origin_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "supplier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "supplier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "supplier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supplier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "supplier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supplier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "origin_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "origin_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "origin_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "file_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "file_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "file_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "supplier_master_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

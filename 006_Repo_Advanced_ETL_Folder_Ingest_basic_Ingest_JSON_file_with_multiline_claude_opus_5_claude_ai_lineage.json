@@ -1,0 +1,1335 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:44:10Z",
+    "run": {
+      "runId": "d61ecc7a-8088-48f6-b61d-e6ef1572cdc0"
+    },
+    "job": {
+      "namespace": "fleet_operations_ingestion",
+      "name": "step_01_extract_charging_stop_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/fleet/charging_stop_events.json"
+              ],
+              "output": "charging_stop_landing_df",
+              "columns": [
+                "routeId",
+                "vehicleId",
+                "stopSequence",
+                "segmentIndex",
+                "stopClock",
+                "chargeDuration",
+                "durationMilliseconds"
+              ],
+              "readOptions": {
+                "multiLine": true
+              },
+              "expression": "spark.read.schema(charging_stop_landing_schema).option('multiLine', True).json('data/landing/fleet/charging_stop_events.json')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/fleet/charging_stop_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "routeId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "stopSequence",
+                "type": "string"
+              },
+              {
+                "name": "segmentIndex",
+                "type": "integer"
+              },
+              {
+                "name": "stopClock",
+                "type": "string"
+              },
+              {
+                "name": "chargeDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "routeId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "stopSequence",
+                "type": "string"
+              },
+              {
+                "name": "segmentIndex",
+                "type": "integer"
+              },
+              {
+                "name": "stopClock",
+                "type": "string"
+              },
+              {
+                "name": "chargeDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "routeId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "routeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "routeId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicleId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "vehicleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicleId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stopSequence": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "stopSequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stopSequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segmentIndex": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "segmentIndex",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segmentIndex",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stopClock": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "stopClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stopClock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "chargeDuration": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "chargeDuration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "chargeDuration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "durationMilliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/fleet/charging_stop_events.json",
+                    "field": "durationMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "durationMilliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:44:10Z",
+    "run": {
+      "runId": "b477d229-66ae-4095-9d41-f8cebe2ba02a"
+    },
+    "job": {
+      "namespace": "fleet_operations_ingestion",
+      "name": "step_02_standardize_charging_stop_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "charging_stop_landing_df"
+              ],
+              "output": "charging_stop_standardized_df",
+              "columns": [
+                "route_id",
+                "vehicle_id",
+                "stop_sequence",
+                "segment_index",
+                "stop_clock",
+                "charge_duration",
+                "duration_milliseconds"
+              ],
+              "renamedColumns": {
+                "route_id": "routeId",
+                "vehicle_id": "vehicleId",
+                "stop_sequence": "stopSequence",
+                "segment_index": "segmentIndex",
+                "stop_clock": "stopClock",
+                "charge_duration": "chargeDuration",
+                "duration_milliseconds": "durationMilliseconds"
+              },
+              "castColumns": {
+                "stop_sequence": "string -> integer"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "routeId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "stopSequence",
+                "type": "string"
+              },
+              {
+                "name": "segmentIndex",
+                "type": "integer"
+              },
+              {
+                "name": "stopClock",
+                "type": "string"
+              },
+              {
+                "name": "chargeDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "route_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "routeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('routeId').alias('route_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "vehicleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('vehicleId').alias('vehicle_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "stopSequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('stopSequence').cast(IntegerType()).alias('stop_sequence')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "segmentIndex",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('segmentIndex').alias('segment_index')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "stopClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('stopClock').alias('stop_clock')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "chargeDuration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('chargeDuration').alias('charge_duration')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_landing_df",
+                    "field": "durationMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('durationMilliseconds').alias('duration_milliseconds')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:44:10Z",
+    "run": {
+      "runId": "770aa581-9972-488f-9d6c-c5cf8227a92a"
+    },
+    "job": {
+      "namespace": "fleet_operations_ingestion",
+      "name": "step_03_apply_charging_stop_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "charging_stop_standardized_df"
+              ],
+              "output": "charging_stop_eligible_df",
+              "columns": [
+                "route_id",
+                "vehicle_id",
+                "stop_sequence",
+                "segment_index",
+                "stop_clock",
+                "charge_duration",
+                "duration_milliseconds"
+              ],
+              "filterExpression": "col('route_id').isNotNull() & col('vehicle_id').isNotNull() & col('stop_sequence').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "route_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "route_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "vehicle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "segment_index",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_index",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "stop_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "charge_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "charge_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_standardized_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "charging_stop_standardized_df",
+                "field": "route_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('route_id').isNotNull() & col('vehicle_id').isNotNull() & col('stop_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "charging_stop_standardized_df",
+                "field": "vehicle_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('route_id').isNotNull() & col('vehicle_id').isNotNull() & col('stop_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "charging_stop_standardized_df",
+                "field": "stop_sequence",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('route_id').isNotNull() & col('vehicle_id').isNotNull() & col('stop_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:44:10Z",
+    "run": {
+      "runId": "ff0e178a-3584-4187-83ec-32dc997ea821"
+    },
+    "job": {
+      "namespace": "fleet_operations_ingestion",
+      "name": "step_04_build_charging_stop_detail_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "charging_stop_eligible_df"
+              ],
+              "output": "charging_stop_detail_df",
+              "columns": [
+                "route_id",
+                "vehicle_id",
+                "stop_sequence",
+                "segment_index",
+                "stop_clock",
+                "charge_duration",
+                "duration_milliseconds",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "route_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "route_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "vehicle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "segment_index",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_index",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "stop_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "charge_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "charge_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_eligible_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:44:10Z",
+    "run": {
+      "runId": "4f9740b5-e857-4c4d-9a45-d7bceb0352d8"
+    },
+    "job": {
+      "namespace": "fleet_operations_ingestion",
+      "name": "step_05_load_charging_stop_detail_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "WRITE",
+              "inputs": [
+                "charging_stop_detail_df"
+              ],
+              "output": "warehouse/curated/fleet/charging_stop_detail",
+              "columns": [
+                "route_id",
+                "vehicle_id",
+                "stop_sequence",
+                "segment_index",
+                "stop_clock",
+                "charge_duration",
+                "duration_milliseconds",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "expression": "charging_stop_detail_df.write.mode('overwrite').parquet('warehouse/curated/fleet/charging_stop_detail')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "charging_stop_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/fleet/charging_stop_detail",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "route_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "segment_index",
+                "type": "integer"
+              },
+              {
+                "name": "stop_clock",
+                "type": "string"
+              },
+              {
+                "name": "charge_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "route_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "route_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "vehicle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "segment_index",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_index",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "stop_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stop_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "charge_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "charge_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "charging_stop_detail_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

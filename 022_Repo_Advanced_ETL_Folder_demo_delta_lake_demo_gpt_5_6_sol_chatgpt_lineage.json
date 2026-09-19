@@ -1,0 +1,5493 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "44b59d16-b5ab-4272-9841-0f7ec28b38d9"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_01_read_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/demo_portable/result_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/result_events.json",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "18501d01-2e11-4336-af75-90d4fb2356d3"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_02_build_result_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loaded_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "285adb33-a91d-4878-9237-218b7207b6ef"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_03_write_result_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/demo_portable/result_snapshot",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loaded_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "loaded_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "0899e589-125f-45d2-a74a-bbfd655a2647"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_04_write_result_external",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/demo_portable/result_external",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loaded_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "loaded_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "6161cb60-3987-4735-94d5-fc563506ad5c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_05_write_result_partitioned",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/demo_portable/result_partitioned",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "loaded_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loaded_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "loaded_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_snapshot_df",
+                  "field": "team_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(\"team_id\")",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "cd8ce398-df90-4f2b-9675-6cb5f59fa155"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_06_read_participants",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/demo_portable/participant_profiles.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/participant_profiles.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/participant_profiles.json",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/participant_profiles.json",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/demo_portable/participant_profiles.json",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "466bf434-72c1-4d24-857d-06b95ed188ed"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_07_stage_participant_day1",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day1_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_sequence": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_raw_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "col(\"participant_id\") <= 10",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "5d195bc9-e4ac-4bb0-a525-064f64ef8b6c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_08_stage_participant_day2",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day2_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "upper(col(\"given_name\"))"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "upper(col(\"family_name\"))"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_sequence": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_raw_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "participant_id between 6 and 15",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "ea3b0092-c48a-4348-8e26-5579797bd0c2"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_09_stage_participant_day3",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day3_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "upper(col(\"given_name\"))"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_raw_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "upper(col(\"family_name\"))"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_sequence": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_raw_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "participant_id <= 5 or participant_id between 16 and 20",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "a2869971-4e0f-40c8-9d27-329a1143d63a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_10_union_participant_history",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day1_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day2_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_day3_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day1_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day2_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day3_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day1_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day2_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day3_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day1_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day2_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day3_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day1_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day2_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day3_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day1_df",
+                    "field": "batch_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day2_df",
+                    "field": "batch_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_day3_df",
+                    "field": "batch_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "3be1f3a9-e45c-4a54-a628-d669c0ab954f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_11_reconcile_participant_master",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_reconciled_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              },
+              {
+                "name": "reconciliation_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_history_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_history_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_history_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_history_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_history_df",
+                    "field": "batch_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "reconciliation_rank": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_history_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "Window.partitionBy(\"participant_id\")",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_history_df",
+                  "field": "batch_sequence",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "orderBy(col(\"batch_sequence\").desc())",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_history_df",
+                  "field": "reconciliation_rank",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "col(\"reconciliation_rank\") == 1",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "606906aa-2882-4658-98f9-2bab35a69b6d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_12_build_participant_master",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_reconciled_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "batch_sequence",
+                "type": "INTEGER"
+              },
+              {
+                "name": "reconciliation_rank",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_reconciled_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_reconciled_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_reconciled_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_reconciled_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:07:32.441Z",
+    "run": {
+      "runId": "48b1f8a7-6291-4bb1-826e-5071d0a49f19"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/storage-reconciliation-demo",
+      "name": "step_13_write_participant_master",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded"
+              ],
+              "expression": "spark.read.schema(result_schema).json(result_source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_raw_df.select(..., current_timestamp().alias('loaded_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_snapshot_path)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').parquet(result_external_path)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "finish_position",
+                "points_awarded",
+                "loaded_at_utc"
+              ],
+              "expression": "result_snapshot_df.write.mode('overwrite').partitionBy('team_id').parquet(result_partitioned_path)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(participant_source_path)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day1_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 10"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day2_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id between 6 and 15"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_raw_df"
+              ],
+              "outputDataFrame": "participant_day3_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "filterExpression": "participant_id <= 5 or participant_id between 16 and 20"
+            },
+            {
+              "sequence": 10,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "participant_day1_df",
+                "participant_day2_df",
+                "participant_day3_df"
+              ],
+              "outputDataFrame": "participant_history_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence"
+              ],
+              "expression": "participant_day1_df.unionByName(participant_day2_df).unionByName(participant_day3_df)"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_FILTER",
+              "inputDataFrames": [
+                "participant_history_df"
+              ],
+              "outputDataFrame": "participant_reconciled_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "batch_sequence",
+                "reconciliation_rank"
+              ],
+              "windowExpression": "partitionBy participant_id orderBy batch_sequence desc; keep row_number = 1"
+            },
+            {
+              "sequence": 12,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_reconciled_df"
+              ],
+              "outputDataFrame": "participant_master_df",
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_reconciled_df.select(..., current_timestamp().alias('updated_at_utc'))"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_master_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "birth_date",
+                "given_name",
+                "family_name",
+                "updated_at_utc"
+              ],
+              "expression": "participant_master_df.write.mode('overwrite').parquet(participant_master_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/demo_portable/participant_master",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "given_name",
+                "type": "STRING"
+              },
+              {
+                "name": "family_name",
+                "type": "STRING"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_master_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_master_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "given_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_master_df",
+                    "field": "given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "family_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_master_df",
+                    "field": "family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_master_df",
+                    "field": "updated_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

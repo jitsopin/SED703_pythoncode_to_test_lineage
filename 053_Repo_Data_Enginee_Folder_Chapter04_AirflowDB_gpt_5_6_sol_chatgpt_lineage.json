@@ -1,0 +1,832 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:13:36.785Z",
+    "run": {
+      "runId": "a2ac3c46-8afc-4e37-8e8f-c05e50999649"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/relational-to-search-sink",
+      "name": "step_01_read_users",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "users_raw_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "read app.users through portable PostgreSQL JDBC connection"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_raw_df"
+              ],
+              "outputDataFrame": "users_selected_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "select name, city"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite intermediate CSV extract"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": "users_search_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "prepare searchable sink records"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_search_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite portable JSON search-sink dataset"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "jdbc://portable-postgresql",
+        "name": "app.users",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "jdbc://portable-postgresql",
+                    "name": "app.users",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "jdbc://portable-postgresql",
+                    "name": "app.users",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:13:36.785Z",
+    "run": {
+      "runId": "d115c63f-711b-4743-b4ae-f8990cba5094"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/relational-to-search-sink",
+      "name": "step_02_select_user_fields",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "users_raw_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "read app.users through portable PostgreSQL JDBC connection"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_raw_df"
+              ],
+              "outputDataFrame": "users_selected_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "select name, city"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite intermediate CSV extract"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": "users_search_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "prepare searchable sink records"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_search_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite portable JSON search-sink dataset"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_raw_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_raw_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:13:36.785Z",
+    "run": {
+      "runId": "cf8c4595-998f-4352-9859-b943f5dd6a19"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/relational-to-search-sink",
+      "name": "step_03_write_intermediate_extract",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "users_raw_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "read app.users through portable PostgreSQL JDBC connection"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_raw_df"
+              ],
+              "outputDataFrame": "users_selected_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "select name, city"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite intermediate CSV extract"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": "users_search_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "prepare searchable sink records"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_search_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite portable JSON search-sink dataset"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/airflow_db/users_extract",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_selected_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_selected_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:13:36.785Z",
+    "run": {
+      "runId": "4dd69b89-3d3b-4b48-9206-72ac579a78f0"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/relational-to-search-sink",
+      "name": "step_04_prepare_search_records",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "users_raw_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "read app.users through portable PostgreSQL JDBC connection"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_raw_df"
+              ],
+              "outputDataFrame": "users_selected_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "select name, city"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite intermediate CSV extract"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": "users_search_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "prepare searchable sink records"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_search_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite portable JSON search-sink dataset"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_selected_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_search_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_selected_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_selected_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:13:36.785Z",
+    "run": {
+      "runId": "95ac05a8-b172-4b6a-b649-9c1233ca9e92"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/relational-to-search-sink",
+      "name": "step_05_write_search_sink",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "users_raw_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "read app.users through portable PostgreSQL JDBC connection"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_raw_df"
+              ],
+              "outputDataFrame": "users_selected_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "select name, city"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WRITE_CSV_OVERWRITE",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite intermediate CSV extract"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "users_selected_df"
+              ],
+              "outputDataFrame": "users_search_df",
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "prepare searchable sink records"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_search_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name",
+                "city"
+              ],
+              "expression": "overwrite portable JSON search-sink dataset"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_search_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/airflow_db/search_index/from_relational",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "INFERRED"
+              },
+              {
+                "name": "city",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_search_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_search_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

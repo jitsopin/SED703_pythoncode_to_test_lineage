@@ -1,0 +1,1353 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:41:55Z",
+    "run": {
+      "runId": "cd1e52fa-c481-4290-9e09-8a6ef5b63457"
+    },
+    "job": {
+      "namespace": "aerial_analytics_load",
+      "name": "step_read_cargo_drone_flights",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/aerial/cargo_drone_flights"
+              ],
+              "output": "flight_landing_df",
+              "columns": [
+                "flight_id",
+                "operator_id",
+                "launch_time",
+                "landing_time",
+                "route_distance_km",
+                "payload_kg"
+              ],
+              "format": "parquet",
+              "expression": "spark.read.parquet('data/landing/aerial/cargo_drone_flights').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/aerial/cargo_drone_flights",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "flight_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "launch_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "launch_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "landing_time": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "landing_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "route_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payload_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aerial/cargo_drone_flights",
+                    "field": "payload_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payload_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:41:55Z",
+    "run": {
+      "runId": "26942b58-aa07-43fa-8405-cf02291cee24"
+    },
+    "job": {
+      "namespace": "aerial_analytics_load",
+      "name": "step_drop_incomplete_flights",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "FILTER",
+              "inputs": [
+                "flight_landing_df"
+              ],
+              "output": "flight_complete_df",
+              "columns": [
+                "flight_id",
+                "operator_id",
+                "launch_time",
+                "landing_time",
+                "route_distance_km",
+                "payload_kg"
+              ],
+              "filterExpression": "drop any row holding a null in any column",
+              "expression": "flight_landing_df.na.drop()",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_complete_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "flight_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "launch_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "launch_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "landing_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "landing_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "route_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payload_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_landing_df",
+                    "field": "payload_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payload_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "flight_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "operator_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "launch_time",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "landing_time",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "route_distance_km",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "flight_landing_df",
+                "field": "payload_kg",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "na.drop()",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:41:55Z",
+    "run": {
+      "runId": "4f217301-d558-44f4-b9f5-ecf68d89a64b"
+    },
+    "job": {
+      "namespace": "aerial_analytics_load",
+      "name": "step_derive_flight_duration",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "flight_complete_df"
+              ],
+              "output": "flight_timed_df",
+              "columns": [
+                "flight_id",
+                "operator_id",
+                "launch_time",
+                "landing_time",
+                "route_distance_km",
+                "payload_kg",
+                "flight_duration_minutes"
+              ],
+              "derivedColumns": {
+                "flight_duration_minutes": "(unix_timestamp(col('landing_time')) - unix_timestamp(col('launch_time'))) / 60"
+              },
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_complete_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_timed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              },
+              {
+                "name": "flight_duration_minutes",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "flight_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "launch_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "launch_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "landing_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "landing_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "route_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payload_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "payload_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payload_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "flight_duration_minutes": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "(unix_timestamp(col('landing_time')) - unix_timestamp(col('launch_time'))) / 60",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_complete_df",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "(unix_timestamp(col('landing_time')) - unix_timestamp(col('launch_time'))) / 60",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:41:55Z",
+    "run": {
+      "runId": "ea74c4aa-4172-4f10-b945-615a60c6c10e"
+    },
+    "job": {
+      "namespace": "aerial_analytics_load",
+      "name": "step_derive_average_speed",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "flight_timed_df"
+              ],
+              "output": "cargo_drone_flight_df",
+              "columns": [
+                "flight_id",
+                "operator_id",
+                "launch_time",
+                "landing_time",
+                "route_distance_km",
+                "payload_kg",
+                "flight_duration_minutes",
+                "average_speed_kmh"
+              ],
+              "derivedColumns": {
+                "average_speed_kmh": "col('route_distance_km') / (col('flight_duration_minutes') / 60)"
+              },
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "flight_timed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              },
+              {
+                "name": "flight_duration_minutes",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cargo_drone_flight_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              },
+              {
+                "name": "flight_duration_minutes",
+                "type": "double"
+              },
+              {
+                "name": "average_speed_kmh",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "flight_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "launch_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "launch_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "landing_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "landing_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "route_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payload_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "payload_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payload_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "flight_duration_minutes": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "flight_duration_minutes",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_duration_minutes",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_speed_kmh": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('route_distance_km') / (col('flight_duration_minutes') / 60)",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "flight_timed_df",
+                    "field": "flight_duration_minutes",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('route_distance_km') / (col('flight_duration_minutes') / 60)",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:41:55Z",
+    "run": {
+      "runId": "8ca73c8d-4448-43d9-ac23-50ce6527362d"
+    },
+    "job": {
+      "namespace": "aerial_analytics_load",
+      "name": "step_replace_cargo_drone_flight_table",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "cargo_drone_flight_df"
+              ],
+              "output": "aerial_analytics.cargo_drone_flight",
+              "columns": [
+                "flight_id",
+                "operator_id",
+                "launch_time",
+                "landing_time",
+                "route_distance_km",
+                "payload_kg",
+                "flight_duration_minutes",
+                "average_speed_kmh"
+              ],
+              "writeMode": "overwrite",
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "cargo_drone_flight_df.write.format('jdbc').option('dbtable', 'aerial_analytics.cargo_drone_flight').mode('overwrite').save()",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "cargo_drone_flight_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              },
+              {
+                "name": "flight_duration_minutes",
+                "type": "double"
+              },
+              {
+                "name": "average_speed_kmh",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgresql",
+        "name": "aerial_analytics.cargo_drone_flight",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "flight_id",
+                "type": "string"
+              },
+              {
+                "name": "operator_id",
+                "type": "string"
+              },
+              {
+                "name": "launch_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "landing_time",
+                "type": "timestamp"
+              },
+              {
+                "name": "route_distance_km",
+                "type": "double"
+              },
+              {
+                "name": "payload_kg",
+                "type": "double"
+              },
+              {
+                "name": "flight_duration_minutes",
+                "type": "double"
+              },
+              {
+                "name": "average_speed_kmh",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "flight_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "launch_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "launch_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "launch_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "landing_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "landing_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "landing_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "route_distance_km": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "route_distance_km",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "route_distance_km",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payload_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "payload_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payload_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "flight_duration_minutes": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "flight_duration_minutes",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "flight_duration_minutes",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "average_speed_kmh": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "cargo_drone_flight_df",
+                    "field": "average_speed_kmh",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "average_speed_kmh",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,852 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:09:53.806Z",
+    "run": {
+      "runId": "867da8e6-7089-48c2-b43c-31c496755b8e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/dual-sink-etl",
+      "name": "step_01_read_csv_records",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "incoming_records_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read CSV"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "incoming_records_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "write Parquet"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "customer_raw_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "read customer Parquet"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "customer_raw_df"
+              ],
+              "outputDataFrame": "customer_mapped_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "cast customer_id to integer"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JDBC_OVERWRITE",
+              "inputDataFrames": [
+                "customer_mapped_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "write JDBC"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/file_exchange/incoming_records",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "incoming_records_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/file_exchange/incoming_records",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:09:53.806Z",
+    "run": {
+      "runId": "13daf65d-2d53-4b98-b5ac-c6a44774fa5a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/dual-sink-etl",
+      "name": "step_02_write_parquet_records",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "incoming_records_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read CSV"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "incoming_records_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "write Parquet"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "customer_raw_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "read customer Parquet"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "customer_raw_df"
+              ],
+              "outputDataFrame": "customer_mapped_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "cast customer_id to integer"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JDBC_OVERWRITE",
+              "inputDataFrames": [
+                "customer_mapped_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "write JDBC"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "incoming_records_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/file_exchange/normalized_records",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_records_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:09:53.806Z",
+    "run": {
+      "runId": "a5535f66-e43b-44fc-8c54-548ae3ed74bc"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/dual-sink-etl",
+      "name": "step_03_read_customer_source",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "incoming_records_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read CSV"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "incoming_records_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "write Parquet"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "customer_raw_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "read customer Parquet"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "customer_raw_df"
+              ],
+              "outputDataFrame": "customer_mapped_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "cast customer_id to integer"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JDBC_OVERWRITE",
+              "inputDataFrames": [
+                "customer_mapped_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "write JDBC"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/customer_registry/customer_source",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "STRING"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "customer_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "STRING"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/customer_registry/customer_source",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "first_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/customer_registry/customer_source",
+                    "field": "first_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/customer_registry/customer_source",
+                    "field": "last_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:09:53.806Z",
+    "run": {
+      "runId": "027ec01e-9e32-4f51-890b-a49d3af145bd"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/dual-sink-etl",
+      "name": "step_04_map_customer_fields",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "incoming_records_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read CSV"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "incoming_records_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "write Parquet"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "customer_raw_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "read customer Parquet"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "customer_raw_df"
+              ],
+              "outputDataFrame": "customer_mapped_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "cast customer_id to integer"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JDBC_OVERWRITE",
+              "inputDataFrames": [
+                "customer_mapped_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "write JDBC"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "customer_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "STRING"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "customer_mapped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_raw_df",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cast to integer"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "first_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_raw_df",
+                    "field": "first_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_raw_df",
+                    "field": "last_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:09:53.806Z",
+    "run": {
+      "runId": "255e062f-4b9f-49e1-9c55-c591907d88da"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/dual-sink-etl",
+      "name": "step_05_write_customer_jdbc",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "incoming_records_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read CSV"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "incoming_records_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "write Parquet"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "customer_raw_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "read customer Parquet"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_CAST",
+              "inputDataFrames": [
+                "customer_raw_df"
+              ],
+              "outputDataFrame": "customer_mapped_df",
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "cast customer_id to integer"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_JDBC_OVERWRITE",
+              "inputDataFrames": [
+                "customer_mapped_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "customer_id",
+                "first_name",
+                "last_name"
+              ],
+              "expression": "write JDBC"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "customer_mapped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://portable-postgresql",
+        "name": "analytics.customer_profile",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "customer_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "first_name",
+                "type": "STRING"
+              },
+              {
+                "name": "last_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_mapped_df",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "first_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_mapped_df",
+                    "field": "first_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "customer_mapped_df",
+                    "field": "last_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

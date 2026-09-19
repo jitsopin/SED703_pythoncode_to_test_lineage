@@ -1,0 +1,1750 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "2a404725-57cb-486e-9b3a-7ae5503c6dd8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_01_read_yellow",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/tripdata/raw/yellow_tripdata*.parquet",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/tripdata/raw/yellow_tripdata*.parquet",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/tripdata/raw/yellow_tripdata*.parquet",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "9321cf7a-a477-4d9e-8e0e-a0a1f984a209"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_02_partition_yellow",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_raw_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_raw_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_raw_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_date(tpep_pickup_datetime)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "a1d82644-8fee-4775-9938-e44728700259"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_03_prepare_yellow_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_partitioned_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_partitioned_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_partitioned_df",
+                    "field": "pickup_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "bd42ff4b-0a56-4faa-ad07-001ec09e9725"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_04_write_yellow",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "yellow_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/tripdata/yellow",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "tpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_output_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_output_df",
+                    "field": "tpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "yellow_output_df",
+                    "field": "pickup_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "yellow_output_df",
+                  "field": "pickup_date",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(pickup_date)",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "356be2cb-528c-49a3-a1c6-3ad8e7526f2c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_05_read_green",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/tripdata/raw/green_tripdata*.parquet",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/tripdata/raw/green_tripdata*.parquet",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/tripdata/raw/green_tripdata*.parquet",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "054c17d9-138e-434e-a164-b0d98e27d657"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_06_partition_green",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_raw_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_raw_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_raw_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "to_date(lpep_pickup_datetime)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "c147cc73-468f-442a-b33a-1aca84e6a21f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_07_prepare_green_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_partitioned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_partitioned_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_partitioned_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_partitioned_df",
+                    "field": "pickup_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T04:07:19.567Z",
+    "run": {
+      "runId": "b6ed610a-207a-485e-bdfd-cf4d8b3bb414"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/tripdata-partitioned-load",
+      "name": "step_08_write_green",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "yellow_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read yellow raw tripdata Parquet files"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "yellow_raw_df"
+              ],
+              "outputDataFrame": "yellow_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(tpep_pickup_datetime)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "yellow_partitioned_df"
+              ],
+              "outputDataFrame": "yellow_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit yellow output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "yellow_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite yellow Parquet partitioned by pickup_date"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "green_raw_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "read green raw tripdata Parquet files"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "green_raw_df"
+              ],
+              "outputDataFrame": "green_partitioned_df",
+              "selectedColumns": [
+                "*",
+                "pickup_date"
+              ],
+              "expression": "pickup_date = to_date(lpep_pickup_datetime)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_ALL",
+              "inputDataFrames": [
+                "green_partitioned_df"
+              ],
+              "outputDataFrame": "green_output_df",
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "explicit green output projection"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "green_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "*"
+              ],
+              "expression": "overwrite green Parquet partitioned by pickup_date"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "green_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/tripdata/green",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "record",
+                "type": "INFERRED"
+              },
+              {
+                "name": "lpep_pickup_datetime",
+                "type": "INFERRED"
+              },
+              {
+                "name": "pickup_date",
+                "type": "DATE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_output_df",
+                    "field": "record",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lpep_pickup_datetime": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_output_df",
+                    "field": "lpep_pickup_datetime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "green_output_df",
+                    "field": "pickup_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "green_output_df",
+                  "field": "pickup_date",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(pickup_date)",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

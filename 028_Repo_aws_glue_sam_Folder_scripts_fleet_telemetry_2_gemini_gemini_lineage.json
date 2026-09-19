@@ -1,0 +1,358 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:45:12Z",
+    "run": {
+      "runId": "b5c1a1e3-d1f4-42b7-a8a2-2e5f3c9a4b5d"
+    },
+    "job": {
+      "namespace": "agriculture_etl",
+      "name": "step_1_extract_drone_telemetry"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/agriculture/drone_flights.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_guid", "type": "string"},
+              {"name": "hardware_mac", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "recorded_timestamp", "type": "timestamp"},
+              {"name": "payload_json", "type": "string"},
+              {"name": "flight_speed_mps", "type": "double"},
+              {"name": "farm_zone", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_guid", "type": "string"},
+              {"name": "hardware_mac", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "recorded_timestamp", "type": "timestamp"},
+              {"name": "payload_json", "type": "string"},
+              {"name": "flight_speed_mps", "type": "double"},
+              {"name": "farm_zone", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_guid": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "flight_guid", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hardware_mac": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "hardware_mac", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "drone_type": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "drone_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "recorded_timestamp": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "recorded_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "payload_json": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "payload_json", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "flight_speed_mps": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "flight_speed_mps", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "farm_zone": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/agriculture/drone_flights.json", "field": "farm_zone", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:45:12Z",
+    "run": {
+      "runId": "e7f2b3a1-c4d5-49b8-a1c2-3d6e4f8a1b2c"
+    },
+    "job": {
+      "namespace": "agriculture_etl",
+      "name": "step_2_apply_defaults_and_derive"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_guid", "type": "string"},
+              {"name": "hardware_mac", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "recorded_timestamp", "type": "timestamp"},
+              {"name": "payload_json", "type": "string"},
+              {"name": "flight_speed_mps", "type": "double"},
+              {"name": "farm_zone", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_guid", "type": "string"},
+              {"name": "hardware_mac", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "recorded_timestamp", "type": "timestamp"},
+              {"name": "payload_json", "type": "string"},
+              {"name": "flight_speed_mps", "type": "double"},
+              {"name": "farm_zone", "type": "string"},
+              {"name": "flight_date", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "flight_guid": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "flight_guid", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hardware_mac": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "hardware_mac", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "drone_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "drone_type", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "coalesce(drone_type, 'UNKNOWN')", "masking": false}]}]
+              },
+              "recorded_timestamp": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "recorded_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "payload_json": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "payload_json", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "flight_speed_mps": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "flight_speed_mps", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "coalesce(flight_speed_mps, 0.0)", "masking": false}]}]
+              },
+              "farm_zone": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "farm_zone", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "coalesce(farm_zone, 'DEFAULT_ZONE')", "masking": false}]}]
+              },
+              "flight_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_raw_df", "field": "recorded_timestamp", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "date_format(recorded_timestamp, 'yyyy-MM-dd')", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:45:12Z",
+    "run": {
+      "runId": "d8a3c2b1-e5f6-41c9-b2d3-4e7f5a9b0c1d"
+    },
+    "job": {
+      "namespace": "agriculture_etl",
+      "name": "step_3_project_and_rename"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "flight_guid", "type": "string"},
+              {"name": "hardware_mac", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "recorded_timestamp", "type": "timestamp"},
+              {"name": "payload_json", "type": "string"},
+              {"name": "flight_speed_mps", "type": "double"},
+              {"name": "farm_zone", "type": "string"},
+              {"name": "flight_date", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "event_id", "type": "string"},
+              {"name": "device_id", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "event_time", "type": "timestamp"},
+              {"name": "sensor_payload_json", "type": "string"},
+              {"name": "speed_mps", "type": "double"},
+              {"name": "region", "type": "string"},
+              {"name": "flight_date", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "flight_guid", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(event_id)", "masking": false}]}]
+              },
+              "device_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "hardware_mac", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(device_id)", "masking": false}]}]
+              },
+              "drone_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "drone_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "event_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "recorded_timestamp", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(event_time)", "masking": false}]}]
+              },
+              "sensor_payload_json": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "payload_json", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(sensor_payload_json)", "masking": false}]}]
+              },
+              "speed_mps": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "flight_speed_mps", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(speed_mps)", "masking": false}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "farm_zone", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(region)", "masking": false}]}]
+              },
+              "flight_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_enriched_df", "field": "flight_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:45:12Z",
+    "run": {
+      "runId": "f9b4d3c2-a6e7-42d0-c3e4-5f8a6b0c1d2e"
+    },
+    "job": {
+      "namespace": "agriculture_etl",
+      "name": "step_4_load_partitioned_metrics"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drone_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "event_id", "type": "string"},
+              {"name": "device_id", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "event_time", "type": "timestamp"},
+              {"name": "sensor_payload_json", "type": "string"},
+              {"name": "speed_mps", "type": "double"},
+              {"name": "region", "type": "string"},
+              {"name": "flight_date", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/agriculture/drone_metrics_partitioned",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "event_id", "type": "string"},
+              {"name": "device_id", "type": "string"},
+              {"name": "drone_type", "type": "string"},
+              {"name": "event_time", "type": "timestamp"},
+              {"name": "sensor_payload_json", "type": "string"},
+              {"name": "speed_mps", "type": "double"},
+              {"name": "region", "type": "string"},
+              {"name": "flight_date", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "drone_final_df",
+                "field": "flight_date",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "partitionBy(flight_date, drone_type)"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "drone_final_df",
+                "field": "drone_type",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "partitionBy(flight_date, drone_type)"}]
+              }
+            ],
+            "fields": {
+              "event_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "event_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "device_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "device_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "drone_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "drone_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "event_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "event_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "sensor_payload_json": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "sensor_payload_json", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "speed_mps": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "speed_mps", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "flight_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "drone_final_df", "field": "flight_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

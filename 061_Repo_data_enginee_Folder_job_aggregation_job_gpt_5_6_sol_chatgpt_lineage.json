@@ -1,0 +1,1255 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "3707d385-71e9-4dc5-a5ec-b3abadfd8555"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_01_read_event_stream",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/events_stream",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/events_stream",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/events_stream",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "d055e2c2-e859-454f-801e-3ea81a5c3e01"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_02_convert_event_time",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_timed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "event_time",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_raw_df",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_raw_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_raw_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "timestamp_millis(event_timestamp)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "bb4b9df1-3828-495e-9479-2bb9b849cdac"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_03_apply_watermark",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_timed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "event_time",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_watermarked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "event_time",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_timed_df",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_timed_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_timed_df",
+                    "field": "event_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "a0b0af6a-6a2c-4ac8-9ef2-67dc1627db5f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_04_aggregate_tumbling_windows",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_watermarked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "event_time",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_aggregated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              },
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "num_hits",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_window": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_watermarked_df",
+                    "field": "event_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "window(event_time, 1 minute)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_watermarked_df",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "num_hits": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "events_watermarked_df",
+                  "field": "event_time",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "masking": false,
+                      "description": "group by one-minute window"
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "events_watermarked_df",
+                  "field": "test_data",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "masking": false,
+                      "description": "group by test_data"
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "events_watermarked_df",
+                  "field": "event_time",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "WATERMARK",
+                      "masking": false,
+                      "description": "one-second watermark"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "719faf2f-f9c9-402a-a8bd-8dbb1a1cadc1"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_05_prepare_window_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_aggregated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_window",
+                "type": "STRUCT<start:TIMESTAMP,end:TIMESTAMP>"
+              },
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "num_hits",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_hour",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "num_hits",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_hour": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_aggregated_df",
+                    "field": "event_window",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "event_window.start"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_aggregated_df",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "num_hits": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_aggregated_df",
+                    "field": "num_hits",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T02:23:39.715Z",
+    "run": {
+      "runId": "d81118f5-ba1f-4e16-9193-b4931c67e65a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-time-aggregation",
+      "name": "step_06_write_finalized_windows",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "events_raw_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp"
+              ],
+              "expression": "readStream JSON with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "WITH_COLUMN",
+              "inputDataFrames": [
+                "events_raw_df"
+              ],
+              "outputDataFrame": "events_timed_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "event_time = timestamp_millis(event_timestamp)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "WITH_WATERMARK",
+              "inputDataFrames": [
+                "events_timed_df"
+              ],
+              "outputDataFrame": "events_watermarked_df",
+              "selectedColumns": [
+                "test_data",
+                "event_timestamp",
+                "event_time"
+              ],
+              "expression": "withWatermark(event_time, 1 second)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "events_watermarked_df"
+              ],
+              "outputDataFrame": "events_aggregated_df",
+              "selectedColumns": [
+                "event_window",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "group by 1-minute tumbling window and test_data; count(*)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "events_aggregated_df"
+              ],
+              "outputDataFrame": "events_output_df",
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "event_hour = event_window.start"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_STREAM_PARQUET_APPEND",
+              "inputDataFrames": [
+                "events_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_hour",
+                "test_data",
+                "num_hits"
+              ],
+              "expression": "append finalized windows to Parquet with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "events_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_hour",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "num_hits",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/events_stream/processed_events_aggregated",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_hour",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "test_data",
+                "type": "INTEGER"
+              },
+              {
+                "name": "num_hits",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_hour": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_output_df",
+                    "field": "event_hour",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "test_data": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_output_df",
+                    "field": "test_data",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "num_hits": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "events_output_df",
+                    "field": "num_hits",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

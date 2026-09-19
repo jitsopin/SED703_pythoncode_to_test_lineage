@@ -1,0 +1,5770 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "7abbfc92-5601-4d62-8af7-779f6ab7293f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_01_read_trade_risk_vectors",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/risk_analytics/trade_risk_vectors",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/risk_analytics/trade_risk_vectors",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "52babd5a-15e6-4fd9-810f-fecffec13735"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_02_filter_today_trades",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "today_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_raw_df",
+                  "field": "trade_date",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "trade_date == current_date",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "316d548e-c411-4a59-b4d1-38cd5a95d427"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_03_select_trade_population",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "today_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "selected_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "today_trade_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "7bfee6df-9393-4387-9e8c-b7ab65047ce6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_04_enrich_trade_risk",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "selected_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "pricing_model",
+                "type": "STRING"
+              },
+              {
+                "name": "deep_nested_metric",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_exposure": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "asset-class CASE over JSON pricing payload fields"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "asset-class CASE over JSON pricing payload fields"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "ELSE var_contribution * 1000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_model": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "get_json_object($.model)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "deep_nested_metric": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "asset-class CASE over deep JSON paths"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "asset-class CASE over deep JSON paths"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jurisdiction": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "EMEA->UK, AMER->US, APAC->JP, else OTHER"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "selected_trade_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "f479af2e-c506-48a2-a779-2e7196130dc9"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_05_calculate_trade_var",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "pricing_model",
+                "type": "STRING"
+              },
+              {
+                "name": "deep_nested_metric",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_var_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "pricing_model",
+                "type": "STRING"
+              },
+              {
+                "name": "deep_nested_metric",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "parametric_var_99",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_exposure": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "risk_exposure",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_model": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "pricing_model",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "deep_nested_metric": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "deep_nested_metric",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jurisdiction": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "jurisdiction",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "parametric_var_99": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "deterministic 1000-scenario pseudo-normal simulation with percentile_approx(0.99)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "risk_exposure",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "abs(risk_exposure) * simulated_return * risk_weight"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_enriched_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "abs(risk_exposure) * simulated_return * risk_weight"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "84214c46-0893-4f7d-a4d9-d6d0c8b050fe"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_06_aggregate_risk_summary",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_var_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "pricing_model",
+                "type": "STRING"
+              },
+              {
+                "name": "deep_nested_metric",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "parametric_var_99",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "risk_summary_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_count",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_var_99",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "max_single_trade_var",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jurisdiction": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "jurisdiction",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_count": {
+                "inputFields": []
+              },
+              "total_exposure": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "risk_exposure",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "sum(risk_exposure)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_var_99": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "parametric_var_99",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "sum(parametric_var_99)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "max_single_trade_var": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_var_df",
+                    "field": "parametric_var_99",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "max(parametric_var_99)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_var_df",
+                  "field": "desk",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(desk, asset_class, jurisdiction)",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_var_df",
+                  "field": "asset_class",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(desk, asset_class, jurisdiction)",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_var_df",
+                  "field": "jurisdiction",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "groupBy(desk, asset_class, jurisdiction)",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "44a2f11d-1399-4aae-b473-a81ccd0c766e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_07_publish_risk_summary",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "risk_summary_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_count",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_var_99",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "max_single_trade_var",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_risk_summary_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "report_date",
+                "type": "DATE"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_count",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_var_99",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "max_single_trade_var",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "report_metadata_json",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jurisdiction": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "jurisdiction",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "trade_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_exposure": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "total_exposure",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_var_99": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "total_var_99",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "max_single_trade_var": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "risk_summary_df",
+                    "field": "max_single_trade_var",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "report_date": {
+                "inputFields": []
+              },
+              "report_metadata_json": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "805f3b12-0772-4041-b994-a94b621ebbb7"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_08_append_risk_summary",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_risk_summary_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "report_date",
+                "type": "DATE"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_count",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_var_99",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "max_single_trade_var",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "report_metadata_json",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/risk_analytics/daily_risk_summary",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "report_date",
+                "type": "DATE"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "jurisdiction",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_count",
+                "type": "BIGINT"
+              },
+              {
+                "name": "total_exposure",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "total_var_99",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "max_single_trade_var",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "report_metadata_json",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "report_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "report_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jurisdiction": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "jurisdiction",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "trade_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_exposure": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "total_exposure",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_var_99": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "total_var_99",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "max_single_trade_var": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "max_single_trade_var",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "report_metadata_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_risk_summary_df",
+                    "field": "report_metadata_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "3ae7860d-0118-450d-a8b2-8831618c79d8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_09_rank_trade_amendments",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "amend_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "cancel_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_raw_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amend_rank": {
+                "inputFields": []
+              },
+              "cancel_rank": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_raw_df",
+                  "field": "trade_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "row_number over trade_id ascending for amendment",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_raw_df",
+                  "field": "trade_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "row_number over trade_id descending for cancellation",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "06249ef9-0f1b-4b08-a945-24094cdf7414"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_10_apply_trade_changes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trade_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "amend_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "cancel_rank",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "amended_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "if amend_rank=1 then 2.5 else risk_weight"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trade_ranked_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "if amend_rank=1 then 0.025 else var_contribution"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "trade_ranked_df",
+                  "field": "cancel_rank",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "cancel_rank != 1",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:44:24.670Z",
+    "run": {
+      "runId": "358809aa-d4bc-433d-92e8-4b597937b76c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/batch-trade-var",
+      "name": "step_11_write_amended_trades",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "trade_raw_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "spark.read.schema(trade_schema).parquet(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "today_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "trade_date == current_date"
+            },
+            {
+              "sequence": 3,
+              "statementType": "CONDITIONAL_SELECT",
+              "inputDataFrames": [
+                "today_trade_df",
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "selected_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "use today's rows when count > 0 else all rows"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT_DERIVE_JSON",
+              "inputDataFrames": [
+                "selected_trade_df"
+              ],
+              "outputDataFrame": "trade_enriched_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight"
+              ],
+              "expression": "derive risk exposure, model, deep nested metric, and jurisdiction"
+            },
+            {
+              "sequence": 5,
+              "statementType": "SELECT_DERIVE_SCENARIO_VAR",
+              "inputDataFrames": [
+                "trade_enriched_df"
+              ],
+              "outputDataFrame": "trade_var_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "risk_exposure",
+                "pricing_model",
+                "deep_nested_metric",
+                "jurisdiction",
+                "risk_weight",
+                "parametric_var_99"
+              ],
+              "expression": "deterministic 1000-scenario pseudo-normal VaR; 99th percentile"
+            },
+            {
+              "sequence": 6,
+              "statementType": "GROUP_BY_AGG",
+              "inputDataFrames": [
+                "trade_var_df"
+              ],
+              "outputDataFrame": "risk_summary_df",
+              "selectedColumns": [
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var"
+              ],
+              "expression": "aggregate count, exposure, total VaR, max trade VaR"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "risk_summary_df"
+              ],
+              "outputDataFrame": "published_risk_summary_df",
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "add report_date and JSON metadata"
+            },
+            {
+              "sequence": 8,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "published_risk_summary_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "report_date",
+                "desk",
+                "asset_class",
+                "jurisdiction",
+                "trade_count",
+                "total_exposure",
+                "total_var_99",
+                "max_single_trade_var",
+                "report_metadata_json"
+              ],
+              "expression": "append Parquet daily risk summary"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WINDOW_RANK",
+              "inputDataFrames": [
+                "trade_raw_df"
+              ],
+              "outputDataFrame": "trade_ranked_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution",
+                "amend_rank",
+                "cancel_rank"
+              ],
+              "expression": "row_number ascending and descending by trade_id"
+            },
+            {
+              "sequence": 10,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "trade_ranked_df"
+              ],
+              "outputDataFrame": "amended_trade_df",
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "cancel last trade; amend first trade risk_weight and var_contribution"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "amended_trade_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "trade_id",
+                "book_id",
+                "desk",
+                "asset_class",
+                "region",
+                "trade_date",
+                "pricing_payload_json",
+                "risk_weight",
+                "var_contribution"
+              ],
+              "expression": "overwrite amended trade snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "amended_trade_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/risk_analytics/trade_risk_vectors_amended",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trade_id",
+                "type": "STRING"
+              },
+              {
+                "name": "book_id",
+                "type": "STRING"
+              },
+              {
+                "name": "desk",
+                "type": "STRING"
+              },
+              {
+                "name": "asset_class",
+                "type": "STRING"
+              },
+              {
+                "name": "region",
+                "type": "STRING"
+              },
+              {
+                "name": "trade_date",
+                "type": "STRING"
+              },
+              {
+                "name": "pricing_payload_json",
+                "type": "STRING"
+              },
+              {
+                "name": "risk_weight",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "var_contribution",
+                "type": "DOUBLE"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trade_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "trade_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "book_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "book_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "desk": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "desk",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "asset_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "asset_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trade_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "trade_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_payload_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "pricing_payload_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "var_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "amended_trade_df",
+                    "field": "var_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,915 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "ed1c9396-8f96-4631-b52a-a21212f99111"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_read_exhibitor_register",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/tradefair/exhibitor_list.csv"
+              ],
+              "output": "exhibitor_df",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "format": "csv",
+              "readOptions": {
+                "header": true
+              },
+              "expression": "spark.read.option('header', True).schema(exhibitor_schema).csv('data/landing/tradefair/exhibitor_list.csv')",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/tradefair/exhibitor_list.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/tradefair/exhibitor_list.csv",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/tradefair/exhibitor_list.csv",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/tradefair/exhibitor_list.csv",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "20f676cc-0794-458f-85e1-351f13f222b9"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_repartition_exhibitors_evenly",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "REPARTITION",
+              "inputs": [
+                "exhibitor_df"
+              ],
+              "output": "exhibitor_even_df",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "partitionCount": 4,
+              "expression": "exhibitor_df.repartition(4)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_even_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "79e630b0-3a95-42ae-b749-cac46901f9bf"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_write_exhibitor_even_split",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "exhibitor_even_df"
+              ],
+              "output": "warehouse/curated/tradefair/exhibitor_even_split",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "writeMode": "overwrite",
+              "format": "csv",
+              "expression": "exhibitor_even_df.write.format('csv').mode('overwrite').save('warehouse/curated/tradefair/exhibitor_even_split')",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_even_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/tradefair/exhibitor_even_split",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_even_df",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_even_df",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_even_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "461d0ade-88f7-42e7-a5d6-debf5d00fa27"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_repartition_exhibitors_by_country",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "REPARTITION",
+              "inputs": [
+                "exhibitor_df"
+              ],
+              "output": "exhibitor_country_shuffled_df",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "partitionCount": 2,
+              "partitionColumns": [
+                "country_name"
+              ],
+              "distribution": "hash on country_name, not a directory layout",
+              "expression": "exhibitor_df.repartition(2, 'country_name')",
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_country_shuffled_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "exhibitor_df",
+                "field": "country_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "exhibitor_df.repartition(2, 'country_name')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "5f39844f-30b5-4f6c-972e-f716607e44c5"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_write_exhibitor_by_country_shuffle",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "exhibitor_country_shuffled_df"
+              ],
+              "output": "warehouse/curated/tradefair/exhibitor_by_country_shuffle",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "writeMode": "overwrite",
+              "format": "csv",
+              "expression": "exhibitor_country_shuffled_df.write.format('csv').mode('overwrite').save('warehouse/curated/tradefair/exhibitor_by_country_shuffle')",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_country_shuffled_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/tradefair/exhibitor_by_country_shuffle",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_country_shuffled_df",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_country_shuffled_df",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_country_shuffled_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T01:24:58Z",
+    "run": {
+      "runId": "95cb23ed-f222-469e-86e2-5e96dc2dcaa0"
+    },
+    "job": {
+      "namespace": "tradefair_curated_publish",
+      "name": "step_write_exhibitor_by_country_folders",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "exhibitor_df"
+              ],
+              "output": "warehouse/curated/tradefair/exhibitor_by_country_folders",
+              "columns": [
+                "exhibitor_id",
+                "exhibitor_name",
+                "country_name"
+              ],
+              "writeMode": "overwrite",
+              "format": "csv",
+              "partitionColumns": [
+                "country_name"
+              ],
+              "expression": "exhibitor_df.write.partitionBy('country_name').format('csv').mode('overwrite').save('warehouse/curated/tradefair/exhibitor_by_country_folders')",
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "exhibitor_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/tradefair/exhibitor_by_country_folders",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "exhibitor_id",
+                "type": "integer"
+              },
+              {
+                "name": "exhibitor_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "exhibitor_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "exhibitor_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "exhibitor_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "exhibitor_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "exhibitor_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "exhibitor_df",
+                "field": "country_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.partitionBy('country_name').format('csv').mode('overwrite').save('warehouse/curated/tradefair/exhibitor_by_country_folders')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

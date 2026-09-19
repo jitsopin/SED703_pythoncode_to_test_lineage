@@ -1,0 +1,3661 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "db86c892-638c-4a0b-ac87-2ec54bf5f0c6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_01_read_event_calendar",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/competition/event_calendar",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_calendar_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/event_calendar",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/event_calendar",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/event_calendar",
+                    "field": "event_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/event_calendar",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/event_calendar",
+                    "field": "venue_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "945d672c-6aa6-4a20-8f65-d9b35b13781a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_02_read_venue_directory",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/reference/venue_directory",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "venue_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "venue_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/venue_directory",
+                    "field": "venue_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_city": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/venue_directory",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"city\").alias(\"venue_city\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "d18e733e-0311-4729-a73e-e31a732e9585"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_03_join_event_venue",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_calendar_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "venue_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "venue_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_venue_context_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_calendar_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_calendar_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_calendar_df",
+                    "field": "event_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_calendar_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "venue_directory_df",
+                    "field": "venue_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_calendar_df",
+                  "field": "venue_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "event_calendar_df.venue_id == venue_directory_df.venue_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "venue_directory_df",
+                  "field": "venue_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "event_calendar_df.venue_id == venue_directory_df.venue_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "62d62f40-02ac-48d3-8612-5f5979d58caf"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_04_read_participant_directory",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/reference/participant_directory",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/participant_directory",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/participant_directory",
+                    "field": "full_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"full_name\").alias(\"participant_name\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/participant_directory",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/participant_directory",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"nationality\").alias(\"participant_nationality\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "3ff860e5-a43e-4760-98f5-9bb51334a27b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_05_read_team_directory",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/reference/team_directory",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "team_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/team_directory",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/reference/team_directory",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "e836b57f-fa88-4adc-a61c-6ba51750eb8b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_06_read_result_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/competition/result_snapshot",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "col(\"elapsed_time_text\").alias(\"event_time_text\")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/competition/result_snapshot",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "5f3a2405-8f94-4a54-b6a5-1927a6487e73"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_07_combine_event_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_venue_context_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "team_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "combined_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "event_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_snapshot_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_venue_context_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_venue_context_df",
+                    "field": "event_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_venue_context_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_venue_context_df",
+                    "field": "venue_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_directory_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_directory_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_directory_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "team_directory_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_snapshot_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.event_id == event_venue_context_df.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_venue_context_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.event_id == event_venue_context_df.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_snapshot_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.participant_id == participant_directory_df.participant_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_directory_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.participant_id == participant_directory_df.participant_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_snapshot_df",
+                  "field": "team_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.team_id == team_directory_df.team_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "team_directory_df",
+                  "field": "team_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "result_snapshot_df.team_id == team_directory_df.team_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "087be283-cea7-4773-b967-3c2c10cd26ab"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_08_build_presentation_result",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "combined_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "event_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "venue_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "event_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "combined_event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:35:44.994Z",
+    "run": {
+      "runId": "6229f241-d817-4e47-ae90-9e2e6a2c8e85"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/event-result-presentation",
+      "name": "step_09_write_presentation_result",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_calendar_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_id"
+              ],
+              "expression": "spark.read.parquet(event_path).select(event_id, season_year, event_name, event_timestamp, venue_id)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "venue_directory_df",
+              "selectedColumns": [
+                "venue_id",
+                "venue_city"
+              ],
+              "expression": "spark.read.parquet(venue_path).select(venue_id, city.alias('venue_city'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "event_calendar_df",
+                "venue_directory_df"
+              ],
+              "outputDataFrame": "event_venue_context_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city"
+              ],
+              "joinExpression": "event_calendar_df.venue_id == venue_directory_df.venue_id"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_directory_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "team_directory_df",
+              "selectedColumns": [
+                "team_id",
+                "team_name"
+              ],
+              "expression": "spark.read.parquet(team_path).select(team_id, team_name)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "team_id",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 7,
+              "statementType": "MULTI_INNER_JOIN",
+              "inputDataFrames": [
+                "result_snapshot_df",
+                "event_venue_context_df",
+                "participant_directory_df",
+                "team_directory_df"
+              ],
+              "outputDataFrame": "combined_event_result_df",
+              "joinExpression": "event_id, participant_id, and team_id equality joins"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "combined_event_result_df"
+              ],
+              "outputDataFrame": "published_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "combined_event_result_df.select(..., current_timestamp().alias('created_at_utc'))"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "event_name",
+                "event_timestamp",
+                "venue_city",
+                "participant_name",
+                "vehicle_number",
+                "participant_nationality",
+                "team_name",
+                "starting_grid",
+                "fastest_lap_number",
+                "event_time_text",
+                "points_awarded",
+                "finish_position",
+                "created_at_utc"
+              ],
+              "expression": "published_event_result_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/presentation/competition/published_event_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_timestamp",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "venue_city",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "team_name",
+                "type": "STRING"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "event_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "event_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "venue_city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "participant_nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "team_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "event_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_event_result_df",
+                    "field": "created_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

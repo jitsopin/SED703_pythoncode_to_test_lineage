@@ -1,0 +1,1193 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "32687c77-bc63-434b-8225-ae4354ab799b"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_01_extract_carrier_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/insurance/carrier_registry.json"
+              ],
+              "output": "carrier_landing_df",
+              "columns": [
+                "carrierId",
+                "carrierCode",
+                "carrierName",
+                "domicileCountry",
+                "websiteUrl"
+              ],
+              "schemaDefinition": "carrierId INT, carrierCode STRING, carrierName STRING, domicileCountry STRING, websiteUrl STRING",
+              "expression": "spark.read.schema(carrier_landing_schema).json('data/landing/insurance/carrier_registry.json')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/insurance/carrier_registry.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrierId",
+                "type": "integer"
+              },
+              {
+                "name": "carrierCode",
+                "type": "string"
+              },
+              {
+                "name": "carrierName",
+                "type": "string"
+              },
+              {
+                "name": "domicileCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrierId",
+                "type": "integer"
+              },
+              {
+                "name": "carrierCode",
+                "type": "string"
+              },
+              {
+                "name": "carrierName",
+                "type": "string"
+              },
+              {
+                "name": "domicileCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrierId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/insurance/carrier_registry.json",
+                    "field": "carrierId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrierId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrierCode": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/insurance/carrier_registry.json",
+                    "field": "carrierCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrierCode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrierName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/insurance/carrier_registry.json",
+                    "field": "carrierName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrierName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicileCountry": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/insurance/carrier_registry.json",
+                    "field": "domicileCountry",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "domicileCountry",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "websiteUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/insurance/carrier_registry.json",
+                    "field": "websiteUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "websiteUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "cda19444-dda0-48e7-b58d-edc8e0789ef3"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_02_standardize_carrier_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "carrier_landing_df"
+              ],
+              "output": "carrier_standardized_df",
+              "columns": [
+                "carrier_id",
+                "carrier_code",
+                "carrier_name",
+                "domicile_country"
+              ],
+              "renamedColumns": {
+                "carrier_id": "carrierId",
+                "carrier_code": "carrierCode",
+                "carrier_name": "carrierName",
+                "domicile_country": "domicileCountry"
+              },
+              "droppedColumns": [
+                "websiteUrl"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrierId",
+                "type": "integer"
+              },
+              {
+                "name": "carrierCode",
+                "type": "string"
+              },
+              {
+                "name": "carrierName",
+                "type": "string"
+              },
+              {
+                "name": "domicileCountry",
+                "type": "string"
+              },
+              {
+                "name": "websiteUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_landing_df",
+                    "field": "carrierId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('carrierId').alias('carrier_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_landing_df",
+                    "field": "carrierCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('carrierCode').alias('carrier_code')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_landing_df",
+                    "field": "carrierName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('carrierName').alias('carrier_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicile_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_landing_df",
+                    "field": "domicileCountry",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('domicileCountry').alias('domicile_country')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "19dd600c-91c5-4f86-a443-a01fd77a0452"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_03_apply_carrier_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "carrier_standardized_df"
+              ],
+              "output": "carrier_eligible_df",
+              "columns": [
+                "carrier_id",
+                "carrier_code",
+                "carrier_name",
+                "domicile_country"
+              ],
+              "filterExpression": "col('carrier_id').isNotNull() & col('carrier_code').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_standardized_df",
+                    "field": "carrier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_standardized_df",
+                    "field": "carrier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_standardized_df",
+                    "field": "carrier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicile_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_standardized_df",
+                    "field": "domicile_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "domicile_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "carrier_standardized_df",
+                "field": "carrier_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('carrier_id').isNotNull() & col('carrier_code').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "carrier_standardized_df",
+                "field": "carrier_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('carrier_id').isNotNull() & col('carrier_code').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "5a5877eb-4c91-4127-9083-63d6b0191b59"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_04_tag_carrier_source_system",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "carrier_eligible_df"
+              ],
+              "output": "carrier_tagged_df",
+              "columns": [
+                "carrier_id",
+                "carrier_code",
+                "carrier_name",
+                "domicile_country",
+                "source_system"
+              ],
+              "derivedColumns": {
+                "source_system": "lit(source_system)"
+              },
+              "runtimeArguments": [
+                "argv[1] -> source_system"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_eligible_df",
+                    "field": "carrier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_eligible_df",
+                    "field": "carrier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_eligible_df",
+                    "field": "carrier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicile_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_eligible_df",
+                    "field": "domicile_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "domicile_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [],
+                "transformationDescription": "lit(source_system) from runtime argument argv[1]"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "eb09ccd0-80b3-4be8-abbc-ccef8216fc49"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_05_build_carrier_master_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "carrier_tagged_df"
+              ],
+              "output": "carrier_master_df",
+              "columns": [
+                "carrier_id",
+                "carrier_code",
+                "carrier_name",
+                "domicile_country",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_tagged_df",
+                    "field": "carrier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_tagged_df",
+                    "field": "carrier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_tagged_df",
+                    "field": "carrier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicile_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_tagged_df",
+                    "field": "domicile_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "domicile_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_tagged_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:10:10Z",
+    "run": {
+      "runId": "fa582e95-aef6-4ba6-a58a-0e4558f5f482"
+    },
+    "job": {
+      "namespace": "insurance_reference_ingestion",
+      "name": "step_06_load_carrier_master_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "carrier_master_df"
+              ],
+              "output": "warehouse/reference/insurance/carrier_master",
+              "columns": [
+                "carrier_id",
+                "carrier_code",
+                "carrier_name",
+                "domicile_country",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "expression": "carrier_master_df.write.mode('overwrite').parquet('warehouse/reference/insurance/carrier_master')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "carrier_master_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/reference/insurance/carrier_master",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "carrier_id",
+                "type": "integer"
+              },
+              {
+                "name": "carrier_code",
+                "type": "string"
+              },
+              {
+                "name": "carrier_name",
+                "type": "string"
+              },
+              {
+                "name": "domicile_country",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "carrier_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "carrier_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "carrier_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "carrier_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "carrier_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "carrier_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "domicile_country": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "domicile_country",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "domicile_country",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "carrier_master_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

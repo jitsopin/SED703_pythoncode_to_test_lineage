@@ -1,0 +1,1129 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:48:13.642Z",
+    "run": {
+      "runId": "0805f4bc-ddd8-413f-9f55-dab2ced51c3c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/lap-performance",
+      "name": "step_01_read_lap_observation_folder",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_FOLDER",
+              "inputDataFrames": [],
+              "outputDataFrame": "lap_observation_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds"
+              ],
+              "expression": "spark.read.schema(lap_observation_schema).csv(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "lap_observation_raw_df"
+              ],
+              "outputDataFrame": "lap_observation_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "lap_observation_snapshot_df"
+              ],
+              "outputDataFrame": "published_lap_observations_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_lap_observations_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_lap_observations_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/lap_performance/lap_observations",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lap_observation_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "running_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "running_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/lap_performance/lap_observations",
+                    "field": "lap_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:48:13.642Z",
+    "run": {
+      "runId": "cc6cd2b9-ce76-4e78-9fd9-e0fb3d5759ba"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/lap-performance",
+      "name": "step_02_add_lap_ingestion_metadata",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_FOLDER",
+              "inputDataFrames": [],
+              "outputDataFrame": "lap_observation_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds"
+              ],
+              "expression": "spark.read.schema(lap_observation_schema).csv(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "lap_observation_raw_df"
+              ],
+              "outputDataFrame": "lap_observation_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "lap_observation_snapshot_df"
+              ],
+              "outputDataFrame": "published_lap_observations_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_lap_observations_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_lap_observations_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lap_observation_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lap_observation_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "running_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "running_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_raw_df",
+                    "field": "lap_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:48:13.642Z",
+    "run": {
+      "runId": "ed075c37-12e2-4584-9331-435607583da1"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/lap-performance",
+      "name": "step_03_project_published_laps",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_FOLDER",
+              "inputDataFrames": [],
+              "outputDataFrame": "lap_observation_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds"
+              ],
+              "expression": "spark.read.schema(lap_observation_schema).csv(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "lap_observation_raw_df"
+              ],
+              "outputDataFrame": "lap_observation_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "lap_observation_snapshot_df"
+              ],
+              "outputDataFrame": "published_lap_observations_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_lap_observations_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_lap_observations_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lap_observation_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_lap_observations_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "running_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "running_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "lap_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lap_observation_snapshot_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:48:13.642Z",
+    "run": {
+      "runId": "29117d49-392e-4c06-8a0d-c34305a9fb1a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/lap-performance",
+      "name": "step_04_write_published_laps",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV_FOLDER",
+              "inputDataFrames": [],
+              "outputDataFrame": "lap_observation_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds"
+              ],
+              "expression": "spark.read.schema(lap_observation_schema).csv(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "lap_observation_raw_df"
+              ],
+              "outputDataFrame": "lap_observation_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "lap_observation_snapshot_df"
+              ],
+              "outputDataFrame": "published_lap_observations_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "lap_observation_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_lap_observations_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "lap_number",
+                "running_position",
+                "lap_time_text",
+                "lap_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_lap_observations_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_lap_observations_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/lap_performance/published_lap_observations",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "running_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "running_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "running_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "lap_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_lap_observations_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

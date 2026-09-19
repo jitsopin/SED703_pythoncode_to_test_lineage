@@ -1,0 +1,176 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T22:30:15Z",
+    "run": {
+      "runId": "4c8f2b3e-7a1d-4e5c-9f6b-0d3a2c5e8b1d"
+    },
+    "job": {
+      "namespace": "logistics_driver_etl",
+      "name": "step_1_extract_driver_profiles"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "/mnt/practice/read_write_json/multi_line.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "driverId", "type": "integer"},
+              {"name": "driverRef", "type": "string"},
+              {"name": "number", "type": "integer"},
+              {"name": "code", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "dob", "type": "date"},
+              {"name": "nationality", "type": "string"},
+              {"name": "url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "driver_profiles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "driverId", "type": "integer"},
+              {"name": "driverRef", "type": "string"},
+              {"name": "number", "type": "integer"},
+              {"name": "code", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "dob", "type": "date"},
+              {"name": "nationality", "type": "string"},
+              {"name": "url", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "driverId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "driverRef": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "driverRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "number": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "code": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "dob": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "dob", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "nationality": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "nationality", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "url": {
+                "inputFields": [{"namespace": "file", "name": "/mnt/practice/read_write_json/multi_line.json", "field": "url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T22:30:15Z",
+    "run": {
+      "runId": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+    },
+    "job": {
+      "namespace": "logistics_driver_etl",
+      "name": "step_2_archive_profiles"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "driver_profiles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "driverId", "type": "integer"},
+              {"name": "driverRef", "type": "string"},
+              {"name": "number", "type": "integer"},
+              {"name": "code", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "dob", "type": "date"},
+              {"name": "nationality", "type": "string"},
+              {"name": "url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "/mnt/practice/archive/drivers_profiles",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "driverId", "type": "integer"},
+              {"name": "driverRef", "type": "string"},
+              {"name": "number", "type": "integer"},
+              {"name": "code", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "dob", "type": "date"},
+              {"name": "nationality", "type": "string"},
+              {"name": "url", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "driverId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "driverRef": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "driverRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "dob": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "dob", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "nationality": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "nationality", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "url": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "driver_profiles_df", "field": "url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

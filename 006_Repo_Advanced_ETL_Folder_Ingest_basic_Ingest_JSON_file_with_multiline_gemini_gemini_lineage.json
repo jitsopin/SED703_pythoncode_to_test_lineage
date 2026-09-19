@@ -1,0 +1,339 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:19Z",
+    "run": {
+      "runId": "7249a5db-6b0f-488b-a459-7b3b38c2c1e1"
+    },
+    "job": {
+      "namespace": "warehouse_etl",
+      "name": "step_1_extract_pallet_scans"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/warehouse/pallet_scans.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouseId", "type": "integer"},
+              {"name": "operatorId", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouseId", "type": "integer"},
+              {"name": "operatorId", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "warehouseId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "warehouseId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "operatorId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "operatorId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_type": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "scan_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "aisle_number": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "aisle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_time": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "scan_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_duration": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "handling_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_ms": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/warehouse/pallet_scans.json", "field": "handling_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:19Z",
+    "run": {
+      "runId": "44f77c38-8fa1-4cd8-b3d1-92beffbcda64"
+    },
+    "job": {
+      "namespace": "warehouse_etl",
+      "name": "step_2_standardize_identifiers"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouseId", "type": "integer"},
+              {"name": "operatorId", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouse_id", "type": "integer"},
+              {"name": "operator_id", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "warehouse_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "warehouseId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(warehouseId, warehouse_id)", "masking": false}]}]
+              },
+              "operator_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "operatorId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(operatorId, operator_id)", "masking": false}]}]
+              },
+              "scan_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "scan_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "aisle_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "aisle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "scan_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "handling_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_raw_df", "field": "handling_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:19Z",
+    "run": {
+      "runId": "9d0121e7-2b21-4ea7-bfdf-3e9a4f4efb71"
+    },
+    "job": {
+      "namespace": "warehouse_etl",
+      "name": "step_3_append_timestamp"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouse_id", "type": "integer"},
+              {"name": "operator_id", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouse_id", "type": "integer"},
+              {"name": "operator_id", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "warehouse_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "warehouse_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "operator_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "operator_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "scan_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "aisle_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "aisle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "scan_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "handling_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_standardized_df", "field": "handling_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:19Z",
+    "run": {
+      "runId": "df906d4e-fb97-4b72-ac1c-76e93e24483a"
+    },
+    "job": {
+      "namespace": "warehouse_etl",
+      "name": "step_4_load_curated_scans"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "scan_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouse_id", "type": "integer"},
+              {"name": "operator_id", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/warehouse/pallet_scans_processed",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "warehouse_id", "type": "integer"},
+              {"name": "operator_id", "type": "integer"},
+              {"name": "scan_type", "type": "string"},
+              {"name": "aisle_number", "type": "integer"},
+              {"name": "scan_time", "type": "string"},
+              {"name": "handling_duration", "type": "string"},
+              {"name": "handling_ms", "type": "integer"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "warehouse_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "warehouse_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "operator_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "operator_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "scan_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "aisle_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "aisle_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "scan_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "scan_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "handling_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "handling_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "handling_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "scan_final_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

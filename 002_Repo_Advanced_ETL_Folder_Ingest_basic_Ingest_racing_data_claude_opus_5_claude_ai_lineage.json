@@ -1,0 +1,1278 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:26:08Z",
+    "run": {
+      "runId": "cc9353a6-66de-4703-b83d-1e08ecd47245"
+    },
+    "job": {
+      "namespace": "shipping_schedule_ingestion",
+      "name": "step_01_extract_port_call_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/shipping/port_call_extract.csv"
+              ],
+              "output": "port_call_landing_df",
+              "columns": [
+                "portCallId",
+                "scheduleYear",
+                "voyageLeg",
+                "terminalId",
+                "portCallName",
+                "callDate",
+                "callTime",
+                "scheduleUrl"
+              ],
+              "expression": "spark.read.option('header', True).schema(port_call_landing_schema).csv('data/landing/shipping/port_call_extract.csv')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/shipping/port_call_extract.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "portCallId",
+                "type": "integer"
+              },
+              {
+                "name": "scheduleYear",
+                "type": "integer"
+              },
+              {
+                "name": "voyageLeg",
+                "type": "integer"
+              },
+              {
+                "name": "terminalId",
+                "type": "integer"
+              },
+              {
+                "name": "portCallName",
+                "type": "string"
+              },
+              {
+                "name": "callDate",
+                "type": "date"
+              },
+              {
+                "name": "callTime",
+                "type": "string"
+              },
+              {
+                "name": "scheduleUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "portCallId",
+                "type": "integer"
+              },
+              {
+                "name": "scheduleYear",
+                "type": "integer"
+              },
+              {
+                "name": "voyageLeg",
+                "type": "integer"
+              },
+              {
+                "name": "terminalId",
+                "type": "integer"
+              },
+              {
+                "name": "portCallName",
+                "type": "string"
+              },
+              {
+                "name": "callDate",
+                "type": "date"
+              },
+              {
+                "name": "callTime",
+                "type": "string"
+              },
+              {
+                "name": "scheduleUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "portCallId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "portCallId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "portCallId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduleYear": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "scheduleYear",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "scheduleYear",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "voyageLeg": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "voyageLeg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "voyageLeg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "terminalId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "terminalId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "terminalId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "portCallName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "portCallName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "portCallName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "callDate": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "callDate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "callDate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "callTime": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "callTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "callTime",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduleUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/shipping/port_call_extract.csv",
+                    "field": "scheduleUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "scheduleUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:26:08Z",
+    "run": {
+      "runId": "48a9bb19-773d-466c-9816-43a31df5c91c"
+    },
+    "job": {
+      "namespace": "shipping_schedule_ingestion",
+      "name": "step_02_standardize_port_call_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "port_call_landing_df"
+              ],
+              "output": "port_call_enriched_df",
+              "columns": [
+                "port_call_id",
+                "schedule_year",
+                "voyage_leg",
+                "terminal_id",
+                "port_call_name",
+                "scheduled_departure_ts"
+              ],
+              "renamedColumns": {
+                "port_call_id": "portCallId",
+                "schedule_year": "scheduleYear",
+                "voyage_leg": "voyageLeg",
+                "terminal_id": "terminalId",
+                "port_call_name": "portCallName"
+              },
+              "derivedColumns": {
+                "scheduled_departure_ts": "to_timestamp(concat_ws(' ', col('callDate'), coalesce(col('callTime'), lit('00:00:00'))), 'yyyy-MM-dd HH:mm:ss') AS scheduled_departure_ts"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "portCallId",
+                "type": "integer"
+              },
+              {
+                "name": "scheduleYear",
+                "type": "integer"
+              },
+              {
+                "name": "voyageLeg",
+                "type": "integer"
+              },
+              {
+                "name": "terminalId",
+                "type": "integer"
+              },
+              {
+                "name": "portCallName",
+                "type": "string"
+              },
+              {
+                "name": "callDate",
+                "type": "date"
+              },
+              {
+                "name": "callTime",
+                "type": "string"
+              },
+              {
+                "name": "scheduleUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "port_call_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "portCallId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('portCallId').alias('port_call_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "schedule_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "scheduleYear",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('scheduleYear').alias('schedule_year')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "voyage_leg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "voyageLeg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('voyageLeg').alias('voyage_leg')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "terminal_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "terminalId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('terminalId').alias('terminal_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "port_call_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "portCallName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('portCallName').alias('port_call_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduled_departure_ts": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "callDate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "to_timestamp(concat_ws(' ', col('callDate'), coalesce(col('callTime'), lit('00:00:00'))), 'yyyy-MM-dd HH:mm:ss') AS scheduled_departure_ts",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_landing_df",
+                    "field": "callTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "to_timestamp(concat_ws(' ', col('callDate'), coalesce(col('callTime'), lit('00:00:00'))), 'yyyy-MM-dd HH:mm:ss') AS scheduled_departure_ts",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:26:08Z",
+    "run": {
+      "runId": "e4a22d07-21bb-4bba-93e2-f399a75e3470"
+    },
+    "job": {
+      "namespace": "shipping_schedule_ingestion",
+      "name": "step_03_apply_port_call_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "port_call_enriched_df"
+              ],
+              "output": "port_call_eligible_df",
+              "columns": [
+                "port_call_id",
+                "schedule_year",
+                "voyage_leg",
+                "terminal_id",
+                "port_call_name",
+                "scheduled_departure_ts"
+              ],
+              "filterExpression": "col('port_call_id').isNotNull() & col('schedule_year').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "port_call_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "port_call_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "schedule_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "schedule_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "schedule_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "voyage_leg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "voyage_leg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "voyage_leg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "terminal_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "terminal_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "terminal_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "port_call_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "port_call_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduled_departure_ts": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_enriched_df",
+                    "field": "scheduled_departure_ts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "scheduled_departure_ts",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "port_call_enriched_df",
+                "field": "port_call_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('port_call_id').isNotNull() & col('schedule_year').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "port_call_enriched_df",
+                "field": "schedule_year",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('port_call_id').isNotNull() & col('schedule_year').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:26:08Z",
+    "run": {
+      "runId": "dfbb3c2e-857a-4501-8d6a-35f6c07ad280"
+    },
+    "job": {
+      "namespace": "shipping_schedule_ingestion",
+      "name": "step_04_build_port_call_schedule_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "port_call_eligible_df"
+              ],
+              "output": "port_call_schedule_df",
+              "columns": [
+                "port_call_id",
+                "schedule_year",
+                "voyage_leg",
+                "terminal_id",
+                "port_call_name",
+                "scheduled_departure_ts",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_schedule_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "port_call_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "port_call_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "schedule_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "schedule_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "schedule_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "voyage_leg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "voyage_leg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "voyage_leg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "terminal_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "terminal_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "terminal_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "port_call_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "port_call_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduled_departure_ts": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_eligible_df",
+                    "field": "scheduled_departure_ts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "scheduled_departure_ts",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:26:08Z",
+    "run": {
+      "runId": "ccd58c46-73cf-4be1-a80b-b8fcd08fc7b5"
+    },
+    "job": {
+      "namespace": "shipping_schedule_ingestion",
+      "name": "step_05_load_port_call_schedule_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "WRITE",
+              "inputs": [
+                "port_call_schedule_df"
+              ],
+              "output": "warehouse/curated/shipping/port_call_schedule",
+              "columns": [
+                "port_call_id",
+                "schedule_year",
+                "voyage_leg",
+                "terminal_id",
+                "port_call_name",
+                "scheduled_departure_ts",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "partitionColumns": [
+                "schedule_year"
+              ],
+              "expression": "port_call_schedule_df.write.mode('overwrite').partitionBy('schedule_year').parquet('warehouse/curated/shipping/port_call_schedule')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "port_call_schedule_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/shipping/port_call_schedule",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "port_call_id",
+                "type": "integer"
+              },
+              {
+                "name": "schedule_year",
+                "type": "integer"
+              },
+              {
+                "name": "voyage_leg",
+                "type": "integer"
+              },
+              {
+                "name": "terminal_id",
+                "type": "integer"
+              },
+              {
+                "name": "port_call_name",
+                "type": "string"
+              },
+              {
+                "name": "scheduled_departure_ts",
+                "type": "timestamp"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "port_call_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "port_call_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "schedule_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "schedule_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "schedule_year",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "voyage_leg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "voyage_leg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "voyage_leg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "terminal_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "terminal_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "terminal_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "port_call_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "port_call_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "port_call_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "scheduled_departure_ts": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "scheduled_departure_ts",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "scheduled_departure_ts",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "port_call_schedule_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "port_call_schedule_df",
+                "field": "schedule_year",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.mode('overwrite').partitionBy('schedule_year').parquet('warehouse/curated/shipping/port_call_schedule')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

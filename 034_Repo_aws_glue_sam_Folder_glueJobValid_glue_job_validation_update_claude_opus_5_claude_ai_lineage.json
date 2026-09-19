@@ -1,0 +1,368 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:37:15Z",
+    "run": {
+      "runId": "5529740e-d0e1-49d1-923e-32de9c550c7a"
+    },
+    "job": {
+      "namespace": "franchise_raw_extract",
+      "name": "step_01_extract_franchise_outlet_over_jdbc",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "crm.franchise_outlet"
+              ],
+              "output": "outlet_headcount_landing_df",
+              "columns": [
+                "NumberOfStaff",
+                "CreatedAt"
+              ],
+              "format": "jdbc",
+              "query": "SELECT NumberOfStaff, CreatedAt FROM crm.franchise_outlet",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('query', \"SELECT NumberOfStaff, CreatedAt FROM crm.franchise_outlet\").load()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "crm.franchise_outlet",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "NumberOfStaff",
+                "type": "integer"
+              },
+              {
+                "name": "CreatedAt",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "outlet_headcount_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "NumberOfStaff",
+                "type": "integer"
+              },
+              {
+                "name": "CreatedAt",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "NumberOfStaff": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "crm.franchise_outlet",
+                    "field": "NumberOfStaff",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "NumberOfStaff",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CreatedAt": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "crm.franchise_outlet",
+                    "field": "CreatedAt",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "CreatedAt",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:37:15Z",
+    "run": {
+      "runId": "104c2a09-acd7-4112-97bb-74d35c0237e7"
+    },
+    "job": {
+      "namespace": "franchise_raw_extract",
+      "name": "step_02_standardize_outlet_headcount_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "outlet_headcount_landing_df"
+              ],
+              "output": "outlet_headcount_df",
+              "columns": [
+                "staff_count",
+                "opened_timestamp"
+              ],
+              "renamedColumns": {
+                "staff_count": "NumberOfStaff",
+                "opened_timestamp": "CreatedAt"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "outlet_headcount_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "NumberOfStaff",
+                "type": "integer"
+              },
+              {
+                "name": "CreatedAt",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "outlet_headcount_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "staff_count",
+                "type": "integer"
+              },
+              {
+                "name": "opened_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "staff_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "outlet_headcount_landing_df",
+                    "field": "NumberOfStaff",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('NumberOfStaff').alias('staff_count')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "opened_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "outlet_headcount_landing_df",
+                    "field": "CreatedAt",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('CreatedAt').alias('opened_timestamp')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:37:15Z",
+    "run": {
+      "runId": "b1fa0acd-95b4-4143-b030-9c520c556392"
+    },
+    "job": {
+      "namespace": "franchise_raw_extract",
+      "name": "step_03_write_outlet_headcount_raw_copy",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "WRITE",
+              "inputs": [
+                "outlet_headcount_df"
+              ],
+              "output": "warehouse/raw/franchise/outlet_headcount",
+              "columns": [
+                "staff_count",
+                "opened_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "format": "json",
+              "expression": "outlet_headcount_df.write.mode('overwrite').json('warehouse/raw/franchise/outlet_headcount')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "outlet_headcount_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "staff_count",
+                "type": "integer"
+              },
+              {
+                "name": "opened_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/raw/franchise/outlet_headcount",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "staff_count",
+                "type": "integer"
+              },
+              {
+                "name": "opened_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "staff_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "outlet_headcount_df",
+                    "field": "staff_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "staff_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "opened_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "outlet_headcount_df",
+                    "field": "opened_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "opened_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

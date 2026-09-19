@@ -1,0 +1,1094 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T23:57:05Z",
+    "run": {
+      "runId": "79ab0d37-2568-48f8-85c4-ebcf25c823d9"
+    },
+    "job": {
+      "namespace": "waste_curated_pricing",
+      "name": "step_read_collection_records",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/curated/waste/collection_record"
+              ],
+              "output": "collection_record_df",
+              "columns": [
+                "collection_id",
+                "customer_id",
+                "service_area_code",
+                "collected_kg",
+                "collected_at"
+              ],
+              "format": "parquet",
+              "expression": "spark.read.parquet('data/curated/waste/collection_record').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/waste/collection_record",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_record_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "collection_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/waste/collection_record",
+                    "field": "collection_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collection_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/waste/collection_record",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "customer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_area_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/waste/collection_record",
+                    "field": "service_area_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/waste/collection_record",
+                    "field": "collected_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_at": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/curated/waste/collection_record",
+                    "field": "collected_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_at",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T23:57:05Z",
+    "run": {
+      "runId": "a9ea18d1-5519-43a6-9281-05d8cde6dfe7"
+    },
+    "job": {
+      "namespace": "waste_curated_pricing",
+      "name": "step_read_waste_tariff",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "reference.waste_tariff"
+              ],
+              "output": "waste_tariff_df",
+              "columns": [
+                "service_area_code",
+                "rate_per_kg"
+              ],
+              "expression": "spark.table('reference.waste_tariff').select(...)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "reference.waste_tariff",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "waste_tariff_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "service_area_code": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "reference.waste_tariff",
+                    "field": "service_area_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_per_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "reference.waste_tariff",
+                    "field": "rate_per_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rate_per_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T23:57:05Z",
+    "run": {
+      "runId": "08db1f14-854b-4537-b3fa-bb4450376053"
+    },
+    "job": {
+      "namespace": "waste_curated_pricing",
+      "name": "step_join_tariff_to_collection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "INNER_JOIN",
+              "inputs": [
+                "collection_record_df",
+                "waste_tariff_df"
+              ],
+              "output": "collection_rated_df",
+              "columns": [
+                "service_area_code",
+                "collection_id",
+                "customer_id",
+                "collected_kg",
+                "collected_at",
+                "rate_per_kg"
+              ],
+              "joinType": "inner",
+              "joinCondition": "service_area_code",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_record_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "waste_tariff_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_rated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "service_area_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_record_df",
+                    "field": "service_area_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collection_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_record_df",
+                    "field": "collection_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collection_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_record_df",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "customer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_record_df",
+                    "field": "collected_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_record_df",
+                    "field": "collected_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_at",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_per_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "waste_tariff_df",
+                    "field": "rate_per_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rate_per_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "collection_record_df",
+                "field": "service_area_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(waste_tariff_df, ['service_area_code'], 'inner')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "waste_tariff_df",
+                "field": "service_area_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(waste_tariff_df, ['service_area_code'], 'inner')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T23:57:05Z",
+    "run": {
+      "runId": "7e46b8d8-a020-4284-8ce8-ade4e4195538"
+    },
+    "job": {
+      "namespace": "waste_curated_pricing",
+      "name": "step_calculate_collection_charge",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "collection_rated_df"
+              ],
+              "output": "collection_charge_df",
+              "columns": [
+                "service_area_code",
+                "collection_id",
+                "customer_id",
+                "collected_kg",
+                "collected_at",
+                "rate_per_kg",
+                "charge_amount"
+              ],
+              "derivedColumns": {
+                "charge_amount": "round(col('collected_kg') * col('rate_per_kg'), 2)"
+              },
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_rated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_charge_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              },
+              {
+                "name": "charge_amount",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "service_area_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "service_area_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collection_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "collection_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collection_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "customer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "collected_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "collected_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_at",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_per_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "rate_per_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rate_per_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "collected_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "round(col('collected_kg') * col('rate_per_kg'), 2)",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_rated_df",
+                    "field": "rate_per_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "round(col('collected_kg') * col('rate_per_kg'), 2)",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T23:57:05Z",
+    "run": {
+      "runId": "3fc479f7-e0be-4dfc-bdcd-57e2deccc5a2"
+    },
+    "job": {
+      "namespace": "waste_curated_pricing",
+      "name": "step_write_collection_charges",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "collection_charge_df"
+              ],
+              "output": "warehouse/curated/waste/collection_charge",
+              "columns": [
+                "service_area_code",
+                "collection_id",
+                "customer_id",
+                "collected_kg",
+                "collected_at",
+                "rate_per_kg",
+                "charge_amount"
+              ],
+              "writeMode": "overwrite",
+              "format": "parquet",
+              "expression": "collection_charge_df.write.mode('overwrite').parquet('warehouse/curated/waste/collection_charge')",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "collection_charge_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              },
+              {
+                "name": "charge_amount",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/waste/collection_charge",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "service_area_code",
+                "type": "string"
+              },
+              {
+                "name": "collection_id",
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "type": "string"
+              },
+              {
+                "name": "collected_kg",
+                "type": "double"
+              },
+              {
+                "name": "collected_at",
+                "type": "timestamp"
+              },
+              {
+                "name": "rate_per_kg",
+                "type": "double"
+              },
+              {
+                "name": "charge_amount",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "service_area_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "service_area_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_area_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collection_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "collection_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collection_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "customer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "customer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "customer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "collected_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "collected_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "collected_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "collected_at",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_per_kg": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "rate_per_kg",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rate_per_kg",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "charge_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "collection_charge_df",
+                    "field": "charge_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "charge_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

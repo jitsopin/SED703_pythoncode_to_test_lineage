@@ -1,0 +1,1241 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:54.655Z",
+    "run": {
+      "runId": "4758fef7-c02e-4b5c-9f6a-784958fa493f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/service-stops",
+      "name": "step_01_read_service_stops",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "service_stop_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds"
+              ],
+              "expression": "spark.read.schema(service_stop_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "service_stop_raw_df"
+              ],
+              "outputDataFrame": "service_stop_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "service_stop_snapshot_df"
+              ],
+              "outputDataFrame": "published_service_stops_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_service_stops_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_service_stops_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/service_stops/stop_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "service_stop_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "stop_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "duration_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/service_stops/stop_events.json",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:54.655Z",
+    "run": {
+      "runId": "b0d2cbbe-71df-4767-b5b5-509f4f67e4dd"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/service-stops",
+      "name": "step_02_add_service_stop_metadata",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "service_stop_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds"
+              ],
+              "expression": "spark.read.schema(service_stop_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "service_stop_raw_df"
+              ],
+              "outputDataFrame": "service_stop_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "service_stop_snapshot_df"
+              ],
+              "outputDataFrame": "published_service_stops_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_service_stops_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_service_stops_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "service_stop_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "service_stop_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "stop_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "duration_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_raw_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:54.655Z",
+    "run": {
+      "runId": "3ea1d213-ca3d-4cf5-b9f3-d94612f1710d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/service-stops",
+      "name": "step_03_project_published_service_stops",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "service_stop_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds"
+              ],
+              "expression": "spark.read.schema(service_stop_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "service_stop_raw_df"
+              ],
+              "outputDataFrame": "service_stop_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "service_stop_snapshot_df"
+              ],
+              "outputDataFrame": "published_service_stops_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_service_stops_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_service_stops_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "service_stop_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_service_stops_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "stop_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "duration_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "service_stop_snapshot_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:43:54.655Z",
+    "run": {
+      "runId": "96d09e70-9100-49cc-89f5-15abf121724a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/service-stops",
+      "name": "step_04_write_published_service_stops",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "service_stop_raw_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds"
+              ],
+              "expression": "spark.read.schema(service_stop_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "service_stop_raw_df"
+              ],
+              "outputDataFrame": "service_stop_snapshot_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_raw_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "service_stop_snapshot_df"
+              ],
+              "outputDataFrame": "published_service_stops_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "service_stop_snapshot_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_service_stops_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "stop_sequence",
+                "lap_number",
+                "stop_time_text",
+                "duration_text",
+                "duration_milliseconds",
+                "ingested_at_utc"
+              ],
+              "expression": "published_service_stops_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_service_stops_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/service_stops/published_stop_events",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_sequence",
+                "type": "STRING"
+              },
+              {
+                "name": "lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "stop_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_text",
+                "type": "STRING"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "stop_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stop_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "stop_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "duration_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_service_stops_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

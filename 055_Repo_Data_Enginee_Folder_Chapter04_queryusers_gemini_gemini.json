@@ -1,0 +1,146 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:35:12Z",
+    "run": {
+      "runId": "e4b3d2c1-a5f6-49b8-c7d6-1a2b3c4d5e6f"
+    },
+    "job": {
+      "namespace": "operational_sync_etl",
+      "name": "step_1_extract_users"
+    },
+    "inputs": [
+      {
+        "namespace": "jdbc://localhost:5432/dataengineering",
+        "name": "public.users",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "long"},
+              {"name": "name", "type": "string"},
+              {"name": "street", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "zip", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "long"},
+              {"name": "name", "type": "string"},
+              {"name": "street", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "zip", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "street": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "street", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "zip": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "zip", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:35:12Z",
+    "run": {
+      "runId": "8f7e6d5c-4b3a-21f0-e9d8-c7b6a5f4e3d2"
+    },
+    "job": {
+      "namespace": "operational_sync_etl",
+      "name": "step_2_load_csv_export"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "long"},
+              {"name": "name", "type": "string"},
+              {"name": "street", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "zip", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/users_export",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "long"},
+              {"name": "name", "type": "string"},
+              {"name": "street", "type": "string"},
+              {"name": "city", "type": "string"},
+              {"name": "zip", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_raw_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_raw_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "street": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_raw_df", "field": "street", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_raw_df", "field": "city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "zip": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_raw_df", "field": "zip", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

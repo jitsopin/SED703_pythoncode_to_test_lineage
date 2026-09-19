@@ -1,0 +1,1532 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:44.258Z",
+    "run": {
+      "runId": "13a0564c-8803-4bf2-bb95-dd126cb40fa4"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/qualifying-activity",
+      "name": "step_01_read_qualifying_activity",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "qualifying_raw_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text"
+              ],
+              "expression": "spark.read.schema(qualifying_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "qualifying_raw_df"
+              ],
+              "outputDataFrame": "qualifying_enriched_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_raw_df.select(..., current_timestamp().alias('ingested_at_utc'), lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "qualifying_enriched_df"
+              ],
+              "outputDataFrame": "published_qualifying_activity_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_enriched_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_qualifying_activity_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "published_qualifying_activity_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/session_results/qualifying_activity.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "qualifying_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "qualifying_result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "qualifying_result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "qualifying_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "qualifying_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q1_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "q1_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q2_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "q2_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q3_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/session_results/qualifying_activity.json",
+                    "field": "q3_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:44.258Z",
+    "run": {
+      "runId": "5f3d1b52-4094-457c-9793-4e7bb00cb680"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/qualifying-activity",
+      "name": "step_02_add_qualifying_metadata",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "qualifying_raw_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text"
+              ],
+              "expression": "spark.read.schema(qualifying_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "qualifying_raw_df"
+              ],
+              "outputDataFrame": "qualifying_enriched_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_raw_df.select(..., current_timestamp().alias('ingested_at_utc'), lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "qualifying_enriched_df"
+              ],
+              "outputDataFrame": "published_qualifying_activity_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_enriched_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_qualifying_activity_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "published_qualifying_activity_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "qualifying_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "qualifying_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "qualifying_result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "qualifying_result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "qualifying_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "qualifying_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q1_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "q1_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q2_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "q2_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q3_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_raw_df",
+                    "field": "q3_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": []
+              },
+              "data_source": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:44.258Z",
+    "run": {
+      "runId": "75b536e2-3f46-41e0-9327-735dde9a8c8b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/qualifying-activity",
+      "name": "step_03_project_published_qualifying",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "qualifying_raw_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text"
+              ],
+              "expression": "spark.read.schema(qualifying_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "qualifying_raw_df"
+              ],
+              "outputDataFrame": "qualifying_enriched_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_raw_df.select(..., current_timestamp().alias('ingested_at_utc'), lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "qualifying_enriched_df"
+              ],
+              "outputDataFrame": "published_qualifying_activity_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_enriched_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_qualifying_activity_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "published_qualifying_activity_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "qualifying_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_qualifying_activity_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "qualifying_result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "qualifying_result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "qualifying_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "qualifying_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q1_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "q1_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q2_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "q2_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q3_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "q3_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "qualifying_enriched_df",
+                    "field": "data_source",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:44.258Z",
+    "run": {
+      "runId": "e845947f-465d-47ae-a9e8-38019ae7ac0a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/qualifying-activity",
+      "name": "step_04_write_published_qualifying",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON_MULTILINE",
+              "inputDataFrames": [],
+              "outputDataFrame": "qualifying_raw_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text"
+              ],
+              "expression": "spark.read.schema(qualifying_schema).option(\"multiLine\", True).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "qualifying_raw_df"
+              ],
+              "outputDataFrame": "qualifying_enriched_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_raw_df.select(..., current_timestamp().alias('ingested_at_utc'), lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "qualifying_enriched_df"
+              ],
+              "outputDataFrame": "published_qualifying_activity_df",
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "qualifying_enriched_df.select(explicit published columns)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "published_qualifying_activity_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "qualifying_result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "qualifying_position",
+                "q1_time_text",
+                "q2_time_text",
+                "q3_time_text",
+                "ingested_at_utc",
+                "data_source"
+              ],
+              "expression": "published_qualifying_activity_df.write.mode(\"overwrite\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_qualifying_activity_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/session_results/published_qualifying_activity",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "qualifying_result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "qualifying_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "q1_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q2_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "q3_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "qualifying_result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "qualifying_result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "qualifying_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "qualifying_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q1_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "q1_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q2_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "q2_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "q3_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "q3_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_qualifying_activity_df",
+                    "field": "data_source",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

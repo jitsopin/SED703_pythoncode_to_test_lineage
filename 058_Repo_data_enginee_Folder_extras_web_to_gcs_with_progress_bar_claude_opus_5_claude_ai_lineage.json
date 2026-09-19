@@ -1,0 +1,1829 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T05:44:34Z",
+    "run": {
+      "runId": "38559112-b885-493c-a15d-c69b19b9cedd"
+    },
+    "job": {
+      "namespace": "towing_curated_ingestion",
+      "name": "step_read_towing_job_exports",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/towing/job_exports"
+              ],
+              "output": "job_landing_df",
+              "columns": [
+                "operatorId",
+                "pickupTimestamp",
+                "dropoffTimestamp",
+                "offlineFlag",
+                "rateCodeId",
+                "pickupZoneId",
+                "dropoffZoneId",
+                "occupantCount",
+                "jobDistanceMiles",
+                "fareAmount",
+                "extraCharge",
+                "localTax",
+                "tipAmount",
+                "tollsAmount",
+                "dispatchFee",
+                "improvementSurcharge",
+                "totalAmount",
+                "congestionSurcharge",
+                "paymentTypeId",
+                "jobType"
+              ],
+              "format": "csv",
+              "readOptions": {
+                "header": true
+              },
+              "compression": "gzip",
+              "expression": "spark.read.option('header', True).schema(job_landing_schema).csv('data/landing/towing/job_exports')",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/towing/job_exports",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operatorId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoffTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offlineFlag",
+                "type": "string"
+              },
+              {
+                "name": "rateCodeId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "dropoffZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "occupantCount",
+                "type": "integer"
+              },
+              {
+                "name": "jobDistanceMiles",
+                "type": "double"
+              },
+              {
+                "name": "fareAmount",
+                "type": "double"
+              },
+              {
+                "name": "extraCharge",
+                "type": "double"
+              },
+              {
+                "name": "localTax",
+                "type": "double"
+              },
+              {
+                "name": "tipAmount",
+                "type": "double"
+              },
+              {
+                "name": "tollsAmount",
+                "type": "double"
+              },
+              {
+                "name": "dispatchFee",
+                "type": "double"
+              },
+              {
+                "name": "improvementSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "totalAmount",
+                "type": "double"
+              },
+              {
+                "name": "congestionSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "paymentTypeId",
+                "type": "integer"
+              },
+              {
+                "name": "jobType",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "job_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operatorId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoffTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offlineFlag",
+                "type": "string"
+              },
+              {
+                "name": "rateCodeId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "dropoffZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "occupantCount",
+                "type": "integer"
+              },
+              {
+                "name": "jobDistanceMiles",
+                "type": "double"
+              },
+              {
+                "name": "fareAmount",
+                "type": "double"
+              },
+              {
+                "name": "extraCharge",
+                "type": "double"
+              },
+              {
+                "name": "localTax",
+                "type": "double"
+              },
+              {
+                "name": "tipAmount",
+                "type": "double"
+              },
+              {
+                "name": "tollsAmount",
+                "type": "double"
+              },
+              {
+                "name": "dispatchFee",
+                "type": "double"
+              },
+              {
+                "name": "improvementSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "totalAmount",
+                "type": "double"
+              },
+              {
+                "name": "congestionSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "paymentTypeId",
+                "type": "integer"
+              },
+              {
+                "name": "jobType",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operatorId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "operatorId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operatorId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickupTimestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "pickupTimestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickupTimestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoffTimestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "dropoffTimestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dropoffTimestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offlineFlag": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "offlineFlag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offlineFlag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rateCodeId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "rateCodeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rateCodeId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickupZoneId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "pickupZoneId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickupZoneId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoffZoneId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "dropoffZoneId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dropoffZoneId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "occupantCount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "occupantCount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "occupantCount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jobDistanceMiles": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "jobDistanceMiles",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "jobDistanceMiles",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fareAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "fareAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fareAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extraCharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "extraCharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extraCharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "localTax": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "localTax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "localTax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tipAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "tipAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tipAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tollsAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "tollsAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tollsAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dispatchFee": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "dispatchFee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dispatchFee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvementSurcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "improvementSurcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "improvementSurcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "totalAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "totalAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "totalAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestionSurcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "congestionSurcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "congestionSurcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "paymentTypeId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "paymentTypeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "paymentTypeId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "jobType": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/towing/job_exports",
+                    "field": "jobType",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "jobType",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T05:44:34Z",
+    "run": {
+      "runId": "7a4d1541-beb7-43f7-afc7-9819c363479a"
+    },
+    "job": {
+      "namespace": "towing_curated_ingestion",
+      "name": "step_standardize_and_record_source_export",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "job_landing_df"
+              ],
+              "output": "job_record_df",
+              "columns": [
+                "operator_id",
+                "pickup_timestamp",
+                "dropoff_timestamp",
+                "offline_flag",
+                "rate_code_id",
+                "pickup_zone_id",
+                "dropoff_zone_id",
+                "occupant_count",
+                "job_distance_miles",
+                "fare_amount",
+                "extra_charge",
+                "local_tax",
+                "tip_amount",
+                "tolls_amount",
+                "dispatch_fee",
+                "improvement_surcharge",
+                "total_amount",
+                "congestion_surcharge",
+                "payment_type_id",
+                "job_type",
+                "source_export"
+              ],
+              "renamedColumns": {
+                "operator_id": "operatorId",
+                "pickup_timestamp": "pickupTimestamp",
+                "dropoff_timestamp": "dropoffTimestamp",
+                "offline_flag": "offlineFlag",
+                "rate_code_id": "rateCodeId",
+                "pickup_zone_id": "pickupZoneId",
+                "dropoff_zone_id": "dropoffZoneId",
+                "occupant_count": "occupantCount",
+                "job_distance_miles": "jobDistanceMiles",
+                "fare_amount": "fareAmount",
+                "extra_charge": "extraCharge",
+                "local_tax": "localTax",
+                "tip_amount": "tipAmount",
+                "tolls_amount": "tollsAmount",
+                "dispatch_fee": "dispatchFee",
+                "improvement_surcharge": "improvementSurcharge",
+                "total_amount": "totalAmount",
+                "congestion_surcharge": "congestionSurcharge",
+                "payment_type_id": "paymentTypeId",
+                "job_type": "jobType"
+              },
+              "derivedColumns": {
+                "source_export": "input_file_name()"
+              },
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "job_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operatorId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoffTimestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offlineFlag",
+                "type": "string"
+              },
+              {
+                "name": "rateCodeId",
+                "type": "integer"
+              },
+              {
+                "name": "pickupZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "dropoffZoneId",
+                "type": "integer"
+              },
+              {
+                "name": "occupantCount",
+                "type": "integer"
+              },
+              {
+                "name": "jobDistanceMiles",
+                "type": "double"
+              },
+              {
+                "name": "fareAmount",
+                "type": "double"
+              },
+              {
+                "name": "extraCharge",
+                "type": "double"
+              },
+              {
+                "name": "localTax",
+                "type": "double"
+              },
+              {
+                "name": "tipAmount",
+                "type": "double"
+              },
+              {
+                "name": "tollsAmount",
+                "type": "double"
+              },
+              {
+                "name": "dispatchFee",
+                "type": "double"
+              },
+              {
+                "name": "improvementSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "totalAmount",
+                "type": "double"
+              },
+              {
+                "name": "congestionSurcharge",
+                "type": "double"
+              },
+              {
+                "name": "paymentTypeId",
+                "type": "integer"
+              },
+              {
+                "name": "jobType",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "job_record_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoff_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "rate_code_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "dropoff_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "occupant_count",
+                "type": "integer"
+              },
+              {
+                "name": "job_distance_miles",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "local_tax",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "double"
+              },
+              {
+                "name": "dispatch_fee",
+                "type": "double"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "job_type",
+                "type": "integer"
+              },
+              {
+                "name": "source_export",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "operatorId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('operatorId').alias('operator_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "pickupTimestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('pickupTimestamp').alias('pickup_timestamp')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "dropoffTimestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('dropoffTimestamp').alias('dropoff_timestamp')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "offlineFlag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('offlineFlag').alias('offline_flag')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_code_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "rateCodeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('rateCodeId').alias('rate_code_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_zone_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "pickupZoneId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('pickupZoneId').alias('pickup_zone_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_zone_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "dropoffZoneId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('dropoffZoneId').alias('dropoff_zone_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "occupant_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "occupantCount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('occupantCount').alias('occupant_count')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "job_distance_miles": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "jobDistanceMiles",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('jobDistanceMiles').alias('job_distance_miles')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "fareAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('fareAmount').alias('fare_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "extraCharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('extraCharge').alias('extra_charge')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "local_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "localTax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('localTax').alias('local_tax')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "tipAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('tipAmount').alias('tip_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "tollsAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('tollsAmount').alias('tolls_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dispatch_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "dispatchFee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('dispatchFee').alias('dispatch_fee')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "improvementSurcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('improvementSurcharge').alias('improvement_surcharge')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "totalAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('totalAmount').alias('total_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "congestionSurcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('congestionSurcharge').alias('congestion_surcharge')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "paymentTypeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('paymentTypeId').alias('payment_type_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "job_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_landing_df",
+                    "field": "jobType",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('jobType').alias('job_type')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_export": {
+                "inputFields": [],
+                "transformationDescription": "input_file_name().alias('source_export')"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T05:44:34Z",
+    "run": {
+      "runId": "237978ec-4911-4691-8b84-e9a00fc6ed33"
+    },
+    "job": {
+      "namespace": "towing_curated_ingestion",
+      "name": "step_write_towing_job_record",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "job_record_df"
+              ],
+              "output": "warehouse/curated/towing/job_record",
+              "columns": [
+                "operator_id",
+                "pickup_timestamp",
+                "dropoff_timestamp",
+                "offline_flag",
+                "rate_code_id",
+                "pickup_zone_id",
+                "dropoff_zone_id",
+                "occupant_count",
+                "job_distance_miles",
+                "fare_amount",
+                "extra_charge",
+                "local_tax",
+                "tip_amount",
+                "tolls_amount",
+                "dispatch_fee",
+                "improvement_surcharge",
+                "total_amount",
+                "congestion_surcharge",
+                "payment_type_id",
+                "job_type",
+                "source_export"
+              ],
+              "writeMode": "overwrite",
+              "format": "parquet",
+              "writeOptions": {
+                "maxRecordsPerFile": 100000
+              },
+              "expression": "job_record_df.write.option('maxRecordsPerFile', 100000).mode('overwrite').parquet('warehouse/curated/towing/job_record')",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "job_record_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoff_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "rate_code_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "dropoff_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "occupant_count",
+                "type": "integer"
+              },
+              {
+                "name": "job_distance_miles",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "local_tax",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "double"
+              },
+              {
+                "name": "dispatch_fee",
+                "type": "double"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "job_type",
+                "type": "integer"
+              },
+              {
+                "name": "source_export",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/towing/job_record",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "operator_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "dropoff_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "offline_flag",
+                "type": "string"
+              },
+              {
+                "name": "rate_code_id",
+                "type": "integer"
+              },
+              {
+                "name": "pickup_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "dropoff_zone_id",
+                "type": "integer"
+              },
+              {
+                "name": "occupant_count",
+                "type": "integer"
+              },
+              {
+                "name": "job_distance_miles",
+                "type": "double"
+              },
+              {
+                "name": "fare_amount",
+                "type": "double"
+              },
+              {
+                "name": "extra_charge",
+                "type": "double"
+              },
+              {
+                "name": "local_tax",
+                "type": "double"
+              },
+              {
+                "name": "tip_amount",
+                "type": "double"
+              },
+              {
+                "name": "tolls_amount",
+                "type": "double"
+              },
+              {
+                "name": "dispatch_fee",
+                "type": "double"
+              },
+              {
+                "name": "improvement_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "total_amount",
+                "type": "double"
+              },
+              {
+                "name": "congestion_surcharge",
+                "type": "double"
+              },
+              {
+                "name": "payment_type_id",
+                "type": "integer"
+              },
+              {
+                "name": "job_type",
+                "type": "integer"
+              },
+              {
+                "name": "source_export",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "operator_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "operator_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "operator_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "pickup_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickup_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "dropoff_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dropoff_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "offline_flag": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "offline_flag",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "offline_flag",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rate_code_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "rate_code_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rate_code_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pickup_zone_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "pickup_zone_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pickup_zone_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dropoff_zone_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "dropoff_zone_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dropoff_zone_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "occupant_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "occupant_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "occupant_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "job_distance_miles": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "job_distance_miles",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "job_distance_miles",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fare_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "fare_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "fare_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extra_charge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "extra_charge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extra_charge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "local_tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "local_tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "local_tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tip_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "tip_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tip_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tolls_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "tolls_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tolls_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dispatch_fee": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "dispatch_fee",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dispatch_fee",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "improvement_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "improvement_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "improvement_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "total_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "total_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "total_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "congestion_surcharge": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "congestion_surcharge",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "congestion_surcharge",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "payment_type_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "payment_type_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "payment_type_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "job_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "job_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "job_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_export": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "job_record_df",
+                    "field": "source_export",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_export",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

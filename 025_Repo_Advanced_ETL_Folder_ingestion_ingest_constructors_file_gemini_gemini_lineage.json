@@ -1,0 +1,380 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:15:00Z",
+    "run": {
+      "runId": "6c4e0f13-a8d2-4318-917c-b2f5d94711a1"
+    },
+    "job": {
+      "namespace": "telecom_etl",
+      "name": "step_1_extract_towers"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/inbound/telecom/towers_20260916.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "towerId", "type": "integer"},
+              {"name": "towerRef", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "specsUrl", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "towerId", "type": "integer"},
+              {"name": "towerRef", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "specsUrl", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "towerId": {
+                "inputFields": [{"namespace": "file", "name": "data/inbound/telecom/towers_20260916.json", "field": "towerId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "towerRef": {
+                "inputFields": [{"namespace": "file", "name": "data/inbound/telecom/towers_20260916.json", "field": "towerRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "providerName": {
+                "inputFields": [{"namespace": "file", "name": "data/inbound/telecom/towers_20260916.json", "field": "providerName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "file", "name": "data/inbound/telecom/towers_20260916.json", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specsUrl": {
+                "inputFields": [{"namespace": "file", "name": "data/inbound/telecom/towers_20260916.json", "field": "specsUrl", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:15:00Z",
+    "run": {
+      "runId": "91a6c8e3-d7f4-41b9-8e50-f3a2c5b9671d"
+    },
+    "job": {
+      "namespace": "telecom_etl",
+      "name": "step_2_drop_specs_url"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "towerId", "type": "integer"},
+              {"name": "towerRef", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "specsUrl", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "towerId", "type": "integer"},
+              {"name": "towerRef", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "towerId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_raw_df", "field": "towerId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "towerRef": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_raw_df", "field": "towerRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "providerName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_raw_df", "field": "providerName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_raw_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:15:00Z",
+    "run": {
+      "runId": "4c9d52f6-3e81-4b1a-bc0d-7a6f2d918e3c"
+    },
+    "job": {
+      "namespace": "telecom_etl",
+      "name": "step_3_rename_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "towerId", "type": "integer"},
+              {"name": "towerRef", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tower_id", "type": "integer"},
+              {"name": "tower_code", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "source_system", "type": "string"},
+              {"name": "batch_date", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tower_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_clean_df", "field": "towerId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(towerId, tower_id)", "masking": false}]}]
+              },
+              "tower_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_clean_df", "field": "towerRef", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(towerRef, tower_code)", "masking": false}]}]
+              },
+              "providerName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_clean_df", "field": "providerName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_clean_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "source_system": {
+                "inputFields": []
+              },
+              "batch_date": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:15:00Z",
+    "run": {
+      "runId": "e1f4a9b2-6c3d-4785-ad10-f8e2c9b4561a"
+    },
+    "job": {
+      "namespace": "telecom_etl",
+      "name": "step_4_append_timestamp"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tower_id", "type": "integer"},
+              {"name": "tower_code", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "source_system", "type": "string"},
+              {"name": "batch_date", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tower_id", "type": "integer"},
+              {"name": "tower_code", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "source_system", "type": "string"},
+              {"name": "batch_date", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tower_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "tower_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tower_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "tower_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "providerName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "providerName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "source_system": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "source_system", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "batch_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_enriched_df", "field": "batch_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T22:15:00Z",
+    "run": {
+      "runId": "1b8c3d9a-5f4e-47a2-9b0d-8e6f1a5c2d3b"
+    },
+    "job": {
+      "namespace": "telecom_etl",
+      "name": "step_5_load_curated_towers"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "tower_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tower_id", "type": "integer"},
+              {"name": "tower_code", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "source_system", "type": "string"},
+              {"name": "batch_date", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "telecom_curated.cell_towers",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "tower_id", "type": "integer"},
+              {"name": "tower_code", "type": "string"},
+              {"name": "providerName", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "source_system", "type": "string"},
+              {"name": "batch_date", "type": "string"},
+              {"name": "processed_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tower_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "tower_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tower_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "tower_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "providerName": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "providerName", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "source_system": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "source_system", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "batch_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "batch_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "processed_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "tower_final_df", "field": "processed_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

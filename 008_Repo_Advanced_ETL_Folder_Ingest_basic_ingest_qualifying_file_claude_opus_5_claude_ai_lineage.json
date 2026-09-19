@@ -1,0 +1,1581 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:52:21Z",
+    "run": {
+      "runId": "b252227a-a373-4d2a-8e7c-d4ff206de812"
+    },
+    "job": {
+      "namespace": "laboratory_curated_ingestion",
+      "name": "step_01_extract_batch_trial_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/laboratory/batch_trial_results"
+              ],
+              "output": "batch_trial_landing_df",
+              "columns": [
+                "trialId",
+                "batchId",
+                "analystId",
+                "instrumentId",
+                "sampleNumber",
+                "rankPosition",
+                "r1",
+                "r2",
+                "r3"
+              ],
+              "readOptions": {
+                "multiLine": true
+              },
+              "expression": "spark.read.schema(batch_trial_landing_schema).option('multiLine', True).json('data/landing/laboratory/batch_trial_results')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/laboratory/batch_trial_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trialId",
+                "type": "integer"
+              },
+              {
+                "name": "batchId",
+                "type": "integer"
+              },
+              {
+                "name": "analystId",
+                "type": "integer"
+              },
+              {
+                "name": "instrumentId",
+                "type": "integer"
+              },
+              {
+                "name": "sampleNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "r1",
+                "type": "string"
+              },
+              {
+                "name": "r2",
+                "type": "string"
+              },
+              {
+                "name": "r3",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trialId",
+                "type": "integer"
+              },
+              {
+                "name": "batchId",
+                "type": "integer"
+              },
+              {
+                "name": "analystId",
+                "type": "integer"
+              },
+              {
+                "name": "instrumentId",
+                "type": "integer"
+              },
+              {
+                "name": "sampleNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "r1",
+                "type": "string"
+              },
+              {
+                "name": "r2",
+                "type": "string"
+              },
+              {
+                "name": "r3",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trialId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "trialId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trialId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batchId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "batchId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "batchId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "analystId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "analystId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "analystId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "instrumentId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "instrumentId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "instrumentId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sampleNumber": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "sampleNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sampleNumber",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rankPosition": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "rankPosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rankPosition",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "r1": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "r1",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "r1",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "r2": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "r2",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "r2",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "r3": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/laboratory/batch_trial_results",
+                    "field": "r3",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "r3",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:52:21Z",
+    "run": {
+      "runId": "7fce9e4b-55be-4d60-b683-0a7d0cb4e2ca"
+    },
+    "job": {
+      "namespace": "laboratory_curated_ingestion",
+      "name": "step_02_standardize_batch_trial_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "batch_trial_landing_df"
+              ],
+              "output": "batch_trial_standardized_df",
+              "columns": [
+                "trial_id",
+                "batch_id",
+                "analyst_id",
+                "instrument_id",
+                "sample_number",
+                "trial_rank",
+                "round_one_time",
+                "round_two_time",
+                "round_three_time"
+              ],
+              "renamedColumns": {
+                "trial_id": "trialId",
+                "batch_id": "batchId",
+                "analyst_id": "analystId",
+                "instrument_id": "instrumentId",
+                "sample_number": "sampleNumber",
+                "trial_rank": "rankPosition",
+                "round_one_time": "r1",
+                "round_two_time": "r2",
+                "round_three_time": "r3"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trialId",
+                "type": "integer"
+              },
+              {
+                "name": "batchId",
+                "type": "integer"
+              },
+              {
+                "name": "analystId",
+                "type": "integer"
+              },
+              {
+                "name": "instrumentId",
+                "type": "integer"
+              },
+              {
+                "name": "sampleNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "r1",
+                "type": "string"
+              },
+              {
+                "name": "r2",
+                "type": "string"
+              },
+              {
+                "name": "r3",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trial_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "trialId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('trialId').alias('trial_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "batchId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('batchId').alias('batch_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "analyst_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "analystId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('analystId').alias('analyst_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "instrument_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "instrumentId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('instrumentId').alias('instrument_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sample_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "sampleNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('sampleNumber').alias('sample_number')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trial_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "rankPosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('rankPosition').alias('trial_rank')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "r1",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('r1').alias('round_one_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "r2",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('r2').alias('round_two_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_landing_df",
+                    "field": "r3",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('r3').alias('round_three_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:52:21Z",
+    "run": {
+      "runId": "65e211e2-e2c8-4c45-9735-b58592ae3bfc"
+    },
+    "job": {
+      "namespace": "laboratory_curated_ingestion",
+      "name": "step_03_apply_batch_trial_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "batch_trial_standardized_df"
+              ],
+              "output": "batch_trial_eligible_df",
+              "columns": [
+                "trial_id",
+                "batch_id",
+                "analyst_id",
+                "instrument_id",
+                "sample_number",
+                "trial_rank",
+                "round_one_time",
+                "round_two_time",
+                "round_three_time"
+              ],
+              "filterExpression": "col('trial_id').isNotNull() & col('batch_id').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trial_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "trial_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "batch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "batch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "analyst_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "analyst_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "analyst_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "instrument_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "instrument_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "instrument_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sample_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "sample_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sample_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trial_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "trial_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "round_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "round_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_standardized_df",
+                    "field": "round_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "batch_trial_standardized_df",
+                "field": "trial_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('trial_id').isNotNull() & col('batch_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "batch_trial_standardized_df",
+                "field": "batch_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('trial_id').isNotNull() & col('batch_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:52:21Z",
+    "run": {
+      "runId": "5485180f-742f-41f6-a7b0-8ee7eaa3abf6"
+    },
+    "job": {
+      "namespace": "laboratory_curated_ingestion",
+      "name": "step_04_build_batch_trial_detail_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "batch_trial_eligible_df"
+              ],
+              "output": "batch_trial_detail_df",
+              "columns": [
+                "trial_id",
+                "batch_id",
+                "analyst_id",
+                "instrument_id",
+                "sample_number",
+                "trial_rank",
+                "round_one_time",
+                "round_two_time",
+                "round_three_time",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trial_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "trial_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "batch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "batch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "analyst_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "analyst_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "analyst_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "instrument_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "instrument_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "instrument_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sample_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "sample_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sample_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trial_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "trial_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "round_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "round_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_eligible_df",
+                    "field": "round_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:52:21Z",
+    "run": {
+      "runId": "643cca8c-fad6-4d59-bae3-a1700c7bcb33"
+    },
+    "job": {
+      "namespace": "laboratory_curated_ingestion",
+      "name": "step_05_load_batch_trial_detail_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "WRITE",
+              "inputs": [
+                "batch_trial_detail_df"
+              ],
+              "output": "warehouse/curated/laboratory/batch_trial_detail",
+              "columns": [
+                "trial_id",
+                "batch_id",
+                "analyst_id",
+                "instrument_id",
+                "sample_number",
+                "trial_rank",
+                "round_one_time",
+                "round_two_time",
+                "round_three_time",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "expression": "batch_trial_detail_df.write.mode('overwrite').parquet('warehouse/curated/laboratory/batch_trial_detail')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "batch_trial_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/laboratory/batch_trial_detail",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trial_id",
+                "type": "integer"
+              },
+              {
+                "name": "batch_id",
+                "type": "integer"
+              },
+              {
+                "name": "analyst_id",
+                "type": "integer"
+              },
+              {
+                "name": "instrument_id",
+                "type": "integer"
+              },
+              {
+                "name": "sample_number",
+                "type": "integer"
+              },
+              {
+                "name": "trial_rank",
+                "type": "integer"
+              },
+              {
+                "name": "round_one_time",
+                "type": "string"
+              },
+              {
+                "name": "round_two_time",
+                "type": "string"
+              },
+              {
+                "name": "round_three_time",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trial_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "trial_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "batch_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "batch_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "batch_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "analyst_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "analyst_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "analyst_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "instrument_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "instrument_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "instrument_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sample_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "sample_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sample_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "trial_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "trial_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trial_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "round_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "round_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "round_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "round_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "round_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "batch_trial_detail_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

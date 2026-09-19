@@ -1,0 +1,1947 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "795a9ee8-40ed-4f9f-8950-bc3c84110635"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_01_extract_audition_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/casting/audition_results"
+              ],
+              "output": "audition_landing_df",
+              "columns": [
+                "auditionId",
+                "productionId",
+                "performerId",
+                "agencyId",
+                "entryNumber",
+                "rankPosition",
+                "s1",
+                "s2",
+                "s3"
+              ],
+              "readOptions": {
+                "multiLine": true
+              },
+              "expression": "spark.read.schema(audition_landing_schema).option('multiLine', True).json('data/landing/casting/audition_results')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/casting/audition_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "auditionId",
+                "type": "integer"
+              },
+              {
+                "name": "productionId",
+                "type": "integer"
+              },
+              {
+                "name": "performerId",
+                "type": "integer"
+              },
+              {
+                "name": "agencyId",
+                "type": "integer"
+              },
+              {
+                "name": "entryNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "s1",
+                "type": "string"
+              },
+              {
+                "name": "s2",
+                "type": "string"
+              },
+              {
+                "name": "s3",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "auditionId",
+                "type": "integer"
+              },
+              {
+                "name": "productionId",
+                "type": "integer"
+              },
+              {
+                "name": "performerId",
+                "type": "integer"
+              },
+              {
+                "name": "agencyId",
+                "type": "integer"
+              },
+              {
+                "name": "entryNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "s1",
+                "type": "string"
+              },
+              {
+                "name": "s2",
+                "type": "string"
+              },
+              {
+                "name": "s3",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "auditionId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "auditionId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "auditionId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productionId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "productionId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productionId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performerId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "performerId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "performerId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agencyId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "agencyId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agencyId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entryNumber": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "entryNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entryNumber",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "rankPosition": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "rankPosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "rankPosition",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "s1": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "s1",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "s1",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "s2": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "s2",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "s2",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "s3": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/casting/audition_results",
+                    "field": "s3",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "s3",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "f3f21fe9-5bb0-4b33-8505-4b5c5a33d2ad"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_02_standardize_audition_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "audition_landing_df"
+              ],
+              "output": "audition_standardized_df",
+              "columns": [
+                "audition_id",
+                "production_id",
+                "performer_id",
+                "agency_id",
+                "entry_number",
+                "audition_rank",
+                "stage_one_time",
+                "stage_two_time",
+                "stage_three_time"
+              ],
+              "renamedColumns": {
+                "audition_id": "auditionId",
+                "production_id": "productionId",
+                "performer_id": "performerId",
+                "agency_id": "agencyId",
+                "entry_number": "entryNumber",
+                "audition_rank": "rankPosition",
+                "stage_one_time": "s1",
+                "stage_two_time": "s2",
+                "stage_three_time": "s3"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "auditionId",
+                "type": "integer"
+              },
+              {
+                "name": "productionId",
+                "type": "integer"
+              },
+              {
+                "name": "performerId",
+                "type": "integer"
+              },
+              {
+                "name": "agencyId",
+                "type": "integer"
+              },
+              {
+                "name": "entryNumber",
+                "type": "integer"
+              },
+              {
+                "name": "rankPosition",
+                "type": "integer"
+              },
+              {
+                "name": "s1",
+                "type": "string"
+              },
+              {
+                "name": "s2",
+                "type": "string"
+              },
+              {
+                "name": "s3",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "audition_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "auditionId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('auditionId').alias('audition_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "production_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "productionId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('productionId').alias('production_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "performerId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('performerId').alias('performer_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "agencyId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('agencyId').alias('agency_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "entryNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('entryNumber').alias('entry_number')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "audition_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "rankPosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('rankPosition').alias('audition_rank')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "s1",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('s1').alias('stage_one_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "s2",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('s2').alias('stage_two_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_landing_df",
+                    "field": "s3",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('s3').alias('stage_three_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "5698d5e1-c279-44b6-a1b2-c65a6e0267e2"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_03_apply_audition_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "audition_standardized_df"
+              ],
+              "output": "audition_eligible_df",
+              "columns": [
+                "audition_id",
+                "production_id",
+                "performer_id",
+                "agency_id",
+                "entry_number",
+                "audition_rank",
+                "stage_one_time",
+                "stage_two_time",
+                "stage_three_time"
+              ],
+              "filterExpression": "col('audition_id').isNotNull() & col('production_id').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "audition_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "audition_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "production_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "production_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "production_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "performer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "performer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "agency_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "entry_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "audition_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "audition_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "stage_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "stage_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_standardized_df",
+                    "field": "stage_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "audition_standardized_df",
+                "field": "audition_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('audition_id').isNotNull() & col('production_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "audition_standardized_df",
+                "field": "production_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('audition_id').isNotNull() & col('production_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "182ee838-9c6a-4fcf-b58f-abe1c8f527a0"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_04_tag_audition_source_system",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "audition_eligible_df"
+              ],
+              "output": "audition_tagged_df",
+              "columns": [
+                "audition_id",
+                "production_id",
+                "performer_id",
+                "agency_id",
+                "entry_number",
+                "audition_rank",
+                "stage_one_time",
+                "stage_two_time",
+                "stage_three_time",
+                "source_system"
+              ],
+              "derivedColumns": {
+                "source_system": "lit(source_system)"
+              },
+              "runtimeArguments": [
+                "argv[1] -> source_system"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "audition_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "audition_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "production_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "production_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "production_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "performer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "performer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "agency_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "entry_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "audition_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "audition_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "stage_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "stage_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_eligible_df",
+                    "field": "stage_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [],
+                "transformationDescription": "lit(source_system) from runtime argument argv[1]"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "96d8e8b0-4002-425a-b1ec-ae2de5eb9bad"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_05_build_audition_detail_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "audition_tagged_df"
+              ],
+              "output": "audition_detail_df",
+              "columns": [
+                "audition_id",
+                "production_id",
+                "performer_id",
+                "agency_id",
+                "entry_number",
+                "audition_rank",
+                "stage_one_time",
+                "stage_two_time",
+                "stage_three_time",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "audition_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "audition_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "production_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "production_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "production_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "performer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "performer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "agency_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "entry_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "audition_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "audition_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "stage_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "stage_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "stage_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_tagged_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:28:56Z",
+    "run": {
+      "runId": "cf2f8134-b0a9-4805-857d-44544a50bde6"
+    },
+    "job": {
+      "namespace": "casting_curated_ingestion",
+      "name": "step_06_load_audition_detail_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "audition_detail_df"
+              ],
+              "output": "warehouse/curated/casting/audition_detail",
+              "columns": [
+                "audition_id",
+                "production_id",
+                "performer_id",
+                "agency_id",
+                "entry_number",
+                "audition_rank",
+                "stage_one_time",
+                "stage_two_time",
+                "stage_three_time",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "expression": "audition_detail_df.write.mode('overwrite').parquet('warehouse/curated/casting/audition_detail')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "audition_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/casting/audition_detail",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "audition_id",
+                "type": "integer"
+              },
+              {
+                "name": "production_id",
+                "type": "integer"
+              },
+              {
+                "name": "performer_id",
+                "type": "integer"
+              },
+              {
+                "name": "agency_id",
+                "type": "integer"
+              },
+              {
+                "name": "entry_number",
+                "type": "integer"
+              },
+              {
+                "name": "audition_rank",
+                "type": "integer"
+              },
+              {
+                "name": "stage_one_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_two_time",
+                "type": "string"
+              },
+              {
+                "name": "stage_three_time",
+                "type": "string"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "audition_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "audition_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "production_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "production_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "production_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "performer_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "performer_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "performer_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "agency_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "agency_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "agency_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "entry_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "entry_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "entry_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "audition_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "audition_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "audition_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_one_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "stage_one_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_one_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_two_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "stage_two_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_two_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stage_three_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "stage_three_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stage_three_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "audition_detail_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

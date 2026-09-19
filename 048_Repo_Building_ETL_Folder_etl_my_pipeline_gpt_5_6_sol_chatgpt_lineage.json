@@ -1,0 +1,5028 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "7679590b-2693-432d-978c-3a0d15243ff3"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_01_read_crashes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/traffic/crashes.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crashes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/crashes.csv",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_UNIT_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/crashes.csv",
+                    "field": "CRASH_UNIT_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/crashes.csv",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "NUM_UNITS": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/crashes.csv",
+                    "field": "NUM_UNITS",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TOTAL_INJURIES": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/crashes.csv",
+                    "field": "TOTAL_INJURIES",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "e9f251bd-c051-43af-9f98-2c6f6a145cee"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_02_read_vehicles",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/traffic/vehicles.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vehicles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MAKE": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "VEHICLE_MAKE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MODEL": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "VEHICLE_MODEL",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_YEAR": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "VEHICLE_YEAR",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/vehicles.csv",
+                    "field": "VEHICLE_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "70f1deaa-fb2d-4856-b1f4-d77acd1c9d34"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_03_read_people",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/traffic/people.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "people_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/people.csv",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/people.csv",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/people.csv",
+                    "field": "PERSON_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_SEX": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/people.csv",
+                    "field": "PERSON_SEX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_AGE": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/traffic/people.csv",
+                    "field": "PERSON_AGE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "16c5de24-e1fa-4efc-b8d5-e49056fad848"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_04_join_crash_vehicles",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crashes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vehicles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crash_vehicles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crashes_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_UNIT_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crashes_df",
+                    "field": "CRASH_UNIT_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crashes_df",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "NUM_UNITS": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crashes_df",
+                    "field": "NUM_UNITS",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TOTAL_INJURIES": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crashes_df",
+                    "field": "TOTAL_INJURIES",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicles_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MAKE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicles_df",
+                    "field": "VEHICLE_MAKE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MODEL": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicles_df",
+                    "field": "VEHICLE_MODEL",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_YEAR": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicles_df",
+                    "field": "VEHICLE_YEAR",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicles_df",
+                    "field": "VEHICLE_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "crashes_df",
+                  "field": "CRASH_RECORD_ID",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "LEFT_JOIN",
+                      "description": "left join vehicles on CRASH_RECORD_ID",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "vehicles_df",
+                  "field": "CRASH_RECORD_ID",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "LEFT_JOIN",
+                      "description": "left join crashes on CRASH_RECORD_ID",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "37d733a2-2e41-45da-8ee4-4536fcc3e121"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_05_join_people",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crash_vehicles_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "people_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "merged_all_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_UNIT_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "CRASH_UNIT_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "NUM_UNITS": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "NUM_UNITS",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TOTAL_INJURIES": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "TOTAL_INJURIES",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MAKE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "VEHICLE_MAKE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MODEL": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "VEHICLE_MODEL",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_YEAR": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "VEHICLE_YEAR",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_vehicles_df",
+                    "field": "VEHICLE_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "people_df",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "people_df",
+                    "field": "PERSON_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_SEX": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "people_df",
+                    "field": "PERSON_SEX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_AGE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "people_df",
+                    "field": "PERSON_AGE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "crash_vehicles_df",
+                  "field": "CRASH_RECORD_ID",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "LEFT_JOIN",
+                      "description": "left join people on CRASH_RECORD_ID",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "people_df",
+                  "field": "CRASH_RECORD_ID",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "LEFT_JOIN",
+                      "description": "left join crash_vehicles on CRASH_RECORD_ID",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "ae9fe23a-ff91-46b0-8a43-04499c5e5a0f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_06_project_crash",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "merged_all_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crash_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_UNIT_ID_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_UNIT_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "project CRASH_UNIT_ID as CRASH_UNIT_ID_x"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project CRASH_RECORD_ID as CRASH_RECORD_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "project CRASH_DATE as CRASH_DATE_x"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project PERSON_ID as PERSON_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_ID as VEHICLE_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "NUM_UNITS": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "NUM_UNITS",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project NUM_UNITS as NUM_UNITS"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TOTAL_INJURIES": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "TOTAL_INJURIES",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project TOTAL_INJURIES as TOTAL_INJURIES"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "b624fc4c-48cf-46ee-bc5d-3839a09540ca"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_07_project_vehicle",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "merged_all_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vehicle_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_UNIT_ID_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_UNIT_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "project CRASH_UNIT_ID as CRASH_UNIT_ID_x"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project CRASH_RECORD_ID as CRASH_RECORD_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "project CRASH_DATE as CRASH_DATE_x"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_ID as VEHICLE_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MAKE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_MAKE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_MAKE as VEHICLE_MAKE"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MODEL": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_MODEL",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_MODEL as VEHICLE_MODEL"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_YEAR": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_YEAR",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_YEAR as VEHICLE_YEAR"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_TYPE as VEHICLE_TYPE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "454a6b5a-cf3b-44ec-b036-eacbb24bf75d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_08_project_person",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "merged_all_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_UNIT_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "person_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project CRASH_RECORD_ID as CRASH_RECORD_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "CRASH_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "project CRASH_DATE as CRASH_DATE_x"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project PERSON_ID as PERSON_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "PERSON_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project PERSON_TYPE as PERSON_TYPE"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project VEHICLE_ID as VEHICLE_ID"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_SEX": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "PERSON_SEX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project PERSON_SEX as PERSON_SEX"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_AGE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "merged_all_df",
+                    "field": "PERSON_AGE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false,
+                        "description": "project PERSON_AGE as PERSON_AGE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "5855acba-aad7-459c-8116-4457d9d2a1f6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_09_write_crash",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "crash_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://portable-postgresql",
+        "name": "analytics.crash",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "NUM_UNITS",
+                "type": "INFERRED"
+              },
+              {
+                "name": "TOTAL_INJURIES",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_UNIT_ID_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "CRASH_UNIT_ID_x",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "CRASH_DATE_x",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "NUM_UNITS": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "NUM_UNITS",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TOTAL_INJURIES": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "crash_df",
+                    "field": "TOTAL_INJURIES",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "2257ea27-9804-4ac8-989c-e82201c46070"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_10_write_vehicle",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "vehicle_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://portable-postgresql",
+        "name": "analytics.vehicle",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_UNIT_ID_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MAKE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_MODEL",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_YEAR",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_TYPE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_UNIT_ID_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "CRASH_UNIT_ID_x",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "CRASH_DATE_x",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MAKE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "VEHICLE_MAKE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_MODEL": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "VEHICLE_MODEL",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_YEAR": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "VEHICLE_YEAR",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "vehicle_df",
+                    "field": "VEHICLE_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:58:22.923Z",
+    "run": {
+      "runId": "13d28007-86ba-4ffb-881b-b793530c4f75"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/traffic-crash",
+      "name": "step_11_write_person",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "crashes_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "read crashes CSV with header and inferred schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "read vehicles CSV with header and inferred schema"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_CSV",
+              "inputDataFrames": [],
+              "outputDataFrame": "people_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "read people CSV with header and inferred schema"
+            },
+            {
+              "sequence": 4,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crashes_df",
+                "vehicles_df"
+              ],
+              "outputDataFrame": "crash_vehicles_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 5,
+              "statementType": "LEFT_JOIN",
+              "inputDataFrames": [
+                "crash_vehicles_df",
+                "people_df"
+              ],
+              "outputDataFrame": "merged_all_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_UNIT_ID",
+                "CRASH_DATE",
+                "NUM_UNITS",
+                "TOTAL_INJURIES",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "left join on CRASH_RECORD_ID"
+            },
+            {
+              "sequence": 6,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "crash_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "project crash target columns"
+            },
+            {
+              "sequence": 7,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "vehicle_df",
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "project vehicle target columns"
+            },
+            {
+              "sequence": 8,
+              "statementType": "SELECT_RENAME",
+              "inputDataFrames": [
+                "merged_all_df"
+              ],
+              "outputDataFrame": "person_df",
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "project person target columns"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "crash_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "VEHICLE_ID",
+                "NUM_UNITS",
+                "TOTAL_INJURIES"
+              ],
+              "expression": "append analytics.crash"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "vehicle_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_UNIT_ID_x",
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "VEHICLE_ID",
+                "VEHICLE_MAKE",
+                "VEHICLE_MODEL",
+                "VEHICLE_YEAR",
+                "VEHICLE_TYPE"
+              ],
+              "expression": "append analytics.vehicle"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "person_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "CRASH_RECORD_ID",
+                "CRASH_DATE_x",
+                "PERSON_ID",
+                "PERSON_TYPE",
+                "VEHICLE_ID",
+                "PERSON_SEX",
+                "PERSON_AGE"
+              ],
+              "expression": "append analytics.person"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "person_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://portable-postgresql",
+        "name": "analytics.person",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "CRASH_RECORD_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "CRASH_DATE_x",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_TYPE",
+                "type": "INFERRED"
+              },
+              {
+                "name": "VEHICLE_ID",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_SEX",
+                "type": "INFERRED"
+              },
+              {
+                "name": "PERSON_AGE",
+                "type": "INFERRED"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "CRASH_RECORD_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "CRASH_RECORD_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "CRASH_DATE_x": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "CRASH_DATE_x",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "PERSON_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_TYPE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "PERSON_TYPE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VEHICLE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "VEHICLE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_SEX": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "PERSON_SEX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PERSON_AGE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "person_df",
+                    "field": "PERSON_AGE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

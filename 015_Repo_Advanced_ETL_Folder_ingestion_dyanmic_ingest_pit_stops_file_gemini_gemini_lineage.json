@@ -1,0 +1,353 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:24:09Z",
+    "run": {
+      "runId": "a98b131c-3f41-471f-b52b-7e61a03e1a12"
+    },
+    "job": {
+      "namespace": "port_operations_etl",
+      "name": "step_1_extract_inspections"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/port/container_inspections.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vesselId", "type": "integer"},
+              {"name": "inspectorId", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vesselId", "type": "integer"},
+              {"name": "inspectorId", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vesselId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "vesselId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspectorId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "inspectorId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_type": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "inspection_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "bay_number": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "bay_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "start_time": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "start_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_duration": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "inspection_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/port/container_inspections.json", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:24:09Z",
+    "run": {
+      "runId": "b103e911-7362-4f11-9a99-b1d3d63c582a"
+    },
+    "job": {
+      "namespace": "port_operations_etl",
+      "name": "step_2_append_timestamp"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vesselId", "type": "integer"},
+              {"name": "inspectorId", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vesselId", "type": "integer"},
+              {"name": "inspectorId", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vesselId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "vesselId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspectorId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "inspectorId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "inspection_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "bay_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "bay_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "start_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "start_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "inspection_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_raw_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:24:09Z",
+    "run": {
+      "runId": "c4d7b290-82a1-4221-a39c-512c1b9d123e"
+    },
+    "job": {
+      "namespace": "port_operations_etl",
+      "name": "step_3_rename_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vesselId", "type": "integer"},
+              {"name": "inspectorId", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vessel_id", "type": "integer"},
+              {"name": "inspector_id", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vessel_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "vesselId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(vesselId, vessel_id)", "masking": false}]}]
+              },
+              "inspector_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "inspectorId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(inspectorId, inspector_id)", "masking": false}]}]
+              },
+              "inspection_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "inspection_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "bay_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "bay_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "start_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "start_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "inspection_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_timestamped_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T21:24:09Z",
+    "run": {
+      "runId": "d825f38e-0158-4db8-8389-9a706ab45094"
+    },
+    "job": {
+      "namespace": "port_operations_etl",
+      "name": "step_4_load_curated_inspections"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "inspection_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vessel_id", "type": "integer"},
+              {"name": "inspector_id", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/port/inspections_processed",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "vessel_id", "type": "integer"},
+              {"name": "inspector_id", "type": "integer"},
+              {"name": "inspection_type", "type": "string"},
+              {"name": "bay_number", "type": "integer"},
+              {"name": "start_time", "type": "string"},
+              {"name": "inspection_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "vessel_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "vessel_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspector_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "inspector_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_type": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "inspection_type", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "bay_number": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "bay_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "start_time": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "start_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "inspection_duration": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "inspection_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "duration_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "inspection_final_df", "field": "data_source", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

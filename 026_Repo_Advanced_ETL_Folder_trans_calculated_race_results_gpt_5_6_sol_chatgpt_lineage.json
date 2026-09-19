@@ -1,0 +1,3561 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "1dfff71d-5066-4ac9-bfd6-d01475838cc6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_01_read_result_facts",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/calculated_results/result_facts",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "file_date",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "file_date",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "organization_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "file_date": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/result_facts",
+                    "field": "file_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "00d128b8-d20b-4f5e-89ca-91b352cc97cb"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_02_filter_and_calculate_points",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "file_date",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "eligible_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "organization_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "calculated_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_fact_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "lit(11) - col(\"finish_position\")"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_fact_df",
+                  "field": "finish_position",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "finish_position <= 10",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "result_fact_df",
+                  "field": "file_date",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "file_date == runtime file_date",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "2feed123-fe94-43c2-bea1-1a5cdc557fb4"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_03_read_participant_reference",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/calculated_results/participant_reference",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/participant_reference",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/participant_reference",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "a9920599-eb9b-40da-a1a1-2a976bb553f3"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_04_read_organization_reference",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/calculated_results/organization_reference",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "organization_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "organization_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/organization_reference",
+                    "field": "organization_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/organization_reference",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "702c6019-c6e3-4dc5-8717-3197a9734451"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_05_read_event_reference",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/calculated_results/event_reference",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/event_reference",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/calculated_results/event_reference",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "1881155a-4b0f-4d75-994c-e54a431c4c57"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_06_join_incremental_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "eligible_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "organization_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "organization_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "event_reference_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "incoming_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "event_reference_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "organization_reference_df",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "eligible_result_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_reference_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "eligible_result_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "eligible_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "eligible_result_df",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "calculated_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "eligible_result_df",
+                    "field": "calculated_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "eligible_result_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.participant_id == participant_reference_df.participant_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "participant_reference_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.participant_id == participant_reference_df.participant_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "eligible_result_df",
+                  "field": "organization_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.organization_id == organization_reference_df.organization_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "organization_reference_df",
+                  "field": "organization_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.organization_id == organization_reference_df.organization_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "eligible_result_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.event_id == event_reference_df.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "event_reference_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "INNER_JOIN",
+                      "description": "eligible_result_df.event_id == event_reference_df.event_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "8ad619bb-5510-4343-bc2e-4ab8037ddfda"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_07_read_existing_target",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive://spark-catalog",
+        "name": "analytics_presentation.calculated_event_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_name": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "calculated_points": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "calculated_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "created_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "hive://spark-catalog",
+                    "name": "analytics_presentation.calculated_event_results",
+                    "field": "updated_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "da9976b5-bb9f-4c10-afba-43bba28ca00e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_08_reconcile_upsert",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "incoming_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "reconciled_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.season_year, upd.season_year)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.season_year, upd.season_year)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.organization_name, upd.organization_name)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.organization_name, upd.organization_name)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.participant_id, upd.participant_id)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.participant_id, upd.participant_id)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.participant_name, upd.participant_name)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.participant_name, upd.participant_name)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.event_id, upd.event_id)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(tgt.event_id, upd.event_id)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.finish_position, tgt.finish_position)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.finish_position, tgt.finish_position)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.awarded_points, tgt.awarded_points)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.awarded_points, tgt.awarded_points)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "calculated_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "incoming_event_result_df",
+                    "field": "calculated_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.calculated_points, tgt.calculated_points)"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "calculated_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "coalesce(upd.calculated_points, tgt.calculated_points)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "created_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "preserve existing created_at_utc; current_timestamp for inserts"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_event_result_df",
+                    "field": "updated_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "current_timestamp for matches; preserve prior value otherwise"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "prior_event_result_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FULL_OUTER_JOIN",
+                      "description": "tgt.participant_id = upd.participant_id AND tgt.event_id = upd.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "prior_event_result_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FULL_OUTER_JOIN",
+                      "description": "tgt.participant_id = upd.participant_id AND tgt.event_id = upd.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "incoming_event_result_df",
+                  "field": "participant_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FULL_OUTER_JOIN",
+                      "description": "tgt.participant_id = upd.participant_id AND tgt.event_id = upd.event_id",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "incoming_event_result_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FULL_OUTER_JOIN",
+                      "description": "tgt.participant_id = upd.participant_id AND tgt.event_id = upd.event_id",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:20:31.255Z",
+    "run": {
+      "runId": "55d33bf4-1f46-42fa-b627-120dca1dccaf"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/calculated-event-results",
+      "name": "step_09_write_calculated_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_fact_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "file_date"
+              ],
+              "expression": "spark.read.parquet(result_path).select(...)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER_SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_fact_df"
+              ],
+              "outputDataFrame": "eligible_result_df",
+              "selectedColumns": [
+                "event_id",
+                "participant_id",
+                "organization_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "filter finish_position <= 10 and file_date == runtime file_date; calculate 11 - finish_position"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_reference_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_name"
+              ],
+              "expression": "spark.read.parquet(participant_path).select(...)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "organization_reference_df",
+              "selectedColumns": [
+                "organization_id",
+                "organization_name"
+              ],
+              "expression": "spark.read.parquet(organization_path).select(...)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "READ_PARQUET_SELECT",
+              "inputDataFrames": [],
+              "outputDataFrame": "event_reference_df",
+              "selectedColumns": [
+                "event_id",
+                "season_year"
+              ],
+              "expression": "spark.read.parquet(event_path).select(...)"
+            },
+            {
+              "sequence": 6,
+              "statementType": "MULTI_INNER_JOIN_SELECT",
+              "inputDataFrames": [
+                "eligible_result_df",
+                "participant_reference_df",
+                "organization_reference_df",
+                "event_reference_df"
+              ],
+              "outputDataFrame": "incoming_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points"
+              ],
+              "expression": "join participant, organization, and event context"
+            },
+            {
+              "sequence": 7,
+              "statementType": "READ_TABLE_OR_EMPTY",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "spark.table(target_table) if table exists else empty target-shaped DataFrame"
+            },
+            {
+              "sequence": 8,
+              "statementType": "FULL_OUTER_RECONCILE",
+              "inputDataFrames": [
+                "prior_event_result_df",
+                "incoming_event_result_df"
+              ],
+              "outputDataFrame": "reconciled_event_result_df",
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "portable upsert by participant_id + event_id; preserve dimensions, update measures, insert created timestamp, update matched timestamp"
+            },
+            {
+              "sequence": 9,
+              "statementType": "WRITE_TABLE_OVERWRITE_PARQUET",
+              "inputDataFrames": [
+                "reconciled_event_result_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "season_year",
+                "organization_name",
+                "participant_id",
+                "participant_name",
+                "event_id",
+                "finish_position",
+                "awarded_points",
+                "calculated_points",
+                "created_at_utc",
+                "updated_at_utc"
+              ],
+              "expression": "reconciled_event_result_df.write.mode('overwrite').format('parquet').saveAsTable(target_table)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "reconciled_event_result_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive://spark-catalog",
+        "name": "analytics_presentation.calculated_event_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "season_year",
+                "type": "INTEGER"
+              },
+              {
+                "name": "organization_name",
+                "type": "STRING"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_name",
+                "type": "STRING"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "awarded_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "calculated_points",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at_utc",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "updated_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "season_year": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "season_year",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "organization_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "organization_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "participant_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "awarded_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "awarded_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "calculated_points": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "calculated_points",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "created_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "reconciled_event_result_df",
+                    "field": "updated_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

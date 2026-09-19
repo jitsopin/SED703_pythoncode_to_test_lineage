@@ -1,0 +1,222 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T12:16:25Z",
+    "run": {
+      "runId": "b1a2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d"
+    },
+    "job": {
+      "namespace": "kafka_streaming_etl",
+      "name": "step_1_extract_and_parse_taxis"
+    },
+    "inputs": [
+      {
+        "namespace": "kafka://redpanda:29092",
+        "name": "rides",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "key", "type": "binary"},
+              {"name": "value", "type": "binary"},
+              {"name": "topic", "type": "string"},
+              {"name": "partition", "type": "integer"},
+              {"name": "offset", "type": "long"},
+              {"name": "timestamp", "type": "timestamp"},
+              {"name": "timestampType", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "DOLocationID", "type": "integer"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "total_amount", "type": "double"},
+              {"name": "event_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "PULocationID": {
+                "inputFields": [{"namespace": "kafka://redpanda:29092", "name": "rides", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).PULocationID", "masking": false}]}]
+              },
+              "DOLocationID": {
+                "inputFields": [{"namespace": "kafka://redpanda:29092", "name": "rides", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).DOLocationID", "masking": false}]}]
+              },
+              "trip_distance": {
+                "inputFields": [{"namespace": "kafka://redpanda:29092", "name": "rides", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).trip_distance", "masking": false}]}]
+              },
+              "total_amount": {
+                "inputFields": [{"namespace": "kafka://redpanda:29092", "name": "rides", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "from_json(cast(value as string)).total_amount", "masking": false}]}]
+              },
+              "event_timestamp": {
+                "inputFields": [{"namespace": "kafka://redpanda:29092", "name": "rides", "field": "value", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "to_timestamp(from_json(cast(value as string)).tpep_pickup_datetime / 1000.0)", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T12:16:25Z",
+    "run": {
+      "runId": "5f6e7d8c-9b0a-1e2f-3d4c-5b6a7e8f9d0c"
+    },
+    "job": {
+      "namespace": "kafka_streaming_etl",
+      "name": "step_2_aggregate_hourly_window"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "parsed_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "DOLocationID", "type": "integer"},
+              {"name": "trip_distance", "type": "double"},
+              {"name": "total_amount", "type": "double"},
+              {"name": "event_timestamp", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "aggregated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "window_start", "type": "timestamp"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "num_trips", "type": "long"},
+              {"name": "total_revenue", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "parsed_df",
+                "field": "event_timestamp",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "window(event_timestamp, '1 hour')"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "parsed_df",
+                "field": "PULocationID",
+                "transformations": [{"type": "INDIRECT", "subtype": "GROUP_BY", "description": "window(event_timestamp, '1 hour')"}]
+              }
+            ],
+            "fields": {
+              "window_start": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_df", "field": "event_timestamp", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "window.start", "masking": false}]}]
+              },
+              "PULocationID": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "parsed_df", "field": "PULocationID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "num_trips": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "parsed_df", "field": "PULocationID", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "count(*)", "masking": false}]},
+                  {"namespace": "dataframe://in-memory", "name": "parsed_df", "field": "event_timestamp", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "count(*)", "masking": false}]}
+                ]
+              },
+              "total_revenue": {
+                "inputFields": [
+                  {"namespace": "dataframe://in-memory", "name": "parsed_df", "field": "total_amount", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "sum(total_amount)", "masking": false}]}
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-18T12:16:25Z",
+    "run": {
+      "runId": "c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f"
+    },
+    "job": {
+      "namespace": "kafka_streaming_etl",
+      "name": "step_3_load_postgres"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "aggregated_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "window_start", "type": "timestamp"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "num_trips", "type": "long"},
+              {"name": "total_revenue", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://postgres:5432",
+        "name": "public.processed_events_aggregated",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "window_start", "type": "timestamp"},
+              {"name": "PULocationID", "type": "integer"},
+              {"name": "num_trips", "type": "long"},
+              {"name": "total_revenue", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "window_start": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "aggregated_df", "field": "window_start", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "PULocationID": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "aggregated_df", "field": "PULocationID", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "num_trips": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "aggregated_df", "field": "num_trips", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "total_revenue": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "aggregated_df", "field": "total_revenue", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

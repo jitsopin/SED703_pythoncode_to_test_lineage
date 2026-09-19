@@ -1,157 +1,142 @@
 """
-Business purpose: publish the monthly revenue of every start zone split by vehicle
-type, so pricing and fleet placement reporting read one row per zone, month and
-vehicle type.
-Sources: data/curated/micromobility/scooter_trips and
-data/curated/micromobility/bike_trips, the two curated trip datasets, which carry
-the same attributes under vehicle specific names for the start and end times.
-Target: warehouse/presentation/micromobility/zone_monthly_revenue, a Parquet
-dataset written as one file and replaced on every run.
-Output grain: one row per revenue_zone, revenue_month and service_type.
-Business rules: both fleets are brought onto one set of column names before they
-are combined, every row records the vehicle type it came from, revenue is totalled
-per zone and month for each charge component separately, and the rider count and
-the trip distance are averaged over the same grouping.
-Generation profile: portable flat batch PySpark union and monthly aggregation.
-Runtime arguments: argv[1] and argv[2] are the two trip datasets and argv[3] is the
-target; they fall back to the paths named above.
+Business purpose: publish the monthly revenue of every departure station split by
+service, so pricing and timetable reporting read one row per station, month and
+service.
+Sources: data/curated/rail/regional_journeys and data/curated/rail/intercity_
+journeys, the two curated journey datasets, which carry the same attributes but
+name their boarding and alighting times after the service.
+Target: warehouse/presentation/rail/station_monthly_revenue, a Parquet dataset
+partitioned by revenue_month and replaced on every run.
+Output grain: one row per revenue_station, revenue_month and service_type.
+Business rules: both services are brought onto one set of column names and
+combined in the same statement that totals them, every row records the service it
+came from, revenue is totalled per station and month for each charge component
+separately, and the passenger count and the journey distance are averaged over the
+same grouping.
+Generation profile: portable flat batch PySpark SQL union and monthly aggregation.
+Runtime arguments: argv[1] and argv[2] are the two journey datasets and argv[3] is
+the target; they fall back to the paths named above.
 Assumptions: both curated datasets are already loaded for the months being
-reported; the temporary table registration of the original uses the current view
-API, and the union uses the by name form, because both of the calls it used are
-deprecated.
+reported; the temporary table registration and the union call of the original are
+both deprecated, so each service is exposed as a view and the two are combined
+inside the statement that aggregates them.
 """
 
 import sys
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 
 # 1. Initialize Spark and read the runtime arguments
-spark = SparkSession.builder.appName("micromobility_zone_monthly_revenue").getOrCreate()
-scooter_input = sys.argv[1] if len(sys.argv) > 1 else "data/curated/micromobility/scooter_trips"
-bike_input = sys.argv[2] if len(sys.argv) > 2 else "data/curated/micromobility/bike_trips"
+spark = SparkSession.builder.appName("rail_station_monthly_revenue").getOrCreate()
+regional_input = sys.argv[1] if len(sys.argv) > 1 else "data/curated/rail/regional_journeys"
+intercity_input = sys.argv[2] if len(sys.argv) > 2 else "data/curated/rail/intercity_journeys"
 revenue_output = sys.argv[3] if len(sys.argv) > 3 else \
-    "warehouse/presentation/micromobility/zone_monthly_revenue"
+    "warehouse/presentation/rail/station_monthly_revenue"
 
-# 2. Read the scooter trips
-scooter_trip_df = spark.read.parquet(scooter_input).select(
-    col("operatorId"),
-    col("scooterStartTime"),
-    col("scooterEndTime"),
-    col("offlineFlag"),
-    col("ratePlanId"),
-    col("startZoneId"),
-    col("endZoneId"),
-    col("riderCount"),
-    col("tripDistanceKm"),
-    col("fareAmount"),
-    col("extraCharge"),
-    col("cityTax"),
-    col("tipAmount"),
-    col("tollAmount"),
-    col("serviceSurcharge"),
-    col("totalAmount"),
-    col("paymentTypeId"),
-    col("congestionSurcharge"))
+# 2. Read the regional journeys
+regional_journey_df = spark.read.parquet(regional_input).select(
+    col("operator_id"),
+    col("regional_boarding_time"),
+    col("regional_alighting_time"),
+    col("offline_flag"),
+    col("fare_class_id"),
+    col("departure_station_id"),
+    col("arrival_station_id"),
+    col("passenger_count"),
+    col("journey_distance_km"),
+    col("fare_amount"),
+    col("extra_charge"),
+    col("network_levy"),
+    col("tip_amount"),
+    col("access_fee"),
+    col("station_surcharge"),
+    col("total_amount"),
+    col("payment_type_id"),
+    col("peak_surcharge"))
 
-# 3. Bring the scooter trips onto the common names and tag the vehicle type
-scooter_selected_df = scooter_trip_df.select(
-    col("operatorId").alias("operator_id"),
-    col("scooterStartTime").alias("start_timestamp"),
-    col("scooterEndTime").alias("end_timestamp"),
-    col("offlineFlag").alias("offline_flag"),
-    col("ratePlanId").alias("rate_plan_id"),
-    col("startZoneId").alias("start_zone_id"),
-    col("endZoneId").alias("end_zone_id"),
-    col("riderCount").alias("rider_count"),
-    col("tripDistanceKm").alias("trip_distance_km"),
-    col("fareAmount").alias("fare_amount"),
-    col("extraCharge").alias("extra_charge"),
-    col("cityTax").alias("city_tax"),
-    col("tipAmount").alias("tip_amount"),
-    col("tollAmount").alias("toll_amount"),
-    col("serviceSurcharge").alias("service_surcharge"),
-    col("totalAmount").alias("total_amount"),
-    col("paymentTypeId").alias("payment_type_id"),
-    col("congestionSurcharge").alias("congestion_surcharge"),
-    lit("scooter").alias("service_type"))
+# 3. Expose the regional journeys to SQL
+regional_journey_df.createOrReplaceTempView("vw_regional_journey")
 
-# 4. Read the bike trips
-bike_trip_df = spark.read.parquet(bike_input).select(
-    col("operatorId"),
-    col("bikeStartTime"),
-    col("bikeEndTime"),
-    col("offlineFlag"),
-    col("ratePlanId"),
-    col("startZoneId"),
-    col("endZoneId"),
-    col("riderCount"),
-    col("tripDistanceKm"),
-    col("fareAmount"),
-    col("extraCharge"),
-    col("cityTax"),
-    col("tipAmount"),
-    col("tollAmount"),
-    col("serviceSurcharge"),
-    col("totalAmount"),
-    col("paymentTypeId"),
-    col("congestionSurcharge"))
+# 4. Read the intercity journeys
+intercity_journey_df = spark.read.parquet(intercity_input).select(
+    col("operator_id"),
+    col("intercity_boarding_time"),
+    col("intercity_alighting_time"),
+    col("offline_flag"),
+    col("fare_class_id"),
+    col("departure_station_id"),
+    col("arrival_station_id"),
+    col("passenger_count"),
+    col("journey_distance_km"),
+    col("fare_amount"),
+    col("extra_charge"),
+    col("network_levy"),
+    col("tip_amount"),
+    col("access_fee"),
+    col("station_surcharge"),
+    col("total_amount"),
+    col("payment_type_id"),
+    col("peak_surcharge"))
 
-# 5. Bring the bike trips onto the common names and tag the vehicle type
-bike_selected_df = bike_trip_df.select(
-    col("operatorId").alias("operator_id"),
-    col("bikeStartTime").alias("start_timestamp"),
-    col("bikeEndTime").alias("end_timestamp"),
-    col("offlineFlag").alias("offline_flag"),
-    col("ratePlanId").alias("rate_plan_id"),
-    col("startZoneId").alias("start_zone_id"),
-    col("endZoneId").alias("end_zone_id"),
-    col("riderCount").alias("rider_count"),
-    col("tripDistanceKm").alias("trip_distance_km"),
-    col("fareAmount").alias("fare_amount"),
-    col("extraCharge").alias("extra_charge"),
-    col("cityTax").alias("city_tax"),
-    col("tipAmount").alias("tip_amount"),
-    col("tollAmount").alias("toll_amount"),
-    col("serviceSurcharge").alias("service_surcharge"),
-    col("totalAmount").alias("total_amount"),
-    col("paymentTypeId").alias("payment_type_id"),
-    col("congestionSurcharge").alias("congestion_surcharge"),
-    lit("bike").alias("service_type"))
+# 5. Expose the intercity journeys to SQL
+intercity_journey_df.createOrReplaceTempView("vw_intercity_journey")
 
-# 6. Bring both fleets together
-trip_df = scooter_selected_df.unionByName(bike_selected_df)
-
-# 7. Expose the combined trips to SQL
-trip_df.createOrReplaceTempView("vw_micromobility_trip")
-
-# 8. Total the revenue per zone, month and vehicle type
-zone_monthly_revenue_df = spark.sql("""
+# 6. Combine both services and total the revenue in one statement
+station_monthly_revenue_df = spark.sql("""
     SELECT
-        start_zone_id AS revenue_zone,
-        date_trunc('month', start_timestamp) AS revenue_month,
-        service_type,
-        SUM(fare_amount) AS revenue_monthly_fare,
-        SUM(extra_charge) AS revenue_monthly_extra,
-        SUM(city_tax) AS revenue_monthly_city_tax,
-        SUM(tip_amount) AS revenue_monthly_tip,
-        SUM(toll_amount) AS revenue_monthly_toll,
-        SUM(service_surcharge) AS revenue_monthly_service_surcharge,
-        SUM(total_amount) AS revenue_monthly_total,
-        SUM(congestion_surcharge) AS revenue_monthly_congestion_surcharge,
-        AVG(rider_count) AS avg_monthly_rider_count,
-        AVG(trip_distance_km) AS avg_monthly_trip_distance
-    FROM vw_micromobility_trip
+        journey.departure_station_id AS revenue_station,
+        date_trunc('month', journey.boarding_time) AS revenue_month,
+        journey.service_type,
+        SUM(journey.fare_amount) AS revenue_monthly_fare,
+        SUM(journey.extra_charge) AS revenue_monthly_extra,
+        SUM(journey.network_levy) AS revenue_monthly_network_levy,
+        SUM(journey.tip_amount) AS revenue_monthly_tip,
+        SUM(journey.access_fee) AS revenue_monthly_access_fee,
+        SUM(journey.station_surcharge) AS revenue_monthly_station_surcharge,
+        SUM(journey.total_amount) AS revenue_monthly_total,
+        SUM(journey.peak_surcharge) AS revenue_monthly_peak_surcharge,
+        AVG(journey.passenger_count) AS avg_monthly_passenger_count,
+        AVG(journey.journey_distance_km) AS avg_monthly_journey_distance
+    FROM (
+        SELECT regional_boarding_time AS boarding_time,
+               departure_station_id,
+               passenger_count,
+               journey_distance_km,
+               fare_amount,
+               extra_charge,
+               network_levy,
+               tip_amount,
+               access_fee,
+               station_surcharge,
+               total_amount,
+               peak_surcharge,
+               'regional' AS service_type
+          FROM vw_regional_journey
+        UNION ALL
+        SELECT intercity_boarding_time AS boarding_time,
+               departure_station_id,
+               passenger_count,
+               journey_distance_km,
+               fare_amount,
+               extra_charge,
+               network_levy,
+               tip_amount,
+               access_fee,
+               station_surcharge,
+               total_amount,
+               peak_surcharge,
+               'intercity' AS service_type
+          FROM vw_intercity_journey
+    ) journey
     GROUP BY 1, 2, 3
 """)
 
-# 9. Gather the result into a single file
-zone_monthly_revenue_single_df = zone_monthly_revenue_df.coalesce(1)
-
-# 10. Replace the published revenue table
-zone_monthly_revenue_single_df.write \
+# 7. Replace the published revenue table, split by month
+station_monthly_revenue_df.write \
     .mode("overwrite") \
+    .partitionBy("revenue_month") \
     .parquet(revenue_output)
 
-# 11. Release resources
+# 8. Release resources
 spark.stop()

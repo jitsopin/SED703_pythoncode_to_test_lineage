@@ -1,0 +1,5801 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "a12a9cce-7182-416b-b702-2551aaa673dc"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_01_read_transfers",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/hedera/native_token_transfer",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transfer_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/hedera/native_token_transfer",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "bb51e098-fb8d-4481-8e42-b768498895cc"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_02_filter_transfer_range",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transfer_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transfer_range_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_raw_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "transfer_raw_df",
+                  "field": "consensus_timestamp",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "bounded by start_nanos and stop_nanos",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "8aa9fa09-3fc1-4058-b3f6-9d7685877ce6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_03_read_prior_latest",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/hedera/native_token_balance_latest",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/curated/hedera/native_token_balance_latest",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "7a0959ed-5655-41cc-bc94-52e43885bf2f"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_04_rank_prior",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              },
+              {
+                "name": "_prior_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_prior_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "row_number partition key"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_raw_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "descending order"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "9b9187cd-e4ab-4afd-98b8-83d175dff0b5"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_05_select_prior_latest",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              },
+              {
+                "name": "_prior_rank",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_latest_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_ranked_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "prior_ranked_df",
+                  "field": "_prior_rank",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "retain rank 1 per account",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "14a96614-b3b8-40ac-a721-472fd3379f1e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_06_union_current_and_prior",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transfer_range_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "prior_latest_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_source_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "transfer_range_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "prior_latest_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "900f78b2-bf9a-4399-91fb-cd5555b15ec2"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_07_compute_running_balance",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_source_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_running_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "cumulative SUM(amount) by account ordered by consensus_timestamp"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_source_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "balance_source_df",
+                  "field": "account_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "WINDOW_PARTITION",
+                      "description": "partition cumulative balance by account",
+                      "masking": false
+                    }
+                  ]
+                },
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "balance_source_df",
+                  "field": "consensus_timestamp",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "ORDER_BY",
+                      "description": "order cumulative balance ascending",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "6583ae56-4c42-4c76-82eb-8bcc154f5d02"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_08_deduplicate_balance_rows",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_running_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_dedup_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "balance_running_df",
+                  "field": "transaction_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "DEDUPLICATION",
+                      "description": "drop duplicate complete balance output keys",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "367c81b5-cdd6-44ab-b1db-a16e04ea6bef"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_09_select_incremental_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_dedup_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_dedup_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "balance_dedup_df",
+                  "field": "consensus_timestamp",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "consensus_timestamp >= start_nanos",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "056b1086-ef39-4de7-8be3-83d51b94ab91"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_10_write_incremental_balance",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/hedera/native_token_balance",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_output_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "6825b755-aad5-4f64-9163-f11cbde445dc"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_11_rank_latest_balance",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "balance_running_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "latest_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              },
+              {
+                "name": "_latest_rank",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "_latest_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "row_number partition key"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "balance_running_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "descending order"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "a91896bb-02c8-4af3-bb1e-c2fc7008d5ab"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_12_select_latest_balance",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "latest_ranked_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              },
+              {
+                "name": "_latest_rank",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "latest_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_ranked_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "latest_ranked_df",
+                  "field": "_latest_rank",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "FILTER",
+                      "description": "retain latest current row per account",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:34:49.565Z",
+    "run": {
+      "runId": "e25feff5-fd91-4ab6-a734-bd94bc6ddfb6"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/hedera-native-balance",
+      "name": "step_13_write_latest_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "transfer_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read native-token transfers with explicit schema"
+            },
+            {
+              "sequence": 2,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "transfer_raw_df"
+              ],
+              "outputDataFrame": "transfer_range_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "filter consensus_timestamp to requested range",
+              "condition": "consensus_timestamp >= start_nanos AND consensus_timestamp <= stop_nanos"
+            },
+            {
+              "sequence": 3,
+              "statementType": "READ_PARQUET",
+              "inputDataFrames": [],
+              "outputDataFrame": "prior_raw_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "read prior latest-balance snapshot"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "prior_raw_df"
+              ],
+              "outputDataFrame": "prior_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_prior_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 5,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "prior_ranked_df"
+              ],
+              "outputDataFrame": "prior_latest_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest prior row per account",
+              "condition": "_prior_rank = 1"
+            },
+            {
+              "sequence": 6,
+              "statementType": "UNION_BY_NAME",
+              "inputDataFrames": [
+                "transfer_range_df",
+                "prior_latest_df"
+              ],
+              "outputDataFrame": "balance_source_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "union current transfers with prior latest state"
+            },
+            {
+              "sequence": 7,
+              "statementType": "WINDOW_CUMULATIVE_SUM",
+              "inputDataFrames": [
+                "balance_source_df"
+              ],
+              "outputDataFrame": "balance_running_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "amount = cumulative SUM(amount) partition by account_id ordered by consensus_timestamp asc"
+            },
+            {
+              "sequence": 8,
+              "statementType": "DROP_DUPLICATES",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "balance_dedup_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "deduplicate complete balance output key"
+            },
+            {
+              "sequence": 9,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "balance_dedup_df"
+              ],
+              "outputDataFrame": "balance_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain current-range output",
+              "condition": "consensus_timestamp >= start_nanos"
+            },
+            {
+              "sequence": 10,
+              "statementType": "WRITE_PARQUET_APPEND",
+              "inputDataFrames": [
+                "balance_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "append incremental native-token balances"
+            },
+            {
+              "sequence": 11,
+              "statementType": "WINDOW_ROW_NUMBER",
+              "inputDataFrames": [
+                "balance_running_df"
+              ],
+              "outputDataFrame": "latest_ranked_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id",
+                "_latest_rank"
+              ],
+              "expression": "row_number partition by account_id order by consensus_timestamp desc"
+            },
+            {
+              "sequence": 12,
+              "statementType": "FILTER_SELECT",
+              "inputDataFrames": [
+                "latest_ranked_df"
+              ],
+              "outputDataFrame": "latest_output_df",
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "retain latest current row per account",
+              "condition": "_latest_rank = 1"
+            },
+            {
+              "sequence": 13,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "latest_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "created",
+                "account_id",
+                "consensus_timestamp",
+                "amount",
+                "block_timestamp_to",
+                "transaction_id"
+              ],
+              "expression": "overwrite latest-balance snapshot"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "latest_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/hedera/native_token_balance_latest",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "created",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "account_id",
+                "type": "STRING"
+              },
+              {
+                "name": "consensus_timestamp",
+                "type": "BIGINT"
+              },
+              {
+                "name": "amount",
+                "type": "DECIMAL(38,8)"
+              },
+              {
+                "name": "block_timestamp_to",
+                "type": "BIGINT"
+              },
+              {
+                "name": "transaction_id",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "created": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "created",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "account_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "account_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "consensus_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "consensus_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "block_timestamp_to": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "block_timestamp_to",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "latest_output_df",
+                    "field": "transaction_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

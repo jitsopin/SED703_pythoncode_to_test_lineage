@@ -1,0 +1,461 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:09:06Z",
+    "run": {
+      "runId": "a13a220c-5184-482f-8d93-35f1118029a1"
+    },
+    "job": {
+      "namespace": "talent_acquisition_etl",
+      "name": "step_1_extract_developers"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/freelancers/developers.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developerId", "type": "integer"},
+              {"name": "developerRef", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developerId", "type": "integer"},
+              {"name": "developerRef", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "developerId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "developerId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "developerRef": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "developerRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "github_id": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "github_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tech_stack": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "tech_stack", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "birth_date": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "birth_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country_residence": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "country_residence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "portfolio_url": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/freelancers/developers.json", "field": "portfolio_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:09:06Z",
+    "run": {
+      "runId": "b24b331d-6295-4930-9ea4-460222913ab2"
+    },
+    "job": {
+      "namespace": "talent_acquisition_etl",
+      "name": "step_2_append_timestamp"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developerId", "type": "integer"},
+              {"name": "developerRef", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developerId", "type": "integer"},
+              {"name": "developerRef", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "developerId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "developerId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "developerRef": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "developerRef", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "github_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "github_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tech_stack": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "tech_stack", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "birth_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "birth_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country_residence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "country_residence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "portfolio_url": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_raw_df", "field": "portfolio_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:09:06Z",
+    "run": {
+      "runId": "c35c442e-73a6-4a41-afb5-571333a24bc3"
+    },
+    "job": {
+      "namespace": "talent_acquisition_etl",
+      "name": "step_3_enrich_and_flatten"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developerId", "type": "integer"},
+              {"name": "developerRef", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "struct"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developer_id", "type": "integer"},
+              {"name": "developer_ref", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "string"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "developer_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "developerId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(developerId, developer_id)", "masking": false}]}]
+              },
+              "developer_ref": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "developerRef", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(developerRef, developer_ref)", "masking": false}]}]
+              },
+              "github_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "github_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tech_stack": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "tech_stack", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "concat(name.first_name, ' ', name.last_name)", "masking": false}]}]
+              },
+              "birth_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "birth_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country_residence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "country_residence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "portfolio_url": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "portfolio_url", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_timestamped_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:09:06Z",
+    "run": {
+      "runId": "d46d553f-84b7-4b52-b0c6-682444b35cd4"
+    },
+    "job": {
+      "namespace": "talent_acquisition_etl",
+      "name": "step_4_drop_url"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developer_id", "type": "integer"},
+              {"name": "developer_ref", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "string"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "portfolio_url", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developer_id", "type": "integer"},
+              {"name": "developer_ref", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "string"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "developer_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "developer_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "developer_ref": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "developer_ref", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "github_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "github_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tech_stack": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "tech_stack", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "birth_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "birth_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country_residence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "country_residence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_enriched_df", "field": "data_source", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:09:06Z",
+    "run": {
+      "runId": "e57e6640-95c8-4c63-c1d7-793555c46de5"
+    },
+    "job": {
+      "namespace": "talent_acquisition_etl",
+      "name": "step_5_load_curated_developers"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dev_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developer_id", "type": "integer"},
+              {"name": "developer_ref", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "string"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/freelancers/developers_processed",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "developer_id", "type": "integer"},
+              {"name": "developer_ref", "type": "string"},
+              {"name": "github_id", "type": "integer"},
+              {"name": "tech_stack", "type": "string"},
+              {"name": "name", "type": "string"},
+              {"name": "birth_date", "type": "date"},
+              {"name": "country_residence", "type": "string"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "developer_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "developer_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "developer_ref": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "developer_ref", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "github_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "github_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "tech_stack": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "tech_stack", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "birth_date": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "birth_date", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "country_residence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "country_residence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "dev_final_df", "field": "data_source", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

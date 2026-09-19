@@ -1,0 +1,958 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:22:19.063Z",
+    "run": {
+      "runId": "15d47460-6c26-4325-81df-dfd72e04e170"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/synthetic-datalake-generator",
+      "name": "step_01_create_user_ids",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "user_ids_df",
+              "selectedColumns": [
+                "userid"
+              ],
+              "expression": "spark.range(1, 1001) and cast id to userid"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "user_ids_df"
+              ],
+              "outputDataFrame": "synthetic_users_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "derive deterministic synthetic user attributes from userid"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "synthetic_users_df"
+              ],
+              "outputDataFrame": "users_output_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "explicit output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "overwrite portable JSON data-lake target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "user_ids_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "userid": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:22:19.063Z",
+    "run": {
+      "runId": "0da4b0cf-c4e6-4d79-9f3c-17f3f54e5156"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/synthetic-datalake-generator",
+      "name": "step_02_derive_synthetic_users",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "user_ids_df",
+              "selectedColumns": [
+                "userid"
+              ],
+              "expression": "spark.range(1, 1001) and cast id to userid"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "user_ids_df"
+              ],
+              "outputDataFrame": "synthetic_users_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "derive deterministic synthetic user attributes from userid"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "synthetic_users_df"
+              ],
+              "outputDataFrame": "users_output_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "explicit output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "overwrite portable JSON data-lake target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "user_ids_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "synthetic_users_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "age",
+                "type": "INTEGER"
+              },
+              {
+                "name": "street",
+                "type": "STRING"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              },
+              {
+                "name": "state",
+                "type": "STRING"
+              },
+              {
+                "name": "zip",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "userid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat('User ', userid)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "age": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "18 + (userid % 84)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "street": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat(userid, ' Example Street')"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat('City ', userid % 100)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat('State ', userid % 50)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "zip": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "user_ids_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "lpad(10000 + userid % 90000, 5, '0')"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:22:19.063Z",
+    "run": {
+      "runId": "6e5eaa41-5e7f-4f42-b030-63d20d1e6606"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/synthetic-datalake-generator",
+      "name": "step_03_prepare_output",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "user_ids_df",
+              "selectedColumns": [
+                "userid"
+              ],
+              "expression": "spark.range(1, 1001) and cast id to userid"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "user_ids_df"
+              ],
+              "outputDataFrame": "synthetic_users_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "derive deterministic synthetic user attributes from userid"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "synthetic_users_df"
+              ],
+              "outputDataFrame": "users_output_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "explicit output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "overwrite portable JSON data-lake target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "synthetic_users_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "age",
+                "type": "INTEGER"
+              },
+              {
+                "name": "street",
+                "type": "STRING"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              },
+              {
+                "name": "state",
+                "type": "STRING"
+              },
+              {
+                "name": "zip",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "age",
+                "type": "INTEGER"
+              },
+              {
+                "name": "street",
+                "type": "STRING"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              },
+              {
+                "name": "state",
+                "type": "STRING"
+              },
+              {
+                "name": "zip",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "userid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "age": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "age",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "street": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "street",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "zip": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "synthetic_users_df",
+                    "field": "zip",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T16:22:19.063Z",
+    "run": {
+      "runId": "85ae27f4-ea01-464a-8819-6d4f514994d4"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/synthetic-datalake-generator",
+      "name": "step_04_write_json_datalake",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "CREATE_RANGE",
+              "inputDataFrames": [],
+              "outputDataFrame": "user_ids_df",
+              "selectedColumns": [
+                "userid"
+              ],
+              "expression": "spark.range(1, 1001) and cast id to userid"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "user_ids_df"
+              ],
+              "outputDataFrame": "synthetic_users_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "derive deterministic synthetic user attributes from userid"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "synthetic_users_df"
+              ],
+              "outputDataFrame": "users_output_df",
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "explicit output projection"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "users_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "userid",
+                "name",
+                "age",
+                "street",
+                "city",
+                "state",
+                "zip"
+              ],
+              "expression": "overwrite portable JSON data-lake target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "age",
+                "type": "INTEGER"
+              },
+              {
+                "name": "street",
+                "type": "STRING"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              },
+              {
+                "name": "state",
+                "type": "STRING"
+              },
+              {
+                "name": "zip",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/datalake/users",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "userid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "name": "age",
+                "type": "INTEGER"
+              },
+              {
+                "name": "street",
+                "type": "STRING"
+              },
+              {
+                "name": "city",
+                "type": "STRING"
+              },
+              {
+                "name": "state",
+                "type": "STRING"
+              },
+              {
+                "name": "zip",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "userid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "userid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "age": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "age",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "street": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "street",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "city",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "state": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "state",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "zip": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "users_output_df",
+                    "field": "zip",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

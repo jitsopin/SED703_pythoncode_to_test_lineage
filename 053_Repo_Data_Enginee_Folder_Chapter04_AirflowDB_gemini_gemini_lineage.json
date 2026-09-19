@@ -1,0 +1,116 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:25:00Z",
+    "run": {
+      "runId": "4c8f2b3e-7a1d-4e5c-9f6b-0d3a2c5e8b1d"
+    },
+    "job": {
+      "namespace": "user_profile_etl",
+      "name": "step_1_extract_pg_users"
+    },
+    "inputs": [
+      {
+        "namespace": "jdbc://localhost:5432/dataengineering",
+        "name": "public.users",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "name", "type": "string"},
+              {"name": "city", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "name", "type": "string"},
+              {"name": "city", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "jdbc://localhost:5432/dataengineering", "name": "public.users", "field": "city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:25:00Z",
+    "run": {
+      "runId": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+    },
+    "job": {
+      "namespace": "user_profile_etl",
+      "name": "step_2_load_elasticsearch"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "users_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "name", "type": "string"},
+              {"name": "city", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "elasticsearch://localhost:9200",
+        "name": "frompostgresql",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "name", "type": "string"},
+              {"name": "city", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "city": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "users_df", "field": "city", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

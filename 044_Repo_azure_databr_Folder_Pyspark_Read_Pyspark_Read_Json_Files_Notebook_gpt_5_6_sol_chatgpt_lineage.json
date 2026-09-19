@@ -1,0 +1,1286 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:32:26.845Z",
+    "run": {
+      "runId": "ae34b27b-6d0f-4672-99b5-29593673c56c"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/driver-json",
+      "name": "step_01_read_driver_json",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "drivers_raw_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "read JSON with explicit schema, dateFormat=yyyy-MM-dd, allowSingleQuotes=True"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "drivers_raw_df"
+              ],
+              "outputDataFrame": "drivers_normalized_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "explicit driver field projection"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "drivers_normalized_df"
+              ],
+              "outputDataFrame": "drivers_output_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "driverId is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "drivers_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "overwrite curated Parquet target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/driver_json/drivers_1.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "driverId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "driverRef": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "driverRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "code": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dob": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "dob",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "url": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/driver_json/drivers_1.json",
+                    "field": "url",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:32:26.845Z",
+    "run": {
+      "runId": "ff703cd7-c63d-479f-be20-d7df34901af2"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/driver-json",
+      "name": "step_02_normalize_driver_fields",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "drivers_raw_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "read JSON with explicit schema, dateFormat=yyyy-MM-dd, allowSingleQuotes=True"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "drivers_raw_df"
+              ],
+              "outputDataFrame": "drivers_normalized_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "explicit driver field projection"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "drivers_normalized_df"
+              ],
+              "outputDataFrame": "drivers_output_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "driverId is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "drivers_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "overwrite curated Parquet target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_normalized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "driverId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "driverRef": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "driverRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dob": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "dob",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "url": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_raw_df",
+                    "field": "url",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:32:26.845Z",
+    "run": {
+      "runId": "5df79b40-3150-4dd8-908d-0b2369e32156"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/driver-json",
+      "name": "step_03_filter_valid_driver_ids",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "drivers_raw_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "read JSON with explicit schema, dateFormat=yyyy-MM-dd, allowSingleQuotes=True"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "drivers_raw_df"
+              ],
+              "outputDataFrame": "drivers_normalized_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "explicit driver field projection"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "drivers_normalized_df"
+              ],
+              "outputDataFrame": "drivers_output_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "driverId is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "drivers_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "overwrite curated Parquet target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_normalized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "driverId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "driverRef": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "driverRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dob": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "dob",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "url": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_normalized_df",
+                    "field": "url",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T15:32:26.845Z",
+    "run": {
+      "runId": "fb3d7405-386c-4a1d-a51b-b539b5ef7174"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/driver-json",
+      "name": "step_04_write_driver_parquet",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "drivers_raw_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "read JSON with explicit schema, dateFormat=yyyy-MM-dd, allowSingleQuotes=True"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "drivers_raw_df"
+              ],
+              "outputDataFrame": "drivers_normalized_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "explicit driver field projection"
+            },
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputDataFrames": [
+                "drivers_normalized_df"
+              ],
+              "outputDataFrame": "drivers_output_df",
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "driverId is not null"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "drivers_output_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "driverId",
+                "driverRef",
+                "number",
+                "code",
+                "name",
+                "dob",
+                "nationality",
+                "url"
+              ],
+              "expression": "overwrite curated Parquet target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "drivers_output_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/driver_json/drivers_normalized",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "driverId",
+                "type": "INTEGER"
+              },
+              {
+                "name": "driverRef",
+                "type": "STRING"
+              },
+              {
+                "name": "number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "code",
+                "type": "STRING"
+              },
+              {
+                "name": "name",
+                "type": "STRUCT<forename:STRING,surname:STRING>"
+              },
+              {
+                "name": "dob",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "url",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "driverId": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "driverId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "driverRef": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "driverRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dob": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "dob",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "url": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "drivers_output_df",
+                    "field": "url",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

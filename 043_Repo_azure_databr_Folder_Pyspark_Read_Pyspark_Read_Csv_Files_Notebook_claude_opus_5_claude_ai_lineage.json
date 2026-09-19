@@ -1,0 +1,684 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T11:25:07Z",
+    "run": {
+      "runId": "9c6f1c27-a782-4a59-8cf7-f6bd99539edd"
+    },
+    "job": {
+      "namespace": "transit_curated_ingestion",
+      "name": "step_read_trip_leg_export",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/transit/trip_leg_times.csv"
+              ],
+              "output": "trip_leg_landing_df",
+              "columns": [
+                "tripId",
+                "vehicleId",
+                "legIndex",
+                "sequencePosition",
+                "legClock",
+                "legMilliseconds"
+              ],
+              "format": "csv",
+              "readOptions": {
+                "header": true,
+                "timestampFormat": "m:ss.SSS",
+                "nullValue": "-1"
+              },
+              "expression": "spark.read.schema(trip_leg_landing_schema).option('header', True).option('timestampFormat', 'm:ss.SSS').option('nullValue', '-1').csv('data/landing/transit/trip_leg_times.csv')",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/transit/trip_leg_times.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "tripId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "legIndex",
+                "type": "integer"
+              },
+              {
+                "name": "sequencePosition",
+                "type": "double"
+              },
+              {
+                "name": "legClock",
+                "type": "timestamp"
+              },
+              {
+                "name": "legMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trip_leg_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "tripId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "legIndex",
+                "type": "integer"
+              },
+              {
+                "name": "sequencePosition",
+                "type": "double"
+              },
+              {
+                "name": "legClock",
+                "type": "timestamp"
+              },
+              {
+                "name": "legMilliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "tripId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "tripId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tripId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicleId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "vehicleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicleId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "legIndex": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "legIndex",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "legIndex",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sequencePosition": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "sequencePosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sequencePosition",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "legClock": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "legClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "legClock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "legMilliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/transit/trip_leg_times.csv",
+                    "field": "legMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "legMilliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T11:25:07Z",
+    "run": {
+      "runId": "44e9c923-80a6-40af-8e53-f97ad1c1efb2"
+    },
+    "job": {
+      "namespace": "transit_curated_ingestion",
+      "name": "step_standardize_trip_leg_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT",
+              "inputs": [
+                "trip_leg_landing_df"
+              ],
+              "output": "trip_leg_time_df",
+              "columns": [
+                "trip_id",
+                "vehicle_id",
+                "leg_index",
+                "sequence_position",
+                "leg_clock",
+                "leg_milliseconds"
+              ],
+              "renamedColumns": {
+                "trip_id": "tripId",
+                "vehicle_id": "vehicleId",
+                "leg_index": "legIndex",
+                "sequence_position": "sequencePosition",
+                "leg_clock": "legClock",
+                "leg_milliseconds": "legMilliseconds"
+              },
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trip_leg_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "tripId",
+                "type": "integer"
+              },
+              {
+                "name": "vehicleId",
+                "type": "integer"
+              },
+              {
+                "name": "legIndex",
+                "type": "integer"
+              },
+              {
+                "name": "sequencePosition",
+                "type": "double"
+              },
+              {
+                "name": "legClock",
+                "type": "timestamp"
+              },
+              {
+                "name": "legMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trip_leg_time_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trip_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "leg_index",
+                "type": "integer"
+              },
+              {
+                "name": "sequence_position",
+                "type": "double"
+              },
+              {
+                "name": "leg_clock",
+                "type": "timestamp"
+              },
+              {
+                "name": "leg_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trip_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "tripId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('tripId').alias('trip_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "vehicleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('vehicleId').alias('vehicle_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "legIndex",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('legIndex').alias('leg_index')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sequence_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "sequencePosition",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('sequencePosition').alias('sequence_position')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "legClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('legClock').alias('leg_clock')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_landing_df",
+                    "field": "legMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('legMilliseconds').alias('leg_milliseconds')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T11:25:07Z",
+    "run": {
+      "runId": "54686c5b-fb95-4586-bbab-a71e7d7bf0a0"
+    },
+    "job": {
+      "namespace": "transit_curated_ingestion",
+      "name": "step_write_trip_leg_time_table",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "trip_leg_time_df"
+              ],
+              "output": "transit_curated.trip_leg_time",
+              "columns": [
+                "trip_id",
+                "vehicle_id",
+                "leg_index",
+                "sequence_position",
+                "leg_clock",
+                "leg_milliseconds"
+              ],
+              "writeMode": "overwrite",
+              "writeTarget": "managed table",
+              "format": "delta",
+              "expression": "trip_leg_time_df.write.mode('overwrite').format('delta').saveAsTable('transit_curated.trip_leg_time')",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "trip_leg_time_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trip_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "leg_index",
+                "type": "integer"
+              },
+              {
+                "name": "sequence_position",
+                "type": "double"
+              },
+              {
+                "name": "leg_clock",
+                "type": "timestamp"
+              },
+              {
+                "name": "leg_milliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "transit_curated.trip_leg_time",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "trip_id",
+                "type": "integer"
+              },
+              {
+                "name": "vehicle_id",
+                "type": "integer"
+              },
+              {
+                "name": "leg_index",
+                "type": "integer"
+              },
+              {
+                "name": "sequence_position",
+                "type": "double"
+              },
+              {
+                "name": "leg_clock",
+                "type": "timestamp"
+              },
+              {
+                "name": "leg_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "trip_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "trip_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "trip_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "vehicle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "vehicle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_index": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "leg_index",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "leg_index",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sequence_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "sequence_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sequence_position",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "leg_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "leg_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "leg_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "trip_leg_time_df",
+                    "field": "leg_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "leg_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

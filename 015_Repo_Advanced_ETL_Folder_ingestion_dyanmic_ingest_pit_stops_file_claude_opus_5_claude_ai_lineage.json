@@ -1,0 +1,1649 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "435d070f-63a6-426f-9f13-e39cea40c6ad"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_01_extract_changeover_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/manufacturing/line_changeover_events.json"
+              ],
+              "output": "changeover_landing_df",
+              "columns": [
+                "lineId",
+                "machineId",
+                "changeoverSequence",
+                "shiftSegment",
+                "changeoverClock",
+                "changeoverDuration",
+                "durationMilliseconds"
+              ],
+              "readOptions": {
+                "multiLine": true
+              },
+              "expression": "spark.read.schema(changeover_landing_schema).option('multiLine', True).json('data/landing/manufacturing/line_changeover_events.json')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/manufacturing/line_changeover_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "lineId",
+                "type": "integer"
+              },
+              {
+                "name": "machineId",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverSequence",
+                "type": "string"
+              },
+              {
+                "name": "shiftSegment",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverClock",
+                "type": "string"
+              },
+              {
+                "name": "changeoverDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "lineId",
+                "type": "integer"
+              },
+              {
+                "name": "machineId",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverSequence",
+                "type": "string"
+              },
+              {
+                "name": "shiftSegment",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverClock",
+                "type": "string"
+              },
+              {
+                "name": "changeoverDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "lineId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "lineId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "lineId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machineId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "machineId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "machineId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeoverSequence": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "changeoverSequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeoverSequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shiftSegment": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "shiftSegment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shiftSegment",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeoverClock": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "changeoverClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeoverClock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeoverDuration": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "changeoverDuration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeoverDuration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "durationMilliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/manufacturing/line_changeover_events.json",
+                    "field": "durationMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "durationMilliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "8b4fb40f-8252-42e9-ac76-d7f1b7d12288"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_02_standardize_changeover_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "changeover_landing_df"
+              ],
+              "output": "changeover_standardized_df",
+              "columns": [
+                "line_id",
+                "machine_id",
+                "changeover_sequence",
+                "shift_segment",
+                "changeover_clock",
+                "changeover_duration",
+                "duration_milliseconds"
+              ],
+              "renamedColumns": {
+                "line_id": "lineId",
+                "machine_id": "machineId",
+                "changeover_sequence": "changeoverSequence",
+                "shift_segment": "shiftSegment",
+                "changeover_clock": "changeoverClock",
+                "changeover_duration": "changeoverDuration",
+                "duration_milliseconds": "durationMilliseconds"
+              },
+              "castColumns": {
+                "changeover_sequence": "string -> integer"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "lineId",
+                "type": "integer"
+              },
+              {
+                "name": "machineId",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverSequence",
+                "type": "string"
+              },
+              {
+                "name": "shiftSegment",
+                "type": "integer"
+              },
+              {
+                "name": "changeoverClock",
+                "type": "string"
+              },
+              {
+                "name": "changeoverDuration",
+                "type": "string"
+              },
+              {
+                "name": "durationMilliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "lineId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('lineId').alias('line_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machine_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "machineId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('machineId').alias('machine_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "changeoverSequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('changeoverSequence').cast(IntegerType()).alias('changeover_sequence')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_segment": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "shiftSegment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('shiftSegment').alias('shift_segment')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "changeoverClock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('changeoverClock').alias('changeover_clock')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "changeoverDuration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('changeoverDuration').alias('changeover_duration')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_landing_df",
+                    "field": "durationMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('durationMilliseconds').alias('duration_milliseconds')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "fbd27748-18e4-446f-ba3a-3532194798e3"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_03_apply_changeover_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "changeover_standardized_df"
+              ],
+              "output": "changeover_eligible_df",
+              "columns": [
+                "line_id",
+                "machine_id",
+                "changeover_sequence",
+                "shift_segment",
+                "changeover_clock",
+                "changeover_duration",
+                "duration_milliseconds"
+              ],
+              "filterExpression": "col('line_id').isNotNull() & col('machine_id').isNotNull() & col('changeover_sequence').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machine_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "machine_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "machine_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "changeover_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_segment": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "shift_segment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_segment",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "changeover_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "changeover_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_standardized_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "changeover_standardized_df",
+                "field": "line_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('line_id').isNotNull() & col('machine_id').isNotNull() & col('changeover_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "changeover_standardized_df",
+                "field": "machine_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('line_id').isNotNull() & col('machine_id').isNotNull() & col('changeover_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "changeover_standardized_df",
+                "field": "changeover_sequence",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('line_id').isNotNull() & col('machine_id').isNotNull() & col('changeover_sequence').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "c6fbe284-25b6-4355-9e40-9c18aa55c0b0"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_04_tag_changeover_source_system",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "changeover_eligible_df"
+              ],
+              "output": "changeover_tagged_df",
+              "columns": [
+                "line_id",
+                "machine_id",
+                "changeover_sequence",
+                "shift_segment",
+                "changeover_clock",
+                "changeover_duration",
+                "duration_milliseconds",
+                "source_system"
+              ],
+              "derivedColumns": {
+                "source_system": "lit(source_system)"
+              },
+              "runtimeArguments": [
+                "argv[1] -> source_system"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machine_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "machine_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "machine_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "changeover_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_segment": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "shift_segment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_segment",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "changeover_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "changeover_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_eligible_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [],
+                "transformationDescription": "lit(source_system) from runtime argument argv[1]"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "7d63f916-9a5a-45bb-8216-f6fe87e38acc"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_05_build_changeover_detail_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "changeover_tagged_df"
+              ],
+              "output": "changeover_detail_df",
+              "columns": [
+                "line_id",
+                "machine_id",
+                "changeover_sequence",
+                "shift_segment",
+                "changeover_clock",
+                "changeover_duration",
+                "duration_milliseconds",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machine_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "machine_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "machine_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "changeover_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_segment": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "shift_segment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_segment",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "changeover_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "changeover_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_tagged_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:25:21Z",
+    "run": {
+      "runId": "98664717-c992-4838-b274-a8e8a828de84"
+    },
+    "job": {
+      "namespace": "manufacturing_curated_ingestion",
+      "name": "step_06_load_changeover_detail_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "changeover_detail_df"
+              ],
+              "output": "warehouse/curated/manufacturing/line_changeover_detail",
+              "columns": [
+                "line_id",
+                "machine_id",
+                "changeover_sequence",
+                "shift_segment",
+                "changeover_clock",
+                "changeover_duration",
+                "duration_milliseconds",
+                "source_system",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "expression": "changeover_detail_df.write.mode('overwrite').parquet('warehouse/curated/manufacturing/line_changeover_detail')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "changeover_detail_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/manufacturing/line_changeover_detail",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "machine_id",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_sequence",
+                "type": "integer"
+              },
+              {
+                "name": "shift_segment",
+                "type": "integer"
+              },
+              {
+                "name": "changeover_clock",
+                "type": "string"
+              },
+              {
+                "name": "changeover_duration",
+                "type": "string"
+              },
+              {
+                "name": "duration_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "machine_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "machine_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "machine_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_sequence": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "changeover_sequence",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_sequence",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_segment": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "shift_segment",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_segment",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_clock": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "changeover_clock",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_clock",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "changeover_duration": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "changeover_duration",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "changeover_duration",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "duration_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "duration_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "duration_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "changeover_detail_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

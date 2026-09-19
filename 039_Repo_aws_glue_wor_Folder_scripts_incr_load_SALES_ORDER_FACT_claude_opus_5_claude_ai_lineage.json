@@ -1,0 +1,2699 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "e4c7f0b3-977d-4517-ac0c-bb23bb9cfeba"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_read_banquet_order_headers",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "banquet_staging.incr_banquet_order"
+              ],
+              "output": "booking_header_df",
+              "columns": [
+                "BOOKING_ID",
+                "EVENT_DATE",
+                "SERVICE_MODE",
+                "VENUE_ID"
+              ],
+              "expression": "spark.table('banquet_staging.incr_banquet_order').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "banquet_staging.incr_banquet_order",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_header_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "BOOKING_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "BOOKING_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "EVENT_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "EVENT_DATE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SERVICE_MODE": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order",
+                    "field": "SERVICE_MODE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SERVICE_MODE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VENUE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order",
+                    "field": "VENUE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "VENUE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "1211d945-e4f2-4aae-99e2-c28d5718df8e"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_read_banquet_order_lines",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "banquet_staging.incr_banquet_order_line"
+              ],
+              "output": "booking_line_df",
+              "columns": [
+                "BOOKING_ID",
+                "LINE_ID",
+                "LINE_NUMBER",
+                "ITEM_ID",
+                "QUANTITY",
+                "UNIT_PRICE",
+                "DISCOUNT",
+                "TAX",
+                "SUPPLY_COST"
+              ],
+              "expression": "spark.table('banquet_staging.incr_banquet_order_line').select(...)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "banquet_staging.incr_banquet_order_line",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_line_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "BOOKING_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "BOOKING_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "LINE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_NUMBER": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "LINE_NUMBER",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_NUMBER",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ITEM_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "ITEM_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ITEM_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "QUANTITY": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "QUANTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "UNIT_PRICE": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "UNIT_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DISCOUNT": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "DISCOUNT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "DISCOUNT",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TAX": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "TAX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "TAX",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SUPPLY_COST": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "banquet_staging.incr_banquet_order_line",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SUPPLY_COST",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "9823fcf0-6ec5-43e8-a296-2bd251be29e6"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_join_lines_to_bookings",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "INNER_JOIN",
+              "inputs": [
+                "booking_header_df",
+                "booking_line_df"
+              ],
+              "output": "booking_joined_df",
+              "columns": [
+                "BOOKING_ID",
+                "EVENT_DATE",
+                "SERVICE_MODE",
+                "VENUE_ID",
+                "LINE_ID",
+                "LINE_NUMBER",
+                "ITEM_ID",
+                "QUANTITY",
+                "UNIT_PRICE",
+                "DISCOUNT",
+                "TAX",
+                "SUPPLY_COST"
+              ],
+              "joinType": "inner",
+              "joinCondition": "BOOKING_ID",
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_header_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_line_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_joined_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "BOOKING_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_header_df",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "BOOKING_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "EVENT_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_header_df",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "EVENT_DATE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SERVICE_MODE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_header_df",
+                    "field": "SERVICE_MODE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SERVICE_MODE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VENUE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_header_df",
+                    "field": "VENUE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "VENUE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "LINE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_NUMBER": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "LINE_NUMBER",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_NUMBER",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ITEM_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "ITEM_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ITEM_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "QUANTITY": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "QUANTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "UNIT_PRICE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "UNIT_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DISCOUNT": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "DISCOUNT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "DISCOUNT",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TAX": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "TAX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "TAX",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SUPPLY_COST": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_line_df",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SUPPLY_COST",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "booking_header_df",
+                "field": "BOOKING_ID",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(booking_line_df, ['BOOKING_ID'], 'inner')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "booking_line_df",
+                "field": "BOOKING_ID",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(booking_line_df, ['BOOKING_ID'], 'inner')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "ba3b7382-5a04-4e9d-b40a-5dbaef9b2287"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_register_booking_joined_view",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "CREATE_TEMPORARY_VIEW",
+              "inputs": [
+                "booking_joined_df"
+              ],
+              "output": "vw_booking_joined",
+              "columns": [
+                "BOOKING_ID",
+                "EVENT_DATE",
+                "SERVICE_MODE",
+                "VENUE_ID",
+                "LINE_ID",
+                "LINE_NUMBER",
+                "ITEM_ID",
+                "QUANTITY",
+                "UNIT_PRICE",
+                "DISCOUNT",
+                "TAX",
+                "SUPPLY_COST"
+              ],
+              "expression": "booking_joined_df.createOrReplaceTempView('vw_booking_joined')",
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_joined_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_booking_joined",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "BOOKING_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "BOOKING_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "EVENT_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "EVENT_DATE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SERVICE_MODE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "SERVICE_MODE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SERVICE_MODE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VENUE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "VENUE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "VENUE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "LINE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_NUMBER": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "LINE_NUMBER",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_NUMBER",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ITEM_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "ITEM_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ITEM_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "QUANTITY": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "QUANTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "UNIT_PRICE": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "UNIT_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DISCOUNT": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "DISCOUNT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "DISCOUNT",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TAX": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "TAX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "TAX",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SUPPLY_COST": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_joined_df",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SUPPLY_COST",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "ff59aa51-d6d2-4f1c-a948-0329198cb01a"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_derive_line_value_and_date_key",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SQL_SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "vw_booking_joined"
+              ],
+              "output": "booking_enriched_df",
+              "columns": [
+                "BOOKING_ID",
+                "EVENT_DATE",
+                "SERVICE_MODE",
+                "VENUE_ID",
+                "LINE_ID",
+                "LINE_NUMBER",
+                "ITEM_ID",
+                "QUANTITY",
+                "UNIT_PRICE",
+                "DISCOUNT",
+                "TAX",
+                "SUPPLY_COST",
+                "EXTENDED_PRICE",
+                "PROFIT",
+                "DATE_KEY"
+              ],
+              "derivedColumns": {
+                "EXTENDED_PRICE": "bround(QUANTITY * UNIT_PRICE, 2) AS EXTENDED_PRICE",
+                "PROFIT": "bround(QUANTITY * (UNIT_PRICE - SUPPLY_COST), 2) AS PROFIT",
+                "DATE_KEY": "date_format(EVENT_DATE, 'yyyyMMdd') AS DATE_KEY"
+              },
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "spark://temporary-view",
+        "name": "vw_booking_joined",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "EXTENDED_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "PROFIT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DATE_KEY",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "BOOKING_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "BOOKING_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "EVENT_DATE": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "EVENT_DATE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SERVICE_MODE": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "SERVICE_MODE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SERVICE_MODE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "VENUE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "VENUE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "VENUE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "LINE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "LINE_NUMBER": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "LINE_NUMBER",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "LINE_NUMBER",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ITEM_ID": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "ITEM_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ITEM_ID",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "QUANTITY": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "QUANTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "UNIT_PRICE": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "UNIT_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DISCOUNT": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "DISCOUNT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "DISCOUNT",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "TAX": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "TAX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "TAX",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "SUPPLY_COST": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "SUPPLY_COST",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "EXTENDED_PRICE": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "bround(QUANTITY * UNIT_PRICE, 2) AS EXTENDED_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "bround(QUANTITY * UNIT_PRICE, 2) AS EXTENDED_PRICE",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PROFIT": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "bround(QUANTITY * (UNIT_PRICE - SUPPLY_COST), 2) AS PROFIT",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "bround(QUANTITY * (UNIT_PRICE - SUPPLY_COST), 2) AS PROFIT",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "bround(QUANTITY * (UNIT_PRICE - SUPPLY_COST), 2) AS PROFIT",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DATE_KEY": {
+                "inputFields": [
+                  {
+                    "namespace": "spark://temporary-view",
+                    "name": "vw_booking_joined",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "date_format(EVENT_DATE, 'yyyyMMdd') AS DATE_KEY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "f98dd1f5-f3d2-4213-a98d-c01603c3089d"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_map_banquet_order_fact_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT",
+              "inputs": [
+                "booking_enriched_df"
+              ],
+              "output": "banquet_order_fact_df",
+              "columns": [
+                "booking_id",
+                "event_date",
+                "service_mode",
+                "venue_id",
+                "line_id",
+                "line_number",
+                "item_id",
+                "quantity",
+                "unit_price",
+                "discount",
+                "tax",
+                "supply_cost",
+                "extended_price",
+                "profit",
+                "date_key"
+              ],
+              "renamedColumns": {
+                "booking_id": "BOOKING_ID",
+                "event_date": "EVENT_DATE",
+                "service_mode": "SERVICE_MODE",
+                "venue_id": "VENUE_ID",
+                "line_id": "LINE_ID",
+                "line_number": "LINE_NUMBER",
+                "item_id": "ITEM_ID",
+                "quantity": "QUANTITY",
+                "unit_price": "UNIT_PRICE",
+                "discount": "DISCOUNT",
+                "tax": "TAX",
+                "supply_cost": "SUPPLY_COST",
+                "extended_price": "EXTENDED_PRICE",
+                "profit": "PROFIT",
+                "date_key": "DATE_KEY"
+              },
+              "castColumns": {
+                "venue_id": "double -> integer"
+              },
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "booking_enriched_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "BOOKING_ID",
+                "type": "integer"
+              },
+              {
+                "name": "EVENT_DATE",
+                "type": "date"
+              },
+              {
+                "name": "SERVICE_MODE",
+                "type": "string"
+              },
+              {
+                "name": "VENUE_ID",
+                "type": "double"
+              },
+              {
+                "name": "LINE_ID",
+                "type": "integer"
+              },
+              {
+                "name": "LINE_NUMBER",
+                "type": "integer"
+              },
+              {
+                "name": "ITEM_ID",
+                "type": "integer"
+              },
+              {
+                "name": "QUANTITY",
+                "type": "integer"
+              },
+              {
+                "name": "UNIT_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DISCOUNT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "TAX",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "SUPPLY_COST",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "EXTENDED_PRICE",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "PROFIT",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "DATE_KEY",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "banquet_order_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "booking_id",
+                "type": "integer"
+              },
+              {
+                "name": "event_date",
+                "type": "date"
+              },
+              {
+                "name": "service_mode",
+                "type": "string"
+              },
+              {
+                "name": "venue_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "item_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "unit_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "supply_cost",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "extended_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "profit",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "date_key",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "booking_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "BOOKING_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('BOOKING_ID').alias('booking_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "EVENT_DATE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('EVENT_DATE').alias('event_date')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "SERVICE_MODE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('SERVICE_MODE').alias('service_mode')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "VENUE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('VENUE_ID').cast('int').alias('venue_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "LINE_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('LINE_ID').alias('line_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "LINE_NUMBER",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('LINE_NUMBER').alias('line_number')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "ITEM_ID",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('ITEM_ID').alias('item_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "QUANTITY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('QUANTITY').alias('quantity')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "unit_price": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "UNIT_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('UNIT_PRICE').alias('unit_price')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "DISCOUNT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('DISCOUNT').alias('discount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "TAX",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('TAX').alias('tax')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supply_cost": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "SUPPLY_COST",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('SUPPLY_COST').alias('supply_cost')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extended_price": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "EXTENDED_PRICE",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('EXTENDED_PRICE').alias('extended_price')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "profit": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "PROFIT",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('PROFIT').alias('profit')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "date_key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "booking_enriched_df",
+                    "field": "DATE_KEY",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('DATE_KEY').alias('date_key')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:39:01Z",
+    "run": {
+      "runId": "6a7843be-57f5-4c9b-a244-dcd1474881cd"
+    },
+    "job": {
+      "namespace": "banquet_analytics_load",
+      "name": "step_append_banquet_order_fact",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "banquet_order_fact_df"
+              ],
+              "output": "analytics_public.banquet_order_fact",
+              "columns": [
+                "booking_id",
+                "event_date",
+                "service_mode",
+                "venue_id",
+                "line_id",
+                "line_number",
+                "item_id",
+                "quantity",
+                "unit_price",
+                "discount",
+                "tax",
+                "supply_cost",
+                "extended_price",
+                "profit",
+                "date_key"
+              ],
+              "writeMode": "append",
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "banquet_order_fact_df.write.format('jdbc').option('dbtable', 'analytics_public.banquet_order_fact').mode('append').save()",
+              "sequence": 7
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "banquet_order_fact_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "booking_id",
+                "type": "integer"
+              },
+              {
+                "name": "event_date",
+                "type": "date"
+              },
+              {
+                "name": "service_mode",
+                "type": "string"
+              },
+              {
+                "name": "venue_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "item_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "unit_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "supply_cost",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "extended_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "profit",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "date_key",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgresql",
+        "name": "analytics_public.banquet_order_fact",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "booking_id",
+                "type": "integer"
+              },
+              {
+                "name": "event_date",
+                "type": "date"
+              },
+              {
+                "name": "service_mode",
+                "type": "string"
+              },
+              {
+                "name": "venue_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_id",
+                "type": "integer"
+              },
+              {
+                "name": "line_number",
+                "type": "integer"
+              },
+              {
+                "name": "item_id",
+                "type": "integer"
+              },
+              {
+                "name": "quantity",
+                "type": "integer"
+              },
+              {
+                "name": "unit_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "discount",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "tax",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "supply_cost",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "extended_price",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "profit",
+                "type": "decimal(10,2)"
+              },
+              {
+                "name": "date_key",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "booking_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "booking_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "booking_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "event_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "event_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "service_mode": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "service_mode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "service_mode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "venue_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "venue_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "venue_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "line_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "line_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "line_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "line_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "item_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "item_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "quantity": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "quantity",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "quantity",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "unit_price": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "unit_price",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "unit_price",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "discount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "discount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "discount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tax": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "tax",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "tax",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "supply_cost": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "supply_cost",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "supply_cost",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "extended_price": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "extended_price",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "extended_price",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "profit": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "profit",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "profit",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "date_key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "banquet_order_fact_df",
+                    "field": "date_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "date_key",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

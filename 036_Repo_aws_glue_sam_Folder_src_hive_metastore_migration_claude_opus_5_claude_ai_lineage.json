@@ -1,0 +1,4092 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "a7281578-f189-4204-b414-1c4b2a9ddbb2"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_namespace_registry",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.namespace_registry"
+              ],
+              "output": "namespace_registry_df",
+              "columns": [
+                "namespace_id",
+                "namespace_name",
+                "namespace_description",
+                "namespace_location"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.namespace_registry').load().select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.namespace_registry",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_description",
+                "type": "string"
+              },
+              {
+                "name": "namespace_location",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_description",
+                "type": "string"
+              },
+              {
+                "name": "namespace_location",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_registry",
+                    "field": "namespace_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_registry",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_description": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_registry",
+                    "field": "namespace_description",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_description",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_location": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_registry",
+                    "field": "namespace_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "b0fbe4fb-da58-484d-bf17-9becca4d9a5b"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_namespace_property",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.namespace_property"
+              ],
+              "output": "namespace_property_df",
+              "columns": [
+                "namespace_id",
+                "property_key",
+                "property_value"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.namespace_property').load().select(...)",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.namespace_property",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_property",
+                    "field": "namespace_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_key": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_property",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_key",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_value": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.namespace_property",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_value",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "a98dd58c-6d7a-4328-9e3e-6964c08476b8"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_fold_namespace_properties",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "GROUP_BY_AGGREGATE",
+              "inputs": [
+                "namespace_property_df"
+              ],
+              "output": "namespace_property_map_df",
+              "columns": [
+                "namespace_id",
+                "properties"
+              ],
+              "groupByColumns": [
+                "namespace_id"
+              ],
+              "aggregations": {
+                "properties": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')"
+              },
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_property_df",
+                    "field": "namespace_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_property_df",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_property_df",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "namespace_property_df",
+                "field": "namespace_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy('namespace_id')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "5d1eafe6-ca5f-4f70-8811-87721dd3d2de"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_build_namespace_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "LEFT_OUTER_JOIN",
+              "inputs": [
+                "namespace_registry_df",
+                "namespace_property_map_df"
+              ],
+              "output": "namespace_attributes_df",
+              "columns": [
+                "name",
+                "description",
+                "location_uri",
+                "properties"
+              ],
+              "joinType": "left_outer",
+              "joinCondition": "namespace_id",
+              "renamedColumns": {
+                "name": "namespace_name",
+                "description": "namespace_description",
+                "location_uri": "namespace_location"
+              },
+              "filterExpression": "col('name').isNotNull()",
+              "droppedColumns": [
+                "namespace_id"
+              ],
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_description",
+                "type": "string"
+              },
+              {
+                "name": "namespace_location",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "name": "location_uri",
+                "type": "string"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_registry_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('namespace_name').alias('name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "description": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_registry_df",
+                    "field": "namespace_description",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('namespace_description').alias('description')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "location_uri": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_registry_df",
+                    "field": "namespace_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('namespace_location').alias('location_uri')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_property_map_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "properties",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "namespace_registry_df",
+                "field": "namespace_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(namespace_property_map_df, 'namespace_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "namespace_property_map_df",
+                "field": "namespace_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(namespace_property_map_df, 'namespace_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "namespace_registry_df",
+                "field": "namespace_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('name').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "82e58842-3f0c-45ef-abfe-923964508492"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_nest_namespace_item",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "namespace_attributes_df"
+              ],
+              "output": "namespace_item_df",
+              "columns": [
+                "item",
+                "type"
+              ],
+              "nestedColumns": {
+                "item": "struct(name, description, location_uri, properties).alias('item')"
+              },
+              "derivedColumns": {
+                "type": "lit('namespace')"
+              },
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "name": "location_uri",
+                "type": "string"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "item",
+                "type": "struct<name:string,description:string,location_uri:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_attributes_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, description, location_uri, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_attributes_df",
+                    "field": "description",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, description, location_uri, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_attributes_df",
+                    "field": "location_uri",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, description, location_uri, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_attributes_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, description, location_uri, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [],
+                "transformationDescription": "lit('namespace')"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "8bb3b06d-3a4e-4e80-b4ed-d82bfbe52858"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_export_namespaces",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "namespace_item_df"
+              ],
+              "output": "warehouse/export/catalog/namespaces",
+              "columns": [
+                "item",
+                "type"
+              ],
+              "writeMode": "overwrite",
+              "format": "json",
+              "expression": "namespace_item_df.write.mode('overwrite').json('warehouse/export/catalog/namespaces')",
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "item",
+                "type": "struct<name:string,description:string,location_uri:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/export/catalog/namespaces",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "item",
+                "type": "struct<name:string,description:string,location_uri:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_item_df",
+                    "field": "item",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "item",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_item_df",
+                    "field": "type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "a61710b4-4117-4c84-b613-c528b6a8fe39"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_dataset_registry",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.dataset_registry"
+              ],
+              "output": "dataset_registry_df",
+              "columns": [
+                "dataset_id",
+                "namespace_id",
+                "dataset_name",
+                "dataset_type",
+                "created_epoch",
+                "last_access_epoch",
+                "retention_days"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.dataset_registry').load().select(...)",
+              "sequence": 7
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.dataset_registry",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "namespace_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_type": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "dataset_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "created_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "last_access_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "retention_days": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_registry",
+                    "field": "retention_days",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "retention_days",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "3b899daa-63b1-4f7c-9afa-9f685dddba59"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_resolve_dataset_namespace",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "INNER_JOIN",
+              "inputs": [
+                "dataset_registry_df",
+                "namespace_registry_df"
+              ],
+              "output": "dataset_named_df",
+              "columns": [
+                "dataset_id",
+                "namespace_id",
+                "dataset_name",
+                "dataset_type",
+                "created_epoch",
+                "last_access_epoch",
+                "retention_days",
+                "namespace_name"
+              ],
+              "joinType": "inner",
+              "joinCondition": "namespace_id",
+              "sequence": 8
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "namespace_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_description",
+                "type": "string"
+              },
+              {
+                "name": "namespace_location",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_named_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "namespace_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "dataset_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "created_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "last_access_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "retention_days": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_registry_df",
+                    "field": "retention_days",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "retention_days",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "namespace_registry_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_registry_df",
+                "field": "namespace_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(namespace_registry_df.select(...), 'namespace_id', 'inner')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "namespace_registry_df",
+                "field": "namespace_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(namespace_registry_df.select(...), 'namespace_id', 'inner')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "abe0a251-f28c-4e13-8648-9e90d791fdb8"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_dataset_property",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.dataset_property"
+              ],
+              "output": "dataset_property_df",
+              "columns": [
+                "dataset_id",
+                "property_key",
+                "property_value"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.dataset_property').load().select(...)",
+              "sequence": 9
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.dataset_property",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_property",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_key": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_property",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_key",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_value": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_property",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_value",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "9ca1d544-a94c-4c36-b776-d7fd75c3b84d"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_fold_dataset_properties",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "GROUP_BY_AGGREGATE",
+              "inputs": [
+                "dataset_property_df"
+              ],
+              "output": "dataset_property_map_df",
+              "columns": [
+                "dataset_id",
+                "properties"
+              ],
+              "groupByColumns": [
+                "dataset_id"
+              ],
+              "aggregations": {
+                "properties": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')"
+              },
+              "sequence": 10
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_property_df",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_property_df",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_property_df",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_property_df",
+                "field": "dataset_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy('dataset_id')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "0e5e0e5b-6572-466a-88c7-f8f1c496ce5e"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_build_dataset_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "LEFT_OUTER_JOIN",
+              "inputs": [
+                "dataset_named_df",
+                "dataset_property_map_df"
+              ],
+              "output": "dataset_attributes_df",
+              "columns": [
+                "namespace_name",
+                "name",
+                "dataset_type",
+                "created_at",
+                "last_access_at",
+                "retention_days",
+                "properties"
+              ],
+              "joinType": "left_outer",
+              "joinCondition": "dataset_id",
+              "renamedColumns": {
+                "name": "dataset_name"
+              },
+              "derivedColumns": {
+                "created_at": "from_unixtime(col('created_epoch'))",
+                "last_access_at": "from_unixtime(col('last_access_epoch'))"
+              },
+              "filterExpression": "col('name').isNotNull() & col('namespace_name').isNotNull()",
+              "droppedColumns": [
+                "dataset_id",
+                "namespace_id"
+              ],
+              "sequence": 11
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_named_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "last_access_at",
+                "type": "string"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('dataset_name').alias('name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "dataset_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "from_unixtime(col('created_epoch')).alias('created_at')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "from_unixtime(col('last_access_epoch')).alias('last_access_at')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "retention_days": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "retention_days",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "retention_days",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_property_map_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "properties",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_named_df",
+                "field": "dataset_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(dataset_property_map_df, 'dataset_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_property_map_df",
+                "field": "dataset_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(dataset_property_map_df, 'dataset_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_named_df",
+                "field": "dataset_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('name').isNotNull() & col('namespace_name').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_named_df",
+                "field": "namespace_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('name').isNotNull() & col('namespace_name').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "d8789e8d-1e70-46e6-ad2d-4db92af72425"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_nest_dataset_item",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "dataset_attributes_df"
+              ],
+              "output": "dataset_item_df",
+              "columns": [
+                "namespace_name",
+                "item",
+                "type"
+              ],
+              "nestedColumns": {
+                "item": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')"
+              },
+              "derivedColumns": {
+                "type": "lit('dataset')"
+              },
+              "sequence": 12
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "last_access_at",
+                "type": "string"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<name:string,dataset_type:string,created_at:string,last_access_at:string,retention_days:integer,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "dataset_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "created_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "last_access_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "retention_days",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_attributes_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(name, dataset_type, created_at, last_access_at, retention_days, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [],
+                "transformationDescription": "lit('dataset')"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "8eb5c401-f2ef-4e5b-a5ae-adaeff4e58cc"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_export_datasets",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "dataset_item_df"
+              ],
+              "output": "warehouse/export/catalog/datasets",
+              "columns": [
+                "namespace_name",
+                "item",
+                "type"
+              ],
+              "writeMode": "overwrite",
+              "format": "json",
+              "expression": "dataset_item_df.write.mode('overwrite').json('warehouse/export/catalog/datasets')",
+              "sequence": 13
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<name:string,dataset_type:string,created_at:string,last_access_at:string,retention_days:integer,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/export/catalog/datasets",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<name:string,dataset_type:string,created_at:string,last_access_at:string,retention_days:integer,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_item_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_item_df",
+                    "field": "item",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "item",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_item_df",
+                    "field": "type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "0a89f37f-14d1-481e-9c3a-333ebe0d1a4d"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_dataset_segment",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.dataset_segment"
+              ],
+              "output": "segment_registry_df",
+              "columns": [
+                "segment_id",
+                "dataset_id",
+                "segment_name",
+                "created_epoch",
+                "last_access_epoch"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.dataset_segment').load().select(...)",
+              "sequence": 14
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.dataset_segment",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "segment_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_segment",
+                    "field": "segment_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_segment",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_name": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_segment",
+                    "field": "segment_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_segment",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "created_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.dataset_segment",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "last_access_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "0a593c4a-3c5a-489d-b539-29331284b773"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_resolve_segment_dataset",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "INNER_JOIN",
+              "inputs": [
+                "segment_registry_df",
+                "dataset_named_df"
+              ],
+              "output": "segment_named_df",
+              "columns": [
+                "segment_id",
+                "dataset_id",
+                "segment_name",
+                "created_epoch",
+                "last_access_epoch",
+                "dataset_name",
+                "namespace_name"
+              ],
+              "joinType": "inner",
+              "joinCondition": "dataset_id",
+              "sequence": 15
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_registry_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "dataset_named_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_type",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "retention_days",
+                "type": "integer"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_named_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "segment_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_registry_df",
+                    "field": "segment_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_registry_df",
+                    "field": "dataset_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_registry_df",
+                    "field": "segment_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_registry_df",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "created_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_registry_df",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "last_access_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "dataset_named_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "segment_registry_df",
+                "field": "dataset_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(dataset_named_df.select(...), 'dataset_id', 'inner')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "dataset_named_df",
+                "field": "dataset_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(dataset_named_df.select(...), 'dataset_id', 'inner')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "f8c949eb-684e-45bc-bc5a-f0215e2e36af"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_read_segment_property",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "legacy_catalog.segment_property"
+              ],
+              "output": "segment_property_df",
+              "columns": [
+                "segment_id",
+                "property_key",
+                "property_value"
+              ],
+              "format": "jdbc",
+              "runtimeArguments": [
+                "argv[1] -> url",
+                "argv[2] -> user",
+                "argv[3] -> password"
+              ],
+              "expression": "spark.read.format('jdbc').option('dbtable', 'legacy_catalog.segment_property').load().select(...)",
+              "sequence": 16
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgresql",
+        "name": "legacy_catalog.segment_property",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "segment_id": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.segment_property",
+                    "field": "segment_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_key": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.segment_property",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_key",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "property_value": {
+                "inputFields": [
+                  {
+                    "namespace": "postgresql",
+                    "name": "legacy_catalog.segment_property",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "property_value",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "e7243760-51ce-4fea-a006-7d81239c272e"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_fold_segment_properties",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "GROUP_BY_AGGREGATE",
+              "inputs": [
+                "segment_property_df"
+              ],
+              "output": "segment_property_map_df",
+              "columns": [
+                "segment_id",
+                "properties"
+              ],
+              "groupByColumns": [
+                "segment_id"
+              ],
+              "aggregations": {
+                "properties": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')"
+              },
+              "sequence": 17
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_property_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "property_key",
+                "type": "string"
+              },
+              {
+                "name": "property_value",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "segment_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_property_df",
+                    "field": "segment_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_property_df",
+                    "field": "property_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_property_df",
+                    "field": "property_value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "AGGREGATION",
+                        "description": "map_from_entries(collect_list(struct(col('property_key'), col('property_value')))).alias('properties')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "segment_property_df",
+                "field": "segment_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "GROUP_BY",
+                    "description": "groupBy('segment_id')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "c72587d2-247b-4798-b901-663a65c4f0f9"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_build_segment_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "LEFT_OUTER_JOIN",
+              "inputs": [
+                "segment_named_df",
+                "segment_property_map_df"
+              ],
+              "output": "segment_attributes_df",
+              "columns": [
+                "namespace_name",
+                "dataset_name",
+                "segment_name",
+                "created_at",
+                "last_access_at",
+                "properties"
+              ],
+              "joinType": "left_outer",
+              "joinCondition": "segment_id",
+              "derivedColumns": {
+                "created_at": "from_unixtime(col('created_epoch'))",
+                "last_access_at": "from_unixtime(col('last_access_epoch'))"
+              },
+              "filterExpression": "col('segment_name').isNotNull()",
+              "droppedColumns": [
+                "segment_id",
+                "dataset_id"
+              ],
+              "sequence": 18
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_named_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "dataset_id",
+                "type": "integer"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_epoch",
+                "type": "long"
+              },
+              {
+                "name": "last_access_epoch",
+                "type": "long"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "namespace_name",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_property_map_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "segment_id",
+                "type": "integer"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "last_access_at",
+                "type": "string"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_named_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_named_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "segment_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_named_df",
+                    "field": "segment_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "segment_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_named_df",
+                    "field": "created_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "from_unixtime(col('created_epoch')).alias('created_at')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "last_access_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_named_df",
+                    "field": "last_access_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "from_unixtime(col('last_access_epoch')).alias('last_access_at')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "properties": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_property_map_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "properties",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "segment_named_df",
+                "field": "segment_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(segment_property_map_df, 'segment_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "segment_property_map_df",
+                "field": "segment_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(segment_property_map_df, 'segment_id', 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "segment_named_df",
+                "field": "segment_name",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('segment_name').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "c7b5958d-53dc-490a-9ec2-d7b6ff8f7807"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_nest_segment_item",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "segment_attributes_df"
+              ],
+              "output": "segment_item_df",
+              "columns": [
+                "namespace_name",
+                "dataset_name",
+                "item",
+                "type"
+              ],
+              "nestedColumns": {
+                "item": "struct(segment_name, created_at, last_access_at, properties).alias('item')"
+              },
+              "derivedColumns": {
+                "type": "lit('segment')"
+              },
+              "sequence": 19
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_attributes_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "segment_name",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "last_access_at",
+                "type": "string"
+              },
+              {
+                "name": "properties",
+                "type": "map<string,string>"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<segment_name:string,created_at:string,last_access_at:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "segment_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(segment_name, created_at, last_access_at, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "created_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(segment_name, created_at, last_access_at, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "last_access_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(segment_name, created_at, last_access_at, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_attributes_df",
+                    "field": "properties",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "struct(segment_name, created_at, last_access_at, properties).alias('item')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [],
+                "transformationDescription": "lit('segment')"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T06:46:12Z",
+    "run": {
+      "runId": "f34332a3-6d07-4f98-ba48-499445ffce7f"
+    },
+    "job": {
+      "namespace": "legacy_catalog_export",
+      "name": "step_export_segments",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "segment_item_df"
+              ],
+              "output": "warehouse/export/catalog/segments",
+              "columns": [
+                "namespace_name",
+                "dataset_name",
+                "item",
+                "type"
+              ],
+              "writeMode": "overwrite",
+              "format": "json",
+              "expression": "segment_item_df.write.mode('overwrite').json('warehouse/export/catalog/segments')",
+              "sequence": 20
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "segment_item_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<segment_name:string,created_at:string,last_access_at:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/export/catalog/segments",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "namespace_name",
+                "type": "string"
+              },
+              {
+                "name": "dataset_name",
+                "type": "string"
+              },
+              {
+                "name": "item",
+                "type": "struct<segment_name:string,created_at:string,last_access_at:string,properties:map<string,string>>"
+              },
+              {
+                "name": "type",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "namespace_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_item_df",
+                    "field": "namespace_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "namespace_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "dataset_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_item_df",
+                    "field": "dataset_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "dataset_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "item": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_item_df",
+                    "field": "item",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "item",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "segment_item_df",
+                    "field": "type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,1879 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "dbb4dc96-16a8-48f0-96d4-6560b61dc94e"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_01_extract_airport_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/aviation/airport_export"
+              ],
+              "output": "airport_landing_df",
+              "columns": [
+                "airportId",
+                "airportRef",
+                "airportName",
+                "cityName",
+                "countryName",
+                "latDegrees",
+                "lonDegrees",
+                "elevationFeet",
+                "infoUrl"
+              ],
+              "readOptions": {
+                "header": true
+              },
+              "sourcePathTemplate": "data/landing/aviation/airport_export/{file_date}/airports.csv",
+              "runtimeArguments": [
+                "argv[2] -> file_date selects the daily folder"
+              ],
+              "expression": "spark.read.option('header', True).schema(airport_landing_schema).csv(f'data/landing/aviation/airport_export/{file_date}/airports.csv')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/aviation/airport_export",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airportId",
+                "type": "integer"
+              },
+              {
+                "name": "airportRef",
+                "type": "string"
+              },
+              {
+                "name": "airportName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "latDegrees",
+                "type": "double"
+              },
+              {
+                "name": "lonDegrees",
+                "type": "double"
+              },
+              {
+                "name": "elevationFeet",
+                "type": "integer"
+              },
+              {
+                "name": "infoUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airportId",
+                "type": "integer"
+              },
+              {
+                "name": "airportRef",
+                "type": "string"
+              },
+              {
+                "name": "airportName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "latDegrees",
+                "type": "double"
+              },
+              {
+                "name": "lonDegrees",
+                "type": "double"
+              },
+              {
+                "name": "elevationFeet",
+                "type": "integer"
+              },
+              {
+                "name": "infoUrl",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airportId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "airportId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airportId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airportRef": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "airportRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airportRef",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airportName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "airportName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airportName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cityName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "cityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cityName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "countryName": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "countryName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "countryName",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latDegrees": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "latDegrees",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latDegrees",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lonDegrees": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "lonDegrees",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "lonDegrees",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevationFeet": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "elevationFeet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevationFeet",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "infoUrl": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/aviation/airport_export",
+                    "field": "infoUrl",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "infoUrl",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "956b2b46-f882-4f65-ae40-bb20443c6ed6"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_02_standardize_airport_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "airport_landing_df"
+              ],
+              "output": "airport_standardized_df",
+              "columns": [
+                "airport_id",
+                "airport_ref",
+                "airport_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_feet"
+              ],
+              "renamedColumns": {
+                "airport_id": "airportId",
+                "airport_ref": "airportRef",
+                "airport_name": "airportName",
+                "city_name": "cityName",
+                "country_name": "countryName",
+                "latitude": "latDegrees",
+                "longitude": "lonDegrees",
+                "elevation_feet": "elevationFeet"
+              },
+              "droppedColumns": [
+                "infoUrl"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airportId",
+                "type": "integer"
+              },
+              {
+                "name": "airportRef",
+                "type": "string"
+              },
+              {
+                "name": "airportName",
+                "type": "string"
+              },
+              {
+                "name": "cityName",
+                "type": "string"
+              },
+              {
+                "name": "countryName",
+                "type": "string"
+              },
+              {
+                "name": "latDegrees",
+                "type": "double"
+              },
+              {
+                "name": "lonDegrees",
+                "type": "double"
+              },
+              {
+                "name": "elevationFeet",
+                "type": "integer"
+              },
+              {
+                "name": "infoUrl",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airport_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "airportId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('airportId').alias('airport_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_ref": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "airportRef",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('airportRef').alias('airport_ref')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "airportName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('airportName').alias('airport_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "cityName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('cityName').alias('city_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "countryName",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('countryName').alias('country_name')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "latDegrees",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('latDegrees').alias('latitude')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "lonDegrees",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('lonDegrees').alias('longitude')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_feet": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_landing_df",
+                    "field": "elevationFeet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('elevationFeet').alias('elevation_feet')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "438ef9a8-0812-452c-9f32-35868db4bd4d"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_03_apply_airport_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "airport_standardized_df"
+              ],
+              "output": "airport_eligible_df",
+              "columns": [
+                "airport_id",
+                "airport_ref",
+                "airport_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_feet"
+              ],
+              "filterExpression": "col('airport_id').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airport_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "airport_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_ref": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "airport_ref",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_ref",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "airport_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_feet": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_standardized_df",
+                    "field": "elevation_feet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_feet",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "airport_standardized_df",
+                "field": "airport_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('airport_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "169db540-51bd-4080-a9cc-f43d36400b8f"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_04_tag_airport_source_and_file_date",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "airport_eligible_df"
+              ],
+              "output": "airport_tagged_df",
+              "columns": [
+                "airport_id",
+                "airport_ref",
+                "airport_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_feet",
+                "source_system",
+                "file_date"
+              ],
+              "derivedColumns": {
+                "source_system": "lit(source_system)",
+                "file_date": "lit(file_date)"
+              },
+              "runtimeArguments": [
+                "argv[1] -> source_system",
+                "argv[2] -> file_date"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airport_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "airport_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_ref": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "airport_ref",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_ref",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "airport_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_feet": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_eligible_df",
+                    "field": "elevation_feet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_feet",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [],
+                "transformationDescription": "lit(source_system) from runtime argument argv[1]"
+              },
+              "file_date": {
+                "inputFields": [],
+                "transformationDescription": "lit(file_date) from runtime argument argv[2]"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "0157f217-d21c-412d-a2e4-b2cde85e9e8a"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_05_build_airport_directory_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "airport_tagged_df"
+              ],
+              "output": "airport_directory_df",
+              "columns": [
+                "airport_id",
+                "airport_ref",
+                "airport_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_feet",
+                "source_system",
+                "file_date",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_tagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airport_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "airport_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_ref": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "airport_ref",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_ref",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "airport_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_feet": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "elevation_feet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_feet",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "file_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_tagged_df",
+                    "field": "file_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "file_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T01:25:04Z",
+    "run": {
+      "runId": "b59e1782-3937-4c71-a698-a27f8462f9b3"
+    },
+    "job": {
+      "namespace": "aviation_reference_ingestion",
+      "name": "step_06_load_airport_directory_table",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 6,
+              "statementType": "WRITE",
+              "inputs": [
+                "airport_directory_df"
+              ],
+              "output": "aviation_curated.airport_directory",
+              "columns": [
+                "airport_id",
+                "airport_ref",
+                "airport_name",
+                "city_name",
+                "country_name",
+                "latitude",
+                "longitude",
+                "elevation_feet",
+                "source_system",
+                "file_date",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "writeTarget": "managed table",
+              "format": "parquet",
+              "expression": "airport_directory_df.write.mode('overwrite').format('parquet').saveAsTable('aviation_curated.airport_directory')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "airport_directory_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "aviation_curated.airport_directory",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "airport_id",
+                "type": "integer"
+              },
+              {
+                "name": "airport_ref",
+                "type": "string"
+              },
+              {
+                "name": "airport_name",
+                "type": "string"
+              },
+              {
+                "name": "city_name",
+                "type": "string"
+              },
+              {
+                "name": "country_name",
+                "type": "string"
+              },
+              {
+                "name": "latitude",
+                "type": "double"
+              },
+              {
+                "name": "longitude",
+                "type": "double"
+              },
+              {
+                "name": "elevation_feet",
+                "type": "integer"
+              },
+              {
+                "name": "source_system",
+                "type": "string"
+              },
+              {
+                "name": "file_date",
+                "type": "string"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "airport_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "airport_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_ref": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "airport_ref",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_ref",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "airport_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "airport_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "airport_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "city_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "city_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "city_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "country_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "country_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "country_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "latitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "latitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "latitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "longitude": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "longitude",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "longitude",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elevation_feet": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "elevation_feet",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elevation_feet",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_system": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "source_system",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "source_system",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "file_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "file_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "file_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "airport_directory_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

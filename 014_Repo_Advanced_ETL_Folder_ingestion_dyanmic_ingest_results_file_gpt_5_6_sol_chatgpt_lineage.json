@@ -1,0 +1,3284 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:19:30.834Z",
+    "run": {
+      "runId": "ead8c031-27f7-4b16-9c48-913de283d6d8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/competition-results",
+      "name": "step_01_read_competition_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code"
+              ],
+              "expression": "spark.read.schema(result_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_sourced_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source"
+              ],
+              "expression": "result_raw_df.select(..., lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_sourced_df"
+              ],
+              "outputDataFrame": "result_ingested_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_sourced_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "result_ingested_df"
+              ],
+              "outputDataFrame": "published_result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_ingested_df.select(explicit published columns excluding status_code)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "published_result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "published_result_snapshot_df.write.mode(\"overwrite\").partitionBy(\"event_id\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/competition_results/result_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "finish_position_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "classification_order": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "classification_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laps_completed": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "laps_completed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "fastest_lap_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "fastest_lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_speed": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "fastest_lap_speed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "status_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/competition_results/result_events.json",
+                    "field": "status_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:19:30.834Z",
+    "run": {
+      "runId": "fcd363c3-89cd-4ac1-80e3-4d57daa8ef5e"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/competition-results",
+      "name": "step_02_attach_data_source",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code"
+              ],
+              "expression": "spark.read.schema(result_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_sourced_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source"
+              ],
+              "expression": "result_raw_df.select(..., lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_sourced_df"
+              ],
+              "outputDataFrame": "result_ingested_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_sourced_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "result_ingested_df"
+              ],
+              "outputDataFrame": "published_result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_ingested_df.select(explicit published columns excluding status_code)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "published_result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "published_result_snapshot_df.write.mode(\"overwrite\").partitionBy(\"event_id\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_sourced_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "finish_position_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "classification_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "classification_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laps_completed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "laps_completed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "fastest_lap_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "fastest_lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_speed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "fastest_lap_speed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "status_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_raw_df",
+                    "field": "status_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:19:30.834Z",
+    "run": {
+      "runId": "34b46cf0-849a-403c-b2d3-93d87b057e1b"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/competition-results",
+      "name": "step_03_add_ingestion_timestamp",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code"
+              ],
+              "expression": "spark.read.schema(result_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_sourced_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source"
+              ],
+              "expression": "result_raw_df.select(..., lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_sourced_df"
+              ],
+              "outputDataFrame": "result_ingested_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_sourced_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "result_ingested_df"
+              ],
+              "outputDataFrame": "published_result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_ingested_df.select(explicit published columns excluding status_code)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "published_result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "published_result_snapshot_df.write.mode(\"overwrite\").partitionBy(\"event_id\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_sourced_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_ingested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "finish_position_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "classification_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "classification_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laps_completed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "laps_completed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "fastest_lap_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "fastest_lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_speed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "fastest_lap_speed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "status_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "status_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_sourced_df",
+                    "field": "data_source",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:19:30.834Z",
+    "run": {
+      "runId": "b32da7cf-549c-400a-8093-105bb1f60b92"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/competition-results",
+      "name": "step_04_project_published_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code"
+              ],
+              "expression": "spark.read.schema(result_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_sourced_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source"
+              ],
+              "expression": "result_raw_df.select(..., lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_sourced_df"
+              ],
+              "outputDataFrame": "result_ingested_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_sourced_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "result_ingested_df"
+              ],
+              "outputDataFrame": "published_result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_ingested_df.select(explicit published columns excluding status_code)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "published_result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "published_result_snapshot_df.write.mode(\"overwrite\").partitionBy(\"event_id\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "result_ingested_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "status_code",
+                "type": "STRING"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "finish_position_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "classification_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "classification_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laps_completed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "laps_completed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "fastest_lap_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "fastest_lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_speed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "fastest_lap_speed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "data_source",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "result_ingested_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T14:19:30.834Z",
+    "run": {
+      "runId": "78580513-3723-4843-b56b-eae69b8a1eff"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/competition-results",
+      "name": "step_05_write_published_results",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "result_raw_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code"
+              ],
+              "expression": "spark.read.schema(result_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_raw_df"
+              ],
+              "outputDataFrame": "result_sourced_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source"
+              ],
+              "expression": "result_raw_df.select(..., lit(data_source).alias('data_source'))"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "result_sourced_df"
+              ],
+              "outputDataFrame": "result_ingested_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "status_code",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_sourced_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "result_ingested_df"
+              ],
+              "outputDataFrame": "published_result_snapshot_df",
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "result_ingested_df.select(explicit published columns excluding status_code)"
+            },
+            {
+              "sequence": 5,
+              "statementType": "WRITE_PARQUET_OVERWRITE_PARTITIONED",
+              "inputDataFrames": [
+                "published_result_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "result_id",
+                "event_id",
+                "participant_id",
+                "team_id",
+                "vehicle_number",
+                "starting_grid",
+                "finish_position",
+                "finish_position_text",
+                "classification_order",
+                "points_awarded",
+                "laps_completed",
+                "elapsed_time_text",
+                "elapsed_milliseconds",
+                "fastest_lap_number",
+                "fastest_lap_rank",
+                "fastest_lap_time_text",
+                "fastest_lap_speed",
+                "data_source",
+                "ingested_at_utc"
+              ],
+              "expression": "published_result_snapshot_df.write.mode(\"overwrite\").partitionBy(\"event_id\").parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "published_result_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/competition_results/published_results",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "result_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "event_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "team_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "vehicle_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "starting_grid",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position",
+                "type": "INTEGER"
+              },
+              {
+                "name": "finish_position_text",
+                "type": "STRING"
+              },
+              {
+                "name": "classification_order",
+                "type": "INTEGER"
+              },
+              {
+                "name": "points_awarded",
+                "type": "FLOAT"
+              },
+              {
+                "name": "laps_completed",
+                "type": "INTEGER"
+              },
+              {
+                "name": "elapsed_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_rank",
+                "type": "INTEGER"
+              },
+              {
+                "name": "fastest_lap_time_text",
+                "type": "STRING"
+              },
+              {
+                "name": "fastest_lap_speed",
+                "type": "FLOAT"
+              },
+              {
+                "name": "data_source",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "result_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "result_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "event_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "event_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "team_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "team_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "vehicle_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "vehicle_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "starting_grid": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "starting_grid",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "finish_position",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_position_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "finish_position_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "classification_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "classification_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "points_awarded": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "points_awarded",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laps_completed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "laps_completed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "elapsed_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "fastest_lap_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "fastest_lap_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_time_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "fastest_lap_time_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "fastest_lap_speed": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "fastest_lap_speed",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "data_source": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "data_source",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "published_result_snapshot_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "published_result_snapshot_df",
+                  "field": "event_id",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "PARTITION_BY",
+                      "description": "partitionBy(\"event_id\")",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

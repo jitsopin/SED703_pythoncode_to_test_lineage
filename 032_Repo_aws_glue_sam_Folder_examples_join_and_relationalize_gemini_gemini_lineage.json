@@ -1,0 +1,825 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_1_extract_staff"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/staff",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/staff", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/staff", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/staff", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "5f6e7d8c-9b0a-1e2f-3d4c-5b6a7e8f9d0c"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_2_extract_assignments"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/assignments",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "staff_id", "type": "integer"},
+              {"name": "organization_id", "type": "integer"},
+              {"name": "role", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "assignments_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "staff_id", "type": "integer"},
+              {"name": "organization_id", "type": "integer"},
+              {"name": "role", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "assignment_id": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/assignments", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_id": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/assignments", "field": "staff_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "organization_id": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/assignments", "field": "organization_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/assignments", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_3_extract_hospitals"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/hospitals",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "name", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "facility_metadata", "type": "string"},
+              {"name": "internal_identifiers", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "hospitals_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "name", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "facility_metadata", "type": "string"},
+              {"name": "internal_identifiers", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/hospitals", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "name": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/hospitals", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/hospitals", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "facility_metadata": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/hospitals", "field": "facility_metadata", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "internal_identifiers": {
+                "inputFields": [{"namespace": "file", "name": "warehouse/medical/hospitals", "field": "internal_identifiers", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "9f8e7d6c-5b4a-3f2e-1d0c-b9a8f7e6d5c4"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_4_clean_hospitals"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "hospitals_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "name", "type": "string"},
+              {"name": "region", "type": "string"},
+              {"name": "facility_metadata", "type": "string"},
+              {"name": "internal_identifiers", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "hospitals_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "hospital_id", "type": "integer"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "hospital_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "hospitals_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(hospital_id)", "masking": false}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "hospitals_df", "field": "name", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "alias(hospital_name)", "masking": false}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "hospitals_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_5_join_staff_and_assignments"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"}
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "assignments_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "staff_id", "type": "integer"},
+              {"name": "organization_id", "type": "integer"},
+              {"name": "role", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_assignments_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "organization_id", "type": "integer"},
+              {"name": "role", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "staff_df",
+                "field": "id",
+                "transformations": [{"type": "INDIRECT", "subtype": "INNER_JOIN", "description": "staff_df.id == assignments_df.staff_id"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "assignments_df",
+                "field": "staff_id",
+                "transformations": [{"type": "INDIRECT", "subtype": "INNER_JOIN", "description": "staff_df.id == assignments_df.staff_id"}]
+              }
+            ],
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "assignments_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "organization_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "assignments_df", "field": "organization_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "assignments_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "4c3d8f9a-1b5e-47a3-b2d4-0e6c5f1a3b8d"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_6_consolidate_staff_history"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_assignments_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "organization_id", "type": "integer"},
+              {"name": "role", "type": "string"}
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "hospitals_clean_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "hospital_id", "type": "integer"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "staff_assignments_df",
+                "field": "organization_id",
+                "transformations": [{"type": "INDIRECT", "subtype": "INNER_JOIN", "description": "staff_assignments_df.organization_id == hospitals_clean_df.hospital_id"}]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "hospitals_clean_df",
+                "field": "hospital_id",
+                "transformations": [{"type": "INDIRECT", "subtype": "INNER_JOIN", "description": "staff_assignments_df.organization_id == hospitals_clean_df.hospital_id"}]
+              }
+            ],
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_assignments_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_assignments_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_assignments_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_assignments_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_assignments_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "hospitals_clean_df", "field": "hospital_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "hospitals_clean_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "6f2b5a19-e93d-4c8f-a7b2-3e4c8f1d2c5e"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_7_load_standard_parquet"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/staff_history_standard",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "hospital_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "48b61c73-f1e9-4e5a-8b17-09a4563a9b1c"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_8_load_single_file_parquet"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/staff_history_single",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "staff_history_df",
+                "field": "*",
+                "transformations": [{"type": "INDIRECT", "subtype": "TRANSFORMATION", "description": "repartition(1)"}]
+              }
+            ],
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "hospital_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "9b1c73f1-e94e-5a8b-1709-a4563a9b1c48"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_9_load_partitioned_parquet"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/medical/staff_history_partitioned",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "staff_history_df",
+                "field": "hospital_name",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "partitionBy(hospital_name)"}]
+              }
+            ],
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "hospital_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T10:43:34Z",
+    "run": {
+      "runId": "e5c20d7f-2b13-4c91-9e7f-b8c16a3f4e8b"
+    },
+    "job": {
+      "namespace": "healthcare_etl",
+      "name": "step_10_load_operational_db"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "staff_history_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://db-medical-prod.internal:5432",
+        "name": "public.staff_history_records",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "id", "type": "integer"},
+              {"name": "staff_name", "type": "string"},
+              {"name": "specialty", "type": "string"},
+              {"name": "assignment_id", "type": "integer"},
+              {"name": "role", "type": "string"},
+              {"name": "hospital_name", "type": "string"},
+              {"name": "region", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "staff_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "staff_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "specialty": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "specialty", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "assignment_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "assignment_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "role": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "role", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "hospital_name": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "hospital_name", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "region": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "staff_history_df", "field": "region", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,417 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:42:15Z",
+    "run": {
+      "runId": "c78a0d1b-5e91-4702-8f15-3b9f8d1c1a2e"
+    },
+    "job": {
+      "namespace": "esports_etl",
+      "name": "step_1_extract_match_results"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/esports/match_results.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "record_id", "type": "integer"},
+              {"name": "tournament_id", "type": "integer"},
+              {"name": "player_id", "type": "integer"},
+              {"name": "team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "placement_status", "type": "string"},
+              {"name": "placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "highest_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "best_round_time", "type": "string"},
+              {"name": "apm_speed", "type": "float"},
+              {"name": "server_status_code", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "record_id", "type": "integer"},
+              {"name": "tournament_id", "type": "integer"},
+              {"name": "player_id", "type": "integer"},
+              {"name": "team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "placement_status", "type": "string"},
+              {"name": "placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "highest_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "best_round_time", "type": "string"},
+              {"name": "apm_speed", "type": "float"},
+              {"name": "server_status_code", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "record_id": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "record_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "tournament_id": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "tournament_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "player_id": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "player_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "team_id": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "team_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "jersey_number": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "jersey_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "starting_seed": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "starting_seed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "final_placement", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "placement_status": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "placement_status", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "placement_order": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "placement_order", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "score_points": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "score_points", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "rounds_survived": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "rounds_survived", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "match_duration": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "match_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "duration_ms": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "highest_kill_streak": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "highest_kill_streak", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "mvp_rank": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "mvp_rank", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "best_round_time": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "best_round_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "apm_speed": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "apm_speed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "server_status_code": {"inputFields": [{"namespace": "file", "name": "data/landing/esports/match_results.json", "field": "server_status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:42:15Z",
+    "run": {
+      "runId": "b26b9a8c-7f41-4560-918d-4a39b2e8f5d0"
+    },
+    "job": {
+      "namespace": "esports_etl",
+      "name": "step_2_standardize_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "record_id", "type": "integer"},
+              {"name": "tournament_id", "type": "integer"},
+              {"name": "player_id", "type": "integer"},
+              {"name": "team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "placement_status", "type": "string"},
+              {"name": "placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "highest_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "best_round_time", "type": "string"},
+              {"name": "apm_speed", "type": "float"},
+              {"name": "server_status_code", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "match_record_id", "type": "integer"},
+              {"name": "event_tournament_id", "type": "integer"},
+              {"name": "esports_player_id", "type": "integer"},
+              {"name": "esports_team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "final_placement_status", "type": "string"},
+              {"name": "final_placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "max_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "fastest_round_time", "type": "string"},
+              {"name": "actions_per_minute", "type": "float"},
+              {"name": "server_status_code", "type": "string"},
+              {"name": "processed_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "match_record_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "record_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(record_id, match_record_id)", "masking": false}]}]},
+              "event_tournament_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "tournament_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(tournament_id, event_tournament_id)", "masking": false}]}]},
+              "esports_player_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "player_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(player_id, esports_player_id)", "masking": false}]}]},
+              "esports_team_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "team_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(team_id, esports_team_id)", "masking": false}]}]},
+              "jersey_number": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "jersey_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "starting_seed": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "starting_seed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "final_placement", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement_status": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "placement_status", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(placement_status, final_placement_status)", "masking": false}]}]},
+              "final_placement_order": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "placement_order", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(placement_order, final_placement_order)", "masking": false}]}]},
+              "score_points": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "score_points", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "rounds_survived": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "rounds_survived", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "match_duration": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "match_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "duration_ms": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "max_kill_streak": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "highest_kill_streak", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(highest_kill_streak, max_kill_streak)", "masking": false}]}]},
+              "mvp_rank": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "mvp_rank", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "fastest_round_time": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "best_round_time", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(best_round_time, fastest_round_time)", "masking": false}]}]},
+              "actions_per_minute": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "apm_speed", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(apm_speed, actions_per_minute)", "masking": false}]}]},
+              "server_status_code": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_raw_df", "field": "server_status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "processed_timestamp": {"inputFields": []}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:42:15Z",
+    "run": {
+      "runId": "a8b41e3d-0f9c-482a-bc97-6a1e3b5d2f40"
+    },
+    "job": {
+      "namespace": "esports_etl",
+      "name": "step_3_drop_server_status"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "match_record_id", "type": "integer"},
+              {"name": "event_tournament_id", "type": "integer"},
+              {"name": "esports_player_id", "type": "integer"},
+              {"name": "esports_team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "final_placement_status", "type": "string"},
+              {"name": "final_placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "max_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "fastest_round_time", "type": "string"},
+              {"name": "actions_per_minute", "type": "float"},
+              {"name": "server_status_code", "type": "string"},
+              {"name": "processed_timestamp", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "match_record_id", "type": "integer"},
+              {"name": "event_tournament_id", "type": "integer"},
+              {"name": "esports_player_id", "type": "integer"},
+              {"name": "esports_team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "final_placement_status", "type": "string"},
+              {"name": "final_placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "max_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "fastest_round_time", "type": "string"},
+              {"name": "actions_per_minute", "type": "float"},
+              {"name": "processed_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "match_record_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "match_record_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "event_tournament_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "event_tournament_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "esports_player_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "esports_player_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "esports_team_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "esports_team_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "jersey_number": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "jersey_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "starting_seed": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "starting_seed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "final_placement", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement_status": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "final_placement_status", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement_order": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "final_placement_order", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "score_points": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "score_points", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "rounds_survived": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "rounds_survived", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "match_duration": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "match_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "duration_ms": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "max_kill_streak": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "max_kill_streak", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "mvp_rank": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "mvp_rank", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "fastest_round_time": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "fastest_round_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "actions_per_minute": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "actions_per_minute", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "processed_timestamp": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_standardized_df", "field": "processed_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:42:15Z",
+    "run": {
+      "runId": "d59c2f1e-8a73-4159-9b4e-2c8a7f9b0d11"
+    },
+    "job": {
+      "namespace": "esports_etl",
+      "name": "step_4_load_partitioned_results"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "match_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "match_record_id", "type": "integer"},
+              {"name": "event_tournament_id", "type": "integer"},
+              {"name": "esports_player_id", "type": "integer"},
+              {"name": "esports_team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "final_placement_status", "type": "string"},
+              {"name": "final_placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "max_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "fastest_round_time", "type": "string"},
+              {"name": "actions_per_minute", "type": "float"},
+              {"name": "processed_timestamp", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "data/curated/esports/match_results_partitioned",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "match_record_id", "type": "integer"},
+              {"name": "event_tournament_id", "type": "integer"},
+              {"name": "esports_player_id", "type": "integer"},
+              {"name": "esports_team_id", "type": "integer"},
+              {"name": "jersey_number", "type": "integer"},
+              {"name": "starting_seed", "type": "integer"},
+              {"name": "final_placement", "type": "integer"},
+              {"name": "final_placement_status", "type": "string"},
+              {"name": "final_placement_order", "type": "integer"},
+              {"name": "score_points", "type": "float"},
+              {"name": "rounds_survived", "type": "integer"},
+              {"name": "match_duration", "type": "string"},
+              {"name": "duration_ms", "type": "integer"},
+              {"name": "max_kill_streak", "type": "integer"},
+              {"name": "mvp_rank", "type": "integer"},
+              {"name": "fastest_round_time", "type": "string"},
+              {"name": "actions_per_minute", "type": "float"},
+              {"name": "processed_timestamp", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "match_final_df",
+                "field": "event_tournament_id",
+                "transformations": [{"type": "INDIRECT", "subtype": "PARTITION_BY", "description": "partitionBy(event_tournament_id)"}]
+              }
+            ],
+            "fields": {
+              "match_record_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "match_record_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "event_tournament_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "event_tournament_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "esports_player_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "esports_player_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "esports_team_id": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "esports_team_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "jersey_number": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "jersey_number", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "starting_seed": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "starting_seed", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "final_placement", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement_status": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "final_placement_status", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "final_placement_order": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "final_placement_order", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "score_points": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "score_points", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "rounds_survived": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "rounds_survived", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "match_duration": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "match_duration", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "duration_ms": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "duration_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "max_kill_streak": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "max_kill_streak", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "mvp_rank": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "mvp_rank", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "fastest_round_time": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "fastest_round_time", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "actions_per_minute": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "actions_per_minute", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]},
+              "processed_timestamp": {"inputFields": [{"namespace": "dataframe://in-memory", "name": "match_final_df", "field": "processed_timestamp", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]}
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

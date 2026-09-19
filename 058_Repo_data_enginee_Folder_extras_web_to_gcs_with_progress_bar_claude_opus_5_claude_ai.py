@@ -1,35 +1,38 @@
 """
-Business purpose: publish the towing job records in columnar form and split by
-month, so billing and utilisation reporting read typed columns without unpacking
-the compressed drops.
-Source: data/landing/towing/job_records, a folder of gzip compressed CSV drops,
-one per month, each with a header row.
-Target: warehouse/curated/towing/job_record, a Parquet dataset partitioned by
-pickup_month and replaced on every run.
+Business purpose: publish the towing job exports in columnar form, keeping each
+row traceable to the export that carried it and keeping the written files to a
+workable size.
+Source: data/landing/towing/job_exports, a folder of gzip compressed CSV exports,
+one per month.
+Target: warehouse/curated/towing/job_record, a Parquet dataset replaced on every
+run and written in files of at most one hundred thousand rows.
 Output grain: one row per towing job.
 Business rules: the column types come from a declared contract rather than from
-the sampled rows, a job without a pickup time is not published because the
-partition is derived from it, and the pickup month is written as yyyy-MM.
-Generation profile: portable flat batch PySpark compressed CSV ingestion.
+the sampled rows, every row records the export it came from, and no written file
+holds more than one hundred thousand rows.
+Generation profile: portable flat batch PySpark compressed CSV ingestion with
+source tracking.
 Runtime arguments: none.
-Assumptions: the drops have already landed in the folder, since fetching them over
-HTTP and uploading the result to object storage is transport rather than
+Assumptions: the exports have already landed in the folder, since fetching them
+over HTTP and uploading the result to object storage is transport rather than
 transformation and has no portable equivalent; the month by month loop of the
 original is expressed as reading the whole folder at once, which Spark handles
-including the gzip; the one file per month layout it produced is expressed as a
-partition on the pickup month; and its checks for work already done were there to
-make a rerun cheap, not to decide what the output contains.
+including the gzip; the hundred thousand row chunks it read and wrote are
+expressed as a limit on the rows per written file; the export each row came from
+is recorded because the original produced one file per export; and its checks for
+work already done and its guard against an empty export were there to make a rerun
+cheap and to stop early, not to decide what the output contains.
 """
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, date_format
+from pyspark.sql.functions import col, input_file_name
 from pyspark.sql.types import (DoubleType, IntegerType, StringType, StructField,
                                StructType, TimestampType)
 
 # 1. Initialize Spark
 spark = SparkSession.builder.appName("towing_job_record_ingestion").getOrCreate()
 
-# 2. Read every compressed drop with an explicit schema contract
+# 2. Read every compressed export with an explicit schema contract
 job_landing_schema = StructType(fields=[
     StructField("operatorId", IntegerType(), True),
     StructField("pickupTimestamp", TimestampType(), True),
@@ -56,10 +59,10 @@ job_landing_schema = StructType(fields=[
 job_landing_df = spark.read \
     .option("header", True) \
     .schema(job_landing_schema) \
-    .csv("data/landing/towing/job_records")
+    .csv("data/landing/towing/job_exports")
 
-# 3. Publish every column under its business name
-job_standardized_df = job_landing_df.select(
+# 3. Publish every column under its business name and record the export
+job_record_df = job_landing_df.select(
     col("operatorId").alias("operator_id"),
     col("pickupTimestamp").alias("pickup_timestamp"),
     col("dropoffTimestamp").alias("dropoff_timestamp"),
@@ -79,21 +82,14 @@ job_standardized_df = job_landing_df.select(
     col("totalAmount").alias("total_amount"),
     col("congestionSurcharge").alias("congestion_surcharge"),
     col("paymentTypeId").alias("payment_type_id"),
-    col("jobType").alias("job_type"))
+    col("jobType").alias("job_type"),
+    input_file_name().alias("source_export"))
 
-# 4. Apply business rules: the pickup time carries the partition
-job_eligible_df = job_standardized_df \
-    .filter(col("pickup_timestamp").isNotNull())
-
-# 5. Derive the month the job was picked up in
-job_record_df = job_eligible_df \
-    .withColumn("pickup_month", date_format(col("pickup_timestamp"), "yyyy-MM"))
-
-# 6. Replace the curated dataset, split by month
+# 4. Replace the curated dataset, capped at a hundred thousand rows per file
 job_record_df.write \
+    .option("maxRecordsPerFile", 100000) \
     .mode("overwrite") \
-    .partitionBy("pickup_month") \
     .parquet("warehouse/curated/towing/job_record")
 
-# 7. Release resources
+# 5. Release resources
 spark.stop()

@@ -1,0 +1,1207 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:59:05Z",
+    "run": {
+      "runId": "ba4d6413-6572-4f81-a1d1-40734e53b485"
+    },
+    "job": {
+      "namespace": "retail_curated_ingestion",
+      "name": "step_01_extract_daily_sales_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/retail/daily_sales_extract.csv"
+              ],
+              "output": "daily_sales_landing_df",
+              "columns": [
+                "storeId",
+                "salesDate",
+                "productCategory",
+                "transactionCount",
+                "grossAmount",
+                "returnAmount"
+              ],
+              "readOptions": {
+                "header": true
+              },
+              "expression": "spark.read.option('header', True).schema(daily_sales_landing_schema).csv('data/landing/retail/daily_sales_extract.csv')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/retail/daily_sales_extract.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "storeId",
+                "type": "integer"
+              },
+              {
+                "name": "salesDate",
+                "type": "date"
+              },
+              {
+                "name": "productCategory",
+                "type": "string"
+              },
+              {
+                "name": "transactionCount",
+                "type": "integer"
+              },
+              {
+                "name": "grossAmount",
+                "type": "double"
+              },
+              {
+                "name": "returnAmount",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "storeId",
+                "type": "integer"
+              },
+              {
+                "name": "salesDate",
+                "type": "date"
+              },
+              {
+                "name": "productCategory",
+                "type": "string"
+              },
+              {
+                "name": "transactionCount",
+                "type": "integer"
+              },
+              {
+                "name": "grossAmount",
+                "type": "double"
+              },
+              {
+                "name": "returnAmount",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "storeId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "storeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "storeId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "salesDate": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "salesDate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "salesDate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productCategory": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "productCategory",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productCategory",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transactionCount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "transactionCount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "transactionCount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "grossAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "grossAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "grossAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "returnAmount": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/retail/daily_sales_extract.csv",
+                    "field": "returnAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "returnAmount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:59:05Z",
+    "run": {
+      "runId": "30900be1-d9b9-472f-af37-d84cc2114971"
+    },
+    "job": {
+      "namespace": "retail_curated_ingestion",
+      "name": "step_02_standardize_daily_sales_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "daily_sales_landing_df"
+              ],
+              "output": "daily_sales_standardized_df",
+              "columns": [
+                "store_id",
+                "sales_date",
+                "product_category",
+                "transaction_count",
+                "gross_amount",
+                "return_amount"
+              ],
+              "renamedColumns": {
+                "store_id": "storeId",
+                "sales_date": "salesDate",
+                "product_category": "productCategory",
+                "transaction_count": "transactionCount",
+                "gross_amount": "grossAmount",
+                "return_amount": "returnAmount"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "storeId",
+                "type": "integer"
+              },
+              {
+                "name": "salesDate",
+                "type": "date"
+              },
+              {
+                "name": "productCategory",
+                "type": "string"
+              },
+              {
+                "name": "transactionCount",
+                "type": "integer"
+              },
+              {
+                "name": "grossAmount",
+                "type": "double"
+              },
+              {
+                "name": "returnAmount",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "store_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "storeId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('storeId').alias('store_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sales_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "salesDate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('salesDate').alias('sales_date')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_category": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "productCategory",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('productCategory').alias('product_category')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "transactionCount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('transactionCount').alias('transaction_count')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gross_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "grossAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('grossAmount').alias('gross_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "return_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_landing_df",
+                    "field": "returnAmount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('returnAmount').alias('return_amount')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:59:05Z",
+    "run": {
+      "runId": "af1efa38-e613-4d4b-beed-23984a23b96d"
+    },
+    "job": {
+      "namespace": "retail_curated_ingestion",
+      "name": "step_03_stamp_daily_sales_load",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "daily_sales_standardized_df"
+              ],
+              "output": "daily_sales_stamped_df",
+              "columns": [
+                "store_id",
+                "sales_date",
+                "product_category",
+                "transaction_count",
+                "gross_amount",
+                "return_amount",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_stamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "store_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "store_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "store_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sales_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "sales_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sales_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_category": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "product_category",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "product_category",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "transaction_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "transaction_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gross_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "gross_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "gross_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "return_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_standardized_df",
+                    "field": "return_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "return_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:59:05Z",
+    "run": {
+      "runId": "a75de22c-1a02-44bf-a104-7df2e93e08c1"
+    },
+    "job": {
+      "namespace": "retail_curated_ingestion",
+      "name": "step_04_arrange_daily_sales_partition_column",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "SELECT",
+              "inputs": [
+                "daily_sales_stamped_df"
+              ],
+              "output": "daily_sales_arranged_df",
+              "columns": [
+                "store_id",
+                "product_category",
+                "transaction_count",
+                "gross_amount",
+                "return_amount",
+                "ingestion_timestamp",
+                "sales_date"
+              ],
+              "reorderedColumns": {
+                "movedToEnd": "sales_date"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_stamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_arranged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "store_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "store_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "store_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_category": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "product_category",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "product_category",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "transaction_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "transaction_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gross_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "gross_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "gross_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "return_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "return_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "return_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sales_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_stamped_df",
+                    "field": "sales_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sales_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:59:05Z",
+    "run": {
+      "runId": "e345cfec-9548-4882-91bd-ed9bc45ead6d"
+    },
+    "job": {
+      "namespace": "retail_curated_ingestion",
+      "name": "step_05_load_daily_store_sales_partitions",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "WRITE",
+              "inputs": [
+                "daily_sales_arranged_df"
+              ],
+              "output": "warehouse/curated/retail/daily_store_sales",
+              "columns": [
+                "store_id",
+                "product_category",
+                "transaction_count",
+                "gross_amount",
+                "return_amount",
+                "ingestion_timestamp",
+                "sales_date"
+              ],
+              "writeMode": "overwrite",
+              "partitionColumns": [
+                "sales_date"
+              ],
+              "partitionOverwriteMode": "dynamic",
+              "expression": "daily_sales_arranged_df.write.mode('overwrite').partitionBy('sales_date').parquet('warehouse/curated/retail/daily_store_sales')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "daily_sales_arranged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/retail/daily_store_sales",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "store_id",
+                "type": "integer"
+              },
+              {
+                "name": "product_category",
+                "type": "string"
+              },
+              {
+                "name": "transaction_count",
+                "type": "integer"
+              },
+              {
+                "name": "gross_amount",
+                "type": "double"
+              },
+              {
+                "name": "return_amount",
+                "type": "double"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sales_date",
+                "type": "date"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "store_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "store_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "store_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_category": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "product_category",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "product_category",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "transaction_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "transaction_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "transaction_count",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gross_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "gross_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "gross_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "return_amount": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "return_amount",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "return_amount",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sales_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "daily_sales_arranged_df",
+                    "field": "sales_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sales_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "daily_sales_arranged_df",
+                "field": "sales_date",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.mode('overwrite').partitionBy('sales_date').parquet('warehouse/curated/retail/daily_store_sales') with spark.sql.sources.partitionOverwriteMode=dynamic",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

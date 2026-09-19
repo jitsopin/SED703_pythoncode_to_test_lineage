@@ -1,0 +1,728 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:22:25Z",
+    "run": {
+      "runId": "253f0818-031f-4006-835c-b817bf2ad53e"
+    },
+    "job": {
+      "namespace": "lending_curated_streaming",
+      "name": "step_01_subscribe_loan_risk_topic",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM",
+              "inputs": [
+                "loan-risk-vectors"
+              ],
+              "output": "loan_risk_raw_df",
+              "columns": [
+                "json_str"
+              ],
+              "readOptions": {
+                "subscribe": "loan-risk-vectors",
+                "startingOffsets": "earliest"
+              },
+              "castColumns": {
+                "json_str": "binary -> string"
+              },
+              "runtimeArguments": [
+                "argv[1] -> kafka.bootstrap.servers"
+              ],
+              "expression": "spark.readStream.format('kafka').option('subscribe', 'loan-risk-vectors').load().select(col('value').cast('string').alias('json_str'))"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "kafka",
+        "name": "loan-risk-vectors",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "binary"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "loan_risk_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "json_str": {
+                "inputFields": [
+                  {
+                    "namespace": "kafka",
+                    "name": "loan-risk-vectors",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('value').cast('string').alias('json_str')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:22:25Z",
+    "run": {
+      "runId": "3598124a-83cb-48ad-867e-b2e213011e71"
+    },
+    "job": {
+      "namespace": "lending_curated_streaming",
+      "name": "step_02_parse_loan_risk_message",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "loan_risk_raw_df"
+              ],
+              "output": "loan_risk_stream_df",
+              "columns": [
+                "loan_id",
+                "portfolio_id",
+                "branch",
+                "product_class",
+                "execution_time",
+                "pricing_vector",
+                "loss_contribution",
+                "risk_weight",
+                "snapshot_date",
+                "region"
+              ],
+              "jsonPaths": {
+                "loan_id": "$.loan_id",
+                "portfolio_id": "$.portfolio_id",
+                "branch": "$.branch",
+                "product_class": "$.product_class",
+                "execution_time": "$.execution_time",
+                "pricing_vector": "$.pricing_vector",
+                "loss_contribution": "$.loss_contribution",
+                "risk_weight": "$.risk_weight",
+                "region": "$.region"
+              },
+              "castColumns": {
+                "loss_contribution": "string -> double",
+                "risk_weight": "string -> double"
+              },
+              "derivedColumns": {
+                "snapshot_date": "current_date()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "loan_risk_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "json_str",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "loan_risk_stream_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "loan_id",
+                "type": "string"
+              },
+              {
+                "name": "portfolio_id",
+                "type": "string"
+              },
+              {
+                "name": "branch",
+                "type": "string"
+              },
+              {
+                "name": "product_class",
+                "type": "string"
+              },
+              {
+                "name": "execution_time",
+                "type": "string"
+              },
+              {
+                "name": "pricing_vector",
+                "type": "string"
+              },
+              {
+                "name": "loss_contribution",
+                "type": "double"
+              },
+              {
+                "name": "risk_weight",
+                "type": "double"
+              },
+              {
+                "name": "snapshot_date",
+                "type": "date"
+              },
+              {
+                "name": "region",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "loan_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.loan_id').alias('loan_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "portfolio_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.portfolio_id').alias('portfolio_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.branch').alias('branch')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.product_class').alias('product_class')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "execution_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.execution_time').alias('execution_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_vector": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.pricing_vector').alias('pricing_vector')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loss_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.loss_contribution').cast('double').alias('loss_contribution')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.risk_weight').cast('double').alias('risk_weight')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_raw_df",
+                    "field": "json_str",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "get_json_object(col('json_str'), '$.region').alias('region')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "snapshot_date": {
+                "inputFields": [],
+                "transformationDescription": "current_date()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T02:22:25Z",
+    "run": {
+      "runId": "2ee938a4-df86-4a9e-a122-fd8a436302ae"
+    },
+    "job": {
+      "namespace": "lending_curated_streaming",
+      "name": "step_03_append_loan_risk_vectors_table",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "WRITE_STREAM",
+              "inputs": [
+                "loan_risk_stream_df"
+              ],
+              "output": "lending_curated.loan_risk_vectors",
+              "columns": [
+                "loan_id",
+                "portfolio_id",
+                "branch",
+                "product_class",
+                "execution_time",
+                "pricing_vector",
+                "loss_contribution",
+                "risk_weight",
+                "snapshot_date",
+                "region"
+              ],
+              "outputMode": "append",
+              "trigger": "processingTime=10 seconds",
+              "checkpointLocation": "warehouse/checkpoints/loan_risk_vectors",
+              "format": "parquet",
+              "expression": "loan_risk_stream_df.writeStream.format('parquet').outputMode('append').trigger(processingTime='10 seconds').toTable('lending_curated.loan_risk_vectors')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "loan_risk_stream_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "loan_id",
+                "type": "string"
+              },
+              {
+                "name": "portfolio_id",
+                "type": "string"
+              },
+              {
+                "name": "branch",
+                "type": "string"
+              },
+              {
+                "name": "product_class",
+                "type": "string"
+              },
+              {
+                "name": "execution_time",
+                "type": "string"
+              },
+              {
+                "name": "pricing_vector",
+                "type": "string"
+              },
+              {
+                "name": "loss_contribution",
+                "type": "double"
+              },
+              {
+                "name": "risk_weight",
+                "type": "double"
+              },
+              {
+                "name": "snapshot_date",
+                "type": "date"
+              },
+              {
+                "name": "region",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "lending_curated.loan_risk_vectors",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "loan_id",
+                "type": "string"
+              },
+              {
+                "name": "portfolio_id",
+                "type": "string"
+              },
+              {
+                "name": "branch",
+                "type": "string"
+              },
+              {
+                "name": "product_class",
+                "type": "string"
+              },
+              {
+                "name": "execution_time",
+                "type": "string"
+              },
+              {
+                "name": "pricing_vector",
+                "type": "string"
+              },
+              {
+                "name": "loss_contribution",
+                "type": "double"
+              },
+              {
+                "name": "risk_weight",
+                "type": "double"
+              },
+              {
+                "name": "snapshot_date",
+                "type": "date"
+              },
+              {
+                "name": "region",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "loan_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "loan_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "loan_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "portfolio_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "portfolio_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "portfolio_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "branch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "branch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "branch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "product_class": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "product_class",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "product_class",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "execution_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "execution_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "execution_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "pricing_vector": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "pricing_vector",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "pricing_vector",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "loss_contribution": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "loss_contribution",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "loss_contribution",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "risk_weight": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "risk_weight",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "risk_weight",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "snapshot_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "snapshot_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "snapshot_date",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "loan_risk_stream_df",
+                    "field": "region",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

@@ -1,0 +1,559 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:39:54.503Z",
+    "run": {
+      "runId": "86238439-a58f-4fae-9c56-f2c176a80e53"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/streaming-word-count",
+      "name": "step_01_read_lines",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "lines_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_EXPLODE_SPLIT",
+              "inputDataFrames": [
+                "lines_df"
+              ],
+              "outputDataFrame": "words_df",
+              "selectedColumns": [
+                "word"
+              ],
+              "expression": "explode(split(value, ' ')) as word"
+            },
+            {
+              "sequence": 3,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "words_df"
+              ],
+              "outputDataFrame": "word_counts_df",
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "group by word; count(*)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "word_counts_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/word_count",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lines_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "value": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/word_count",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:39:54.503Z",
+    "run": {
+      "runId": "5c9472cb-0224-4be0-9c2f-d0e1fad5b53d"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/streaming-word-count",
+      "name": "step_02_split_and_explode_words",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "lines_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_EXPLODE_SPLIT",
+              "inputDataFrames": [
+                "lines_df"
+              ],
+              "outputDataFrame": "words_df",
+              "selectedColumns": [
+                "word"
+              ],
+              "expression": "explode(split(value, ' ')) as word"
+            },
+            {
+              "sequence": 3,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "words_df"
+              ],
+              "outputDataFrame": "word_counts_df",
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "group by word; count(*)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "word_counts_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "lines_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "value",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "words_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "word",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "word": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "lines_df",
+                    "field": "value",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "explode(split(value, ' '))"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:39:54.503Z",
+    "run": {
+      "runId": "bf50f9b8-a37b-432c-9fa0-355abc75f435"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/streaming-word-count",
+      "name": "step_03_count_words",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "lines_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_EXPLODE_SPLIT",
+              "inputDataFrames": [
+                "lines_df"
+              ],
+              "outputDataFrame": "words_df",
+              "selectedColumns": [
+                "word"
+              ],
+              "expression": "explode(split(value, ' ')) as word"
+            },
+            {
+              "sequence": 3,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "words_df"
+              ],
+              "outputDataFrame": "word_counts_df",
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "group by word; count(*)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "word_counts_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "words_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "word",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "word_counts_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "word",
+                "type": "STRING"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "word": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "words_df",
+                    "field": "word",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "count": {
+                "inputFields": []
+              }
+            },
+            "dataset": {
+              "inputFields": [
+                {
+                  "namespace": "dataframe://in-memory",
+                  "name": "words_df",
+                  "field": "word",
+                  "transformations": [
+                    {
+                      "type": "INDIRECT",
+                      "subtype": "GROUP_BY",
+                      "description": "group by word",
+                      "masking": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-19T01:39:54.503Z",
+    "run": {
+      "runId": "772e44dc-37a7-47d2-bc84-4e1597159ab4"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/streaming-word-count",
+      "name": "step_04_write_complete_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_STREAM_TEXT",
+              "inputDataFrames": [],
+              "outputDataFrame": "lines_df",
+              "selectedColumns": [
+                "value"
+              ],
+              "expression": "readStream text from portable landing path"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_EXPLODE_SPLIT",
+              "inputDataFrames": [
+                "lines_df"
+              ],
+              "outputDataFrame": "words_df",
+              "selectedColumns": [
+                "word"
+              ],
+              "expression": "explode(split(value, ' ')) as word"
+            },
+            {
+              "sequence": 3,
+              "statementType": "GROUP_AGGREGATE",
+              "inputDataFrames": [
+                "words_df"
+              ],
+              "outputDataFrame": "word_counts_df",
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "group by word; count(*)"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_STREAM_FOREACHBATCH_COMPLETE_SNAPSHOT",
+              "inputDataFrames": [
+                "word_counts_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "word",
+                "count"
+              ],
+              "expression": "complete-mode foreachBatch overwrite JSON snapshot with checkpointing"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "word_counts_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "word",
+                "type": "STRING"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/word_count/current_counts",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "word",
+                "type": "STRING"
+              },
+              {
+                "name": "count",
+                "type": "BIGINT"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "word": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "word_counts_df",
+                    "field": "word",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "word_counts_df",
+                    "field": "count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

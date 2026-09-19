@@ -1,0 +1,915 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "0d3f4ba6-4454-4f5d-ad9a-6e4ebcb39535"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_01_read_jdbc_source",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "jdbc://portable-source",
+        "name": "validation.account_source",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "source_records_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "employee_count": {
+                "inputFields": [
+                  {
+                    "namespace": "jdbc://portable-source",
+                    "name": "validation.account_source",
+                    "field": "employee_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at": {
+                "inputFields": [
+                  {
+                    "namespace": "jdbc://portable-source",
+                    "name": "validation.account_source",
+                    "field": "created_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "ef332c99-707a-4ad2-97a7-5081519d0fb8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_02_select_validation_columns",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "source_records_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_source_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "employee_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_records_df",
+                    "field": "employee_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_records_df",
+                    "field": "created_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "19c18f18-07f4-44d9-8259-a3ad18c9d510"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_03_validate_source",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_source_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "31dedd88-6dbf-4dca-ae3d-4b63db06b306"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_04_write_source_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "validated_source_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/connector_validation/source_snapshot",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "employee_count",
+                "type": "INTEGER"
+              },
+              {
+                "name": "created_at",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "employee_count": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_source_df",
+                    "field": "employee_count",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "created_at": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "validated_source_df",
+                    "field": "created_at",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "b7cd2f18-4799-46d0-b600-24eedcbbbab8"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_05_create_sink_test",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "sink_test_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T08:46:18.652Z",
+    "run": {
+      "runId": "62dc1d75-3df1-47d5-a7f0-4cd67bf986da"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/jdbc-validation",
+      "name": "step_06_write_sink_test",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JDBC",
+              "inputDataFrames": [],
+              "outputDataFrame": "source_records_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "read employee_count and created_at through JDBC query"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputDataFrames": [
+                "source_records_df"
+              ],
+              "outputDataFrame": "validated_source_df",
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "select expected validation columns"
+            },
+            {
+              "sequence": 3,
+              "statementType": "ASSERT_SCHEMA_COUNT",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "assert expected schema and count == 2"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_JSON_OVERWRITE",
+              "inputDataFrames": [
+                "validated_source_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "employee_count",
+                "created_at"
+              ],
+              "expression": "write validation source snapshot JSON"
+            },
+            {
+              "sequence": 5,
+              "statementType": "CREATE_DATAFRAME_LITERAL",
+              "inputDataFrames": [],
+              "outputDataFrame": "sink_test_df",
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "create one-row sink validation record"
+            },
+            {
+              "sequence": 6,
+              "statementType": "WRITE_JDBC_APPEND",
+              "inputDataFrames": [
+                "sink_test_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "name"
+              ],
+              "expression": "append validation row to JDBC target"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "sink_test_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "jdbc://portable-target",
+        "name": "validation.account_sink",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "name",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "sink_test_df",
+                    "field": "name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

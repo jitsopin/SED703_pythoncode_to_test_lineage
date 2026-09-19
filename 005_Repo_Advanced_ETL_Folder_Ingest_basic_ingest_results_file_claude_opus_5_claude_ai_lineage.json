@@ -1,0 +1,2677 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:40:34Z",
+    "run": {
+      "runId": "175ebb3a-40af-43b9-b367-74d6bb6d77cb"
+    },
+    "job": {
+      "namespace": "operations_performance_ingestion",
+      "name": "step_01_extract_pick_task_landing",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/operations/pick_task_events.json"
+              ],
+              "output": "pick_task_landing_df",
+              "columns": [
+                "taskId",
+                "shiftId",
+                "workerId",
+                "stationId",
+                "laneNumber",
+                "assignedSlot",
+                "finishRank",
+                "finishRankText",
+                "finishRankOrder",
+                "productivityScore",
+                "unitsPicked",
+                "elapsedTime",
+                "elapsedMilliseconds",
+                "bestCycleId",
+                "cycleRank",
+                "bestCycleTime",
+                "bestCycleRate",
+                "statusCode"
+              ],
+              "expression": "spark.read.schema(pick_task_landing_schema).json('data/landing/operations/pick_task_events.json')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/operations/pick_task_events.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "taskId",
+                "type": "integer"
+              },
+              {
+                "name": "shiftId",
+                "type": "integer"
+              },
+              {
+                "name": "workerId",
+                "type": "integer"
+              },
+              {
+                "name": "stationId",
+                "type": "integer"
+              },
+              {
+                "name": "laneNumber",
+                "type": "integer"
+              },
+              {
+                "name": "assignedSlot",
+                "type": "integer"
+              },
+              {
+                "name": "finishRank",
+                "type": "integer"
+              },
+              {
+                "name": "finishRankText",
+                "type": "string"
+              },
+              {
+                "name": "finishRankOrder",
+                "type": "integer"
+              },
+              {
+                "name": "productivityScore",
+                "type": "float"
+              },
+              {
+                "name": "unitsPicked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsedTime",
+                "type": "string"
+              },
+              {
+                "name": "elapsedMilliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleId",
+                "type": "integer"
+              },
+              {
+                "name": "cycleRank",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleTime",
+                "type": "string"
+              },
+              {
+                "name": "bestCycleRate",
+                "type": "float"
+              },
+              {
+                "name": "statusCode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "taskId",
+                "type": "integer"
+              },
+              {
+                "name": "shiftId",
+                "type": "integer"
+              },
+              {
+                "name": "workerId",
+                "type": "integer"
+              },
+              {
+                "name": "stationId",
+                "type": "integer"
+              },
+              {
+                "name": "laneNumber",
+                "type": "integer"
+              },
+              {
+                "name": "assignedSlot",
+                "type": "integer"
+              },
+              {
+                "name": "finishRank",
+                "type": "integer"
+              },
+              {
+                "name": "finishRankText",
+                "type": "string"
+              },
+              {
+                "name": "finishRankOrder",
+                "type": "integer"
+              },
+              {
+                "name": "productivityScore",
+                "type": "float"
+              },
+              {
+                "name": "unitsPicked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsedTime",
+                "type": "string"
+              },
+              {
+                "name": "elapsedMilliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleId",
+                "type": "integer"
+              },
+              {
+                "name": "cycleRank",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleTime",
+                "type": "string"
+              },
+              {
+                "name": "bestCycleRate",
+                "type": "float"
+              },
+              {
+                "name": "statusCode",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "taskId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "taskId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "taskId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shiftId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "shiftId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shiftId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "workerId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "workerId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "workerId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "stationId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "stationId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "stationId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "laneNumber": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "laneNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "laneNumber",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "assignedSlot": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "assignedSlot",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "assignedSlot",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finishRank": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "finishRank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finishRank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finishRankText": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "finishRankText",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finishRankText",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finishRankOrder": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "finishRankOrder",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finishRankOrder",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productivityScore": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "productivityScore",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productivityScore",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "unitsPicked": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "unitsPicked",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "unitsPicked",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsedTime": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "elapsedTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsedTime",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsedMilliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "elapsedMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsedMilliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "bestCycleId": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "bestCycleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "bestCycleId",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cycleRank": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "cycleRank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cycleRank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "bestCycleTime": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "bestCycleTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "bestCycleTime",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "bestCycleRate": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "bestCycleRate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "bestCycleRate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "statusCode": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/operations/pick_task_events.json",
+                    "field": "statusCode",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "statusCode",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:40:34Z",
+    "run": {
+      "runId": "91221ec6-9e77-4d2a-aa2e-c8de7166a24c"
+    },
+    "job": {
+      "namespace": "operations_performance_ingestion",
+      "name": "step_02_standardize_pick_task_attributes",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 2,
+              "statementType": "SELECT",
+              "inputs": [
+                "pick_task_landing_df"
+              ],
+              "output": "pick_task_standardized_df",
+              "columns": [
+                "task_id",
+                "shift_id",
+                "worker_id",
+                "station_id",
+                "lane_number",
+                "assigned_slot",
+                "finish_rank",
+                "finish_rank_text",
+                "finish_rank_order",
+                "productivity_score",
+                "units_picked",
+                "elapsed_time",
+                "elapsed_milliseconds",
+                "best_cycle_id",
+                "cycle_rank",
+                "best_cycle_time",
+                "best_cycle_rate"
+              ],
+              "renamedColumns": {
+                "task_id": "taskId",
+                "shift_id": "shiftId",
+                "worker_id": "workerId",
+                "station_id": "stationId",
+                "lane_number": "laneNumber",
+                "assigned_slot": "assignedSlot",
+                "finish_rank": "finishRank",
+                "finish_rank_text": "finishRankText",
+                "finish_rank_order": "finishRankOrder",
+                "productivity_score": "productivityScore",
+                "units_picked": "unitsPicked",
+                "elapsed_time": "elapsedTime",
+                "elapsed_milliseconds": "elapsedMilliseconds",
+                "best_cycle_id": "bestCycleId",
+                "cycle_rank": "cycleRank",
+                "best_cycle_time": "bestCycleTime",
+                "best_cycle_rate": "bestCycleRate"
+              },
+              "droppedColumns": [
+                "statusCode"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_landing_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "taskId",
+                "type": "integer"
+              },
+              {
+                "name": "shiftId",
+                "type": "integer"
+              },
+              {
+                "name": "workerId",
+                "type": "integer"
+              },
+              {
+                "name": "stationId",
+                "type": "integer"
+              },
+              {
+                "name": "laneNumber",
+                "type": "integer"
+              },
+              {
+                "name": "assignedSlot",
+                "type": "integer"
+              },
+              {
+                "name": "finishRank",
+                "type": "integer"
+              },
+              {
+                "name": "finishRankText",
+                "type": "string"
+              },
+              {
+                "name": "finishRankOrder",
+                "type": "integer"
+              },
+              {
+                "name": "productivityScore",
+                "type": "float"
+              },
+              {
+                "name": "unitsPicked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsedTime",
+                "type": "string"
+              },
+              {
+                "name": "elapsedMilliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleId",
+                "type": "integer"
+              },
+              {
+                "name": "cycleRank",
+                "type": "integer"
+              },
+              {
+                "name": "bestCycleTime",
+                "type": "string"
+              },
+              {
+                "name": "bestCycleRate",
+                "type": "float"
+              },
+              {
+                "name": "statusCode",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "task_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "taskId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('taskId').alias('task_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "shiftId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('shiftId').alias('shift_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "worker_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "workerId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('workerId').alias('worker_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "stationId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('stationId').alias('station_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lane_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "laneNumber",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('laneNumber').alias('lane_number')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "assigned_slot": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "assignedSlot",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('assignedSlot').alias('assigned_slot')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "finishRank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('finishRank').alias('finish_rank')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "finishRankText",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('finishRankText').alias('finish_rank_text')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "finishRankOrder",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('finishRankOrder').alias('finish_rank_order')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productivity_score": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "productivityScore",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('productivityScore').alias('productivity_score')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "units_picked": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "unitsPicked",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('unitsPicked').alias('units_picked')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "elapsedTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('elapsedTime').alias('elapsed_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "elapsedMilliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('elapsedMilliseconds').alias('elapsed_milliseconds')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "bestCycleId",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('bestCycleId').alias('best_cycle_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cycle_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "cycleRank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('cycleRank').alias('cycle_rank')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "bestCycleTime",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('bestCycleTime').alias('best_cycle_time')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_landing_df",
+                    "field": "bestCycleRate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('bestCycleRate').alias('best_cycle_rate')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:40:34Z",
+    "run": {
+      "runId": "26e91dca-3bf0-4594-a042-f40386d653a8"
+    },
+    "job": {
+      "namespace": "operations_performance_ingestion",
+      "name": "step_03_apply_pick_task_business_rules",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 3,
+              "statementType": "FILTER",
+              "inputs": [
+                "pick_task_standardized_df"
+              ],
+              "output": "pick_task_eligible_df",
+              "columns": [
+                "task_id",
+                "shift_id",
+                "worker_id",
+                "station_id",
+                "lane_number",
+                "assigned_slot",
+                "finish_rank",
+                "finish_rank_text",
+                "finish_rank_order",
+                "productivity_score",
+                "units_picked",
+                "elapsed_time",
+                "elapsed_milliseconds",
+                "best_cycle_id",
+                "cycle_rank",
+                "best_cycle_time",
+                "best_cycle_rate"
+              ],
+              "filterExpression": "col('task_id').isNotNull() & col('shift_id').isNotNull()"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_standardized_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "task_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "task_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "task_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "shift_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "worker_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "worker_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "worker_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lane_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "lane_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "lane_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "assigned_slot": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "assigned_slot",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "assigned_slot",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "finish_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "finish_rank_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "finish_rank_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_order",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productivity_score": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "productivity_score",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productivity_score",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "units_picked": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "units_picked",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "units_picked",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "elapsed_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "best_cycle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cycle_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "cycle_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cycle_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "best_cycle_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_standardized_df",
+                    "field": "best_cycle_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "pick_task_standardized_df",
+                "field": "task_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('task_id').isNotNull() & col('shift_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "pick_task_standardized_df",
+                "field": "shift_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('task_id').isNotNull() & col('shift_id').isNotNull())",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:40:34Z",
+    "run": {
+      "runId": "d18893ec-990e-4844-b423-da7999824893"
+    },
+    "job": {
+      "namespace": "operations_performance_ingestion",
+      "name": "step_04_build_pick_task_performance_projection",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 4,
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "pick_task_eligible_df"
+              ],
+              "output": "pick_task_performance_df",
+              "columns": [
+                "task_id",
+                "shift_id",
+                "worker_id",
+                "station_id",
+                "lane_number",
+                "assigned_slot",
+                "finish_rank",
+                "finish_rank_text",
+                "finish_rank_order",
+                "productivity_score",
+                "units_picked",
+                "elapsed_time",
+                "elapsed_milliseconds",
+                "best_cycle_id",
+                "cycle_rank",
+                "best_cycle_time",
+                "best_cycle_rate",
+                "ingestion_timestamp"
+              ],
+              "derivedColumns": {
+                "ingestion_timestamp": "current_timestamp()"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_eligible_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_performance_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "task_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "task_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "task_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "shift_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "worker_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "worker_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "worker_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lane_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "lane_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "lane_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "assigned_slot": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "assigned_slot",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "assigned_slot",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "finish_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "finish_rank_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "finish_rank_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_order",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productivity_score": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "productivity_score",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productivity_score",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "units_picked": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "units_picked",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "units_picked",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "elapsed_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "best_cycle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cycle_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "cycle_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cycle_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "best_cycle_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_eligible_df",
+                    "field": "best_cycle_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:40:34Z",
+    "run": {
+      "runId": "75ef5aa8-043e-48bb-a739-2c9303630dec"
+    },
+    "job": {
+      "namespace": "operations_performance_ingestion",
+      "name": "step_05_load_pick_task_performance_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "sequence": 5,
+              "statementType": "WRITE",
+              "inputs": [
+                "pick_task_performance_df"
+              ],
+              "output": "warehouse/curated/operations/pick_task_performance",
+              "columns": [
+                "task_id",
+                "shift_id",
+                "worker_id",
+                "station_id",
+                "lane_number",
+                "assigned_slot",
+                "finish_rank",
+                "finish_rank_text",
+                "finish_rank_order",
+                "productivity_score",
+                "units_picked",
+                "elapsed_time",
+                "elapsed_milliseconds",
+                "best_cycle_id",
+                "cycle_rank",
+                "best_cycle_time",
+                "best_cycle_rate",
+                "ingestion_timestamp"
+              ],
+              "writeMode": "overwrite",
+              "partitionColumns": [
+                "shift_id"
+              ],
+              "expression": "pick_task_performance_df.write.mode('overwrite').partitionBy('shift_id').parquet('warehouse/curated/operations/pick_task_performance')"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "pick_task_performance_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/curated/operations/pick_task_performance",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "task_id",
+                "type": "integer"
+              },
+              {
+                "name": "shift_id",
+                "type": "integer"
+              },
+              {
+                "name": "worker_id",
+                "type": "integer"
+              },
+              {
+                "name": "station_id",
+                "type": "integer"
+              },
+              {
+                "name": "lane_number",
+                "type": "integer"
+              },
+              {
+                "name": "assigned_slot",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank",
+                "type": "integer"
+              },
+              {
+                "name": "finish_rank_text",
+                "type": "string"
+              },
+              {
+                "name": "finish_rank_order",
+                "type": "integer"
+              },
+              {
+                "name": "productivity_score",
+                "type": "float"
+              },
+              {
+                "name": "units_picked",
+                "type": "integer"
+              },
+              {
+                "name": "elapsed_time",
+                "type": "string"
+              },
+              {
+                "name": "elapsed_milliseconds",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_id",
+                "type": "integer"
+              },
+              {
+                "name": "cycle_rank",
+                "type": "integer"
+              },
+              {
+                "name": "best_cycle_time",
+                "type": "string"
+              },
+              {
+                "name": "best_cycle_rate",
+                "type": "float"
+              },
+              {
+                "name": "ingestion_timestamp",
+                "type": "timestamp"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "task_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "task_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "task_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "shift_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "shift_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "shift_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "worker_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "worker_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "worker_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "station_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "station_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "station_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "lane_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "lane_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "lane_number",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "assigned_slot": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "assigned_slot",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "assigned_slot",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "finish_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_text": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "finish_rank_text",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_text",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "finish_rank_order": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "finish_rank_order",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "finish_rank_order",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "productivity_score": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "productivity_score",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "productivity_score",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "units_picked": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "units_picked",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "units_picked",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "elapsed_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "elapsed_milliseconds": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "elapsed_milliseconds",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "elapsed_milliseconds",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "best_cycle_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "cycle_rank": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "cycle_rank",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "cycle_rank",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_time": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "best_cycle_time",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_time",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "best_cycle_rate": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "best_cycle_rate",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "best_cycle_rate",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingestion_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "pick_task_performance_df",
+                    "field": "ingestion_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "ingestion_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "pick_task_performance_df",
+                "field": "shift_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.mode('overwrite').partitionBy('shift_id').parquet('warehouse/curated/operations/pick_task_performance')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

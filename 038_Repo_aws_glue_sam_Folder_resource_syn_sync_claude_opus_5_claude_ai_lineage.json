@@ -1,0 +1,2547 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "064373f7-c908-4f17-a23c-00bf99464ffa"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_read_source_resource_inventory",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "platform_curated.source_resource_inventory"
+              ],
+              "output": "source_resource_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "relative_path",
+                "config_json",
+                "updated_epoch"
+              ],
+              "expression": "spark.table('platform_curated.source_resource_inventory').select(...)",
+              "sequence": 1
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "platform_curated.source_resource_inventory",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "relative_path",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "source_resource_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "relative_path",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "relative_path": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "relative_path",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "relative_path",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.source_resource_inventory",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "0a47a01c-3ae7-41dc-93f1-bd158779358a"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_read_environment_mapping",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "data/landing/platform/environment_mapping.csv"
+              ],
+              "output": "environment_mapping_df",
+              "columns": [
+                "region_code",
+                "target_prefix"
+              ],
+              "readOptions": {
+                "header": true
+              },
+              "format": "csv",
+              "expression": "spark.read.option('header', True).schema(...).csv('data/landing/platform/environment_mapping.csv')",
+              "sequence": 2
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/platform/environment_mapping.csv",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_prefix",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "environment_mapping_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_prefix",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/platform/environment_mapping.csv",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_prefix": {
+                "inputFields": [
+                  {
+                    "namespace": "file",
+                    "name": "data/landing/platform/environment_mapping.csv",
+                    "field": "target_prefix",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_prefix",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "b079f3a1-56b5-44c7-ae37-b8970d67864b"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_resolve_target_location",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "INNER_JOIN",
+              "inputs": [
+                "source_resource_df",
+                "environment_mapping_df"
+              ],
+              "output": "resource_mapped_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch"
+              ],
+              "joinType": "inner",
+              "joinCondition": "region_code",
+              "derivedColumns": {
+                "target_location": "concat(col('target_prefix'), lit('/'), col('relative_path')).alias('target_location')"
+              },
+              "droppedColumns": [
+                "relative_path",
+                "target_prefix"
+              ],
+              "sequence": 3
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "source_resource_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "relative_path",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "environment_mapping_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_prefix",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_mapped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "environment_mapping_df",
+                    "field": "target_prefix",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "concat(col('target_prefix'), lit('/'), col('relative_path')).alias('target_location')",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "source_resource_df",
+                    "field": "relative_path",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "concat(col('target_prefix'), lit('/'), col('relative_path')).alias('target_location')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "source_resource_df",
+                "field": "region_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(environment_mapping_df, 'region_code', 'inner')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "environment_mapping_df",
+                "field": "region_code",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(environment_mapping_df, 'region_code', 'inner')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "8839a7a3-5804-4fc9-94b4-639909e30998"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_read_target_resource_inventory",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "READ",
+              "inputs": [
+                "platform_curated.target_resource_inventory"
+              ],
+              "output": "target_resource_df",
+              "columns": [
+                "target_resource_id",
+                "target_updated_epoch"
+              ],
+              "renamedColumns": {
+                "target_resource_id": "resource_id",
+                "target_updated_epoch": "updated_epoch"
+              },
+              "expression": "spark.table('platform_curated.target_resource_inventory').select(...)",
+              "sequence": 4
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "hive",
+        "name": "platform_curated.target_resource_inventory",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "target_resource_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "target_resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.target_resource_inventory",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('resource_id').alias('target_resource_id')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "hive",
+                    "name": "platform_curated.target_resource_inventory",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "description": "col('updated_epoch').alias('target_updated_epoch')",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "6a9e5910-fe5d-412d-bc6a-1aabe91ec5bd"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_compare_source_to_target",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "LEFT_OUTER_JOIN",
+              "inputs": [
+                "resource_mapped_df",
+                "target_resource_df"
+              ],
+              "output": "resource_compared_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch",
+                "target_resource_id",
+                "target_updated_epoch"
+              ],
+              "joinType": "left_outer",
+              "joinCondition": "resource_mapped_df.resource_id == target_resource_df.target_resource_id",
+              "sequence": 5
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_mapped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "target_resource_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_compared_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "target_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_mapped_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "target_resource_df",
+                    "field": "target_resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "target_resource_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_mapped_df",
+                "field": "resource_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(target_resource_df, resource_mapped_df.resource_id == target_resource_df.target_resource_id, 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "target_resource_df",
+                "field": "target_resource_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "JOIN",
+                    "description": "join(target_resource_df, resource_mapped_df.resource_id == target_resource_df.target_resource_id, 'left_outer')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "14b1f6f5-3751-40cb-b492-91d844b44570"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_decide_sync_action",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "ADD_DERIVED_COLUMN",
+              "inputs": [
+                "resource_compared_df"
+              ],
+              "output": "resource_planned_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch",
+                "target_resource_id",
+                "target_updated_epoch",
+                "sync_action"
+              ],
+              "derivedColumns": {
+                "sync_action": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))"
+              },
+              "sequence": 6
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_compared_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_planned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "target_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "target_resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sync_action": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "target_resource_id",
+                    "transformations": [
+                      {
+                        "type": "INDIRECT",
+                        "subtype": "CONDITION",
+                        "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "INDIRECT",
+                        "subtype": "CONDITION",
+                        "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                        "masking": false
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_compared_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "INDIRECT",
+                        "subtype": "CONDITION",
+                        "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_compared_df",
+                "field": "target_resource_id",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "CONDITION",
+                    "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_compared_df",
+                "field": "updated_epoch",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "CONDITION",
+                    "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                    "masking": false
+                  }
+                ]
+              },
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_compared_df",
+                "field": "target_updated_epoch",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "CONDITION",
+                    "description": "when(col('target_resource_id').isNull(), lit('create')).when(col('updated_epoch') > col('target_updated_epoch'), lit('update')).otherwise(lit('unchanged'))",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "6bf0b80b-152e-46f7-b18d-80c68f11bd47"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_keep_pending_resources",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "FILTER",
+              "inputs": [
+                "resource_planned_df"
+              ],
+              "output": "resource_pending_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch",
+                "target_resource_id",
+                "target_updated_epoch",
+                "sync_action"
+              ],
+              "filterExpression": "col('sync_action') != 'unchanged'",
+              "sequence": 7
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_planned_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_pending_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "target_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "target_resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sync_action": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_planned_df",
+                    "field": "sync_action",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sync_action",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_planned_df",
+                "field": "sync_action",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "FILTER",
+                    "description": "filter(col('sync_action') != 'unchanged')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "32da2408-ba24-4553-acc6-22b9e04ec093"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_build_resource_sync_plan",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "SELECT_WITH_DERIVED_COLUMN",
+              "inputs": [
+                "resource_pending_df"
+              ],
+              "output": "resource_sync_plan_df",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch",
+                "target_updated_epoch",
+                "planned_timestamp",
+                "sync_action"
+              ],
+              "derivedColumns": {
+                "planned_timestamp": "current_timestamp()"
+              },
+              "sequence": 8
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_pending_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_resource_id",
+                "type": "string"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_sync_plan_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "planned_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "target_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sync_action": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_pending_df",
+                    "field": "sync_action",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sync_action",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "planned_timestamp": {
+                "inputFields": [],
+                "transformationDescription": "current_timestamp()"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T07:26:33Z",
+    "run": {
+      "runId": "ebc99c53-e263-452f-be38-bc4f6e85f49b"
+    },
+    "job": {
+      "namespace": "platform_resource_sync",
+      "name": "step_load_resource_sync_plan",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+          "_schemaURL": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0#/$defs/TransformationStepsJobFacet",
+          "steps": [
+            {
+              "statementType": "WRITE",
+              "inputs": [
+                "resource_sync_plan_df"
+              ],
+              "output": "platform_curated.resource_sync_plan",
+              "columns": [
+                "resource_id",
+                "resource_type",
+                "resource_name",
+                "region_code",
+                "target_location",
+                "config_json",
+                "updated_epoch",
+                "target_updated_epoch",
+                "planned_timestamp",
+                "sync_action"
+              ],
+              "writeMode": "overwrite",
+              "writeTarget": "managed table",
+              "partitionColumns": [
+                "sync_action"
+              ],
+              "expression": "resource_sync_plan_df.write.mode('overwrite').partitionBy('sync_action').saveAsTable('platform_curated.resource_sync_plan')",
+              "sequence": 9
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "resource_sync_plan_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "planned_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "platform_curated.resource_sync_plan",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "resource_id",
+                "type": "string"
+              },
+              {
+                "name": "resource_type",
+                "type": "string"
+              },
+              {
+                "name": "resource_name",
+                "type": "string"
+              },
+              {
+                "name": "region_code",
+                "type": "string"
+              },
+              {
+                "name": "target_location",
+                "type": "string"
+              },
+              {
+                "name": "config_json",
+                "type": "string"
+              },
+              {
+                "name": "updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "target_updated_epoch",
+                "type": "long"
+              },
+              {
+                "name": "planned_timestamp",
+                "type": "timestamp"
+              },
+              {
+                "name": "sync_action",
+                "type": "string"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "resource_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "resource_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_id",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_type": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "resource_type",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_type",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resource_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "resource_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "resource_name",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "region_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "region_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "region_code",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_location": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "target_location",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_location",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "config_json": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "config_json",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "config_json",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "target_updated_epoch": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "target_updated_epoch",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "target_updated_epoch",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "planned_timestamp": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "planned_timestamp",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "planned_timestamp",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sync_action": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "resource_sync_plan_df",
+                    "field": "sync_action",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "description": "sync_action",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "dataset": [
+              {
+                "namespace": "dataframe://in-memory",
+                "name": "resource_sync_plan_df",
+                "field": "sync_action",
+                "transformations": [
+                  {
+                    "type": "INDIRECT",
+                    "subtype": "PARTITION_BY",
+                    "description": "write.mode('overwrite').partitionBy('sync_action').saveAsTable('platform_curated.resource_sync_plan')",
+                    "masking": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/anthropics/claude-skills/generate-etl-lineage/1.0.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

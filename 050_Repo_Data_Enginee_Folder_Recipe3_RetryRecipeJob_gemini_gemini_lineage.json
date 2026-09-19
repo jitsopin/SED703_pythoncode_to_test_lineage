@@ -1,0 +1,219 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:04:16Z",
+    "run": {
+      "runId": "d8f2b1a3-6e4c-4a9b-8d7c-1f3a2b4c5e6d"
+    },
+    "job": {
+      "namespace": "synthetic_data_etl",
+      "name": "step_1_generate_sequence"
+    },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "transaction_id": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:04:16Z",
+    "run": {
+      "runId": "5e4d3c2b-1a9f-4e8d-7c6b-5a4f3e2d1c0b"
+    },
+    "job": {
+      "namespace": "synthetic_data_etl",
+      "name": "step_2_derive_anomaly_flags"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_flagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"},
+              {"name": "is_anomaly", "type": "boolean"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "transaction_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_raw_df", "field": "transaction_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "is_anomaly": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_raw_df", "field": "transaction_id", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "CASE WHEN transaction_id = 10 THEN true ELSE false END", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:04:16Z",
+    "run": {
+      "runId": "9a8b7c6d-5e4f-4d3c-2b1a-0f9e8d7c6b5a"
+    },
+    "job": {
+      "namespace": "synthetic_data_etl",
+      "name": "step_3_apply_validation_scoring"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_flagged_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"},
+              {"name": "is_anomaly", "type": "boolean"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_scored_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"},
+              {"name": "is_anomaly", "type": "boolean"},
+              {"name": "validation_score", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "transaction_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_flagged_df", "field": "transaction_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "is_anomaly": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_flagged_df", "field": "is_anomaly", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "validation_score": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_flagged_df", "field": "is_anomaly", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "CASE WHEN is_anomaly THEN 0.0 ELSE 100.0 END", "masking": false}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-17T23:04:16Z",
+    "run": {
+      "runId": "f1e2d3c4-b5a6-49f8-e7d6-c5b4a3f2e1d0"
+    },
+    "job": {
+      "namespace": "synthetic_data_etl",
+      "name": "step_4_load_synthetic_transactions"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "transactions_scored_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"},
+              {"name": "is_anomaly", "type": "boolean"},
+              {"name": "validation_score", "type": "double"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file",
+        "name": "warehouse/testing/synthetic_transactions",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "transaction_id", "type": "long"},
+              {"name": "is_anomaly", "type": "boolean"},
+              {"name": "validation_score", "type": "double"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "transaction_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_scored_df", "field": "transaction_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "is_anomaly": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_scored_df", "field": "is_anomaly", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "validation_score": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "transactions_scored_df", "field": "validation_score", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

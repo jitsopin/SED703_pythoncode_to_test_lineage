@@ -1,0 +1,333 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:02:22Z",
+    "run": {
+      "runId": "a1b2c3d4-1234-4567-89ab-cdef01234567"
+    },
+    "job": {
+      "namespace": "infrastructure_etl",
+      "name": "step_1_extract_server_metrics"
+    },
+    "inputs": [
+      {
+        "namespace": "file",
+        "name": "data/landing/infrastructure/server_metrics",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "serverId", "type": "integer"},
+              {"name": "applicationId", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "serverId", "type": "integer"},
+              {"name": "applicationId", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "serverId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "serverId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "applicationId": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "applicationId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "measurement_sequence": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "measurement_sequence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "status_code": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_time_str": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "response_time_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_ms": {
+                "inputFields": [{"namespace": "file", "name": "data/landing/infrastructure/server_metrics", "field": "response_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:02:22Z",
+    "run": {
+      "runId": "b2c3d4e5-2345-4678-9abc-def012345678"
+    },
+    "job": {
+      "namespace": "infrastructure_etl",
+      "name": "step_2_append_initial_timestamp"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "serverId", "type": "integer"},
+              {"name": "applicationId", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "serverId", "type": "integer"},
+              {"name": "applicationId", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "serverId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "serverId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "applicationId": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "applicationId", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "measurement_sequence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "measurement_sequence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "status_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_time_str": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "response_time_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_raw_df", "field": "response_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:02:22Z",
+    "run": {
+      "runId": "c3d4e5f6-3456-4789-abcd-ef0123456789"
+    },
+    "job": {
+      "namespace": "infrastructure_etl",
+      "name": "step_3_rename_and_enrich"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_timestamped_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "serverId", "type": "integer"},
+              {"name": "applicationId", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "server_id", "type": "integer"},
+              {"name": "app_id", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "server_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "serverId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(serverId, server_id)", "masking": false}]}]
+              },
+              "app_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "applicationId", "transformations": [{"type": "DIRECT", "subtype": "TRANSFORMATION", "description": "withColumnRenamed(applicationId, app_id)", "masking": false}]}]
+              },
+              "measurement_sequence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "measurement_sequence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "status_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_time_str": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "response_time_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_timestamped_df", "field": "response_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": []
+              },
+              "data_source": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-16T15:02:22Z",
+    "run": {
+      "runId": "d4e5f6a7-4567-489a-bcde-f0123456789a"
+    },
+    "job": {
+      "namespace": "infrastructure_etl",
+      "name": "step_4_load_curated_metrics"
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "metrics_final_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "server_id", "type": "integer"},
+              {"name": "app_id", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "hive",
+        "name": "infra_curated.server_metrics",
+        "facets": {
+          "schema": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {"name": "server_id", "type": "integer"},
+              {"name": "app_id", "type": "integer"},
+              {"name": "measurement_sequence", "type": "integer"},
+              {"name": "status_code", "type": "integer"},
+              {"name": "response_time_str", "type": "string"},
+              {"name": "response_ms", "type": "integer"},
+              {"name": "ingested_at", "type": "timestamp"},
+              {"name": "data_source", "type": "string"}
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "server_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "server_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "app_id": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "app_id", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "measurement_sequence": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "measurement_sequence", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "status_code": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "status_code", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_time_str": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "response_time_str", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "response_ms": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "response_ms", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "ingested_at": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "ingested_at", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              },
+              "data_source": {
+                "inputFields": [{"namespace": "dataframe://in-memory", "name": "metrics_final_df", "field": "data_source", "transformations": [{"type": "DIRECT", "subtype": "IDENTITY"}]}]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]

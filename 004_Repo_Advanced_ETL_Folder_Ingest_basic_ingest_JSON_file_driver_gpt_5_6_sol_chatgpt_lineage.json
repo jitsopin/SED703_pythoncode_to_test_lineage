@@ -1,0 +1,1317 @@
+[
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:37:01.752Z",
+    "run": {
+      "runId": "ac5f2e48-62a7-4056-aea9-ed997ef410dc"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-registry",
+      "name": "step_01_read_participant_profiles",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_profile_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "personal_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_raw_df"
+              ],
+              "outputDataFrame": "participant_profile_flattened_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "participant_profile_raw_df.select(..., concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name')).alias('full_name'), ...)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_flattened_df"
+              ],
+              "outputDataFrame": "participant_registry_snapshot_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_profile_flattened_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_registry_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_registry_snapshot_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/landing/participant_registry/participant_profiles.json",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "personal_name",
+                "type": "STRUCT<given_name:STRING,family_name:STRING>",
+                "fields": [
+                  {
+                    "name": "given_name",
+                    "type": "STRING"
+                  },
+                  {
+                    "name": "family_name",
+                    "type": "STRING"
+                  }
+                ]
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "source_link",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_profile_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "personal_name",
+                "type": "STRUCT<given_name:STRING,family_name:STRING>",
+                "fields": [
+                  {
+                    "name": "given_name",
+                    "type": "STRING"
+                  },
+                  {
+                    "name": "family_name",
+                    "type": "STRING"
+                  }
+                ]
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "source_link",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_key": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "participant_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_number": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "car_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "short_code": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "short_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_link": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "source_link",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "personal_name": {
+                "inputFields": [
+                  {
+                    "namespace": "file://local",
+                    "name": "data/landing/participant_registry/participant_profiles.json",
+                    "field": "personal_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:37:01.752Z",
+    "run": {
+      "runId": "9549942a-361d-456d-9ee9-6294672d349a"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-registry",
+      "name": "step_02_flatten_participant_profile",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_profile_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "personal_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_raw_df"
+              ],
+              "outputDataFrame": "participant_profile_flattened_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "participant_profile_raw_df.select(..., concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name')).alias('full_name'), ...)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_flattened_df"
+              ],
+              "outputDataFrame": "participant_registry_snapshot_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_profile_flattened_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_registry_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_registry_snapshot_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_profile_raw_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "personal_name",
+                "type": "STRUCT<given_name:STRING,family_name:STRING>",
+                "fields": [
+                  {
+                    "name": "given_name",
+                    "type": "STRING"
+                  },
+                  {
+                    "name": "family_name",
+                    "type": "STRING"
+                  }
+                ]
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "source_link",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_profile_flattened_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "source_link",
+                "type": "STRING"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "participant_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "car_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "short_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "short_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "source_link": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "source_link",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "full_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "personal_name.given_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name'))"
+                      }
+                    ]
+                  },
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_raw_df",
+                    "field": "personal_name.family_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "TRANSFORMATION",
+                        "masking": false,
+                        "description": "concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name'))"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:37:01.752Z",
+    "run": {
+      "runId": "f1646b05-856a-4bab-bdbb-80daf1c7ec08"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-registry",
+      "name": "step_03_build_participant_snapshot",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_profile_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "personal_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_raw_df"
+              ],
+              "outputDataFrame": "participant_profile_flattened_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "participant_profile_raw_df.select(..., concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name')).alias('full_name'), ...)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_flattened_df"
+              ],
+              "outputDataFrame": "participant_registry_snapshot_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_profile_flattened_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_registry_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_registry_snapshot_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_profile_flattened_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "source_link",
+                "type": "STRING"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_registry_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "participant_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "car_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "short_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "short_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "full_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "full_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_profile_flattened_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": []
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-15T15:37:01.752Z",
+    "run": {
+      "runId": "013da328-2649-4ae5-a76f-b3d12b1cb896"
+    },
+    "job": {
+      "namespace": "etl://portable-pyspark/participant-registry",
+      "name": "step_04_write_participant_registry",
+      "facets": {
+        "transformationSteps": {
+          "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+          "_schemaURL": "https://openai.com/schemas/openlineage/transformationSteps-1-0-0.json",
+          "steps": [
+            {
+              "sequence": 1,
+              "statementType": "READ_JSON",
+              "inputDataFrames": [],
+              "outputDataFrame": "participant_profile_raw_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "personal_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "spark.read.schema(participant_schema).json(source_path)"
+            },
+            {
+              "sequence": 2,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_raw_df"
+              ],
+              "outputDataFrame": "participant_profile_flattened_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "source_link"
+              ],
+              "expression": "participant_profile_raw_df.select(..., concat(col('personal_name.given_name'), lit(' '), col('personal_name.family_name')).alias('full_name'), ...)"
+            },
+            {
+              "sequence": 3,
+              "statementType": "SELECT_DERIVE",
+              "inputDataFrames": [
+                "participant_profile_flattened_df"
+              ],
+              "outputDataFrame": "participant_registry_snapshot_df",
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_profile_flattened_df.select(..., current_timestamp().alias('ingested_at_utc'))"
+            },
+            {
+              "sequence": 4,
+              "statementType": "WRITE_PARQUET_OVERWRITE",
+              "inputDataFrames": [
+                "participant_registry_snapshot_df"
+              ],
+              "outputDataFrame": null,
+              "selectedColumns": [
+                "participant_id",
+                "participant_key",
+                "car_number",
+                "short_code",
+                "full_name",
+                "birth_date",
+                "nationality",
+                "ingested_at_utc"
+              ],
+              "expression": "participant_registry_snapshot_df.write.mode('overwrite').parquet(target_path)"
+            }
+          ]
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "dataframe://in-memory",
+        "name": "participant_registry_snapshot_df",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "file://local",
+        "name": "data/curated/participant_registry/published_participants",
+        "facets": {
+          "schema": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-1-1/SchemaDatasetFacet.json#/$defs/SchemaDatasetFacet",
+            "fields": [
+              {
+                "name": "participant_id",
+                "type": "INTEGER"
+              },
+              {
+                "name": "participant_key",
+                "type": "STRING"
+              },
+              {
+                "name": "car_number",
+                "type": "INTEGER"
+              },
+              {
+                "name": "short_code",
+                "type": "STRING"
+              },
+              {
+                "name": "full_name",
+                "type": "STRING"
+              },
+              {
+                "name": "birth_date",
+                "type": "DATE"
+              },
+              {
+                "name": "nationality",
+                "type": "STRING"
+              },
+              {
+                "name": "ingested_at_utc",
+                "type": "TIMESTAMP"
+              }
+            ]
+          },
+          "columnLineage": {
+            "_producer": "https://openai.com/chatgpt/generate-etl-lineage",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-2-0/ColumnLineageDatasetFacet.json#/$defs/ColumnLineageDatasetFacet",
+            "fields": {
+              "participant_id": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "participant_id",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "participant_key": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "participant_key",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "car_number": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "car_number",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "short_code": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "short_code",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "full_name": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "full_name",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "birth_date": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "birth_date",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "nationality": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "nationality",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ingested_at_utc": {
+                "inputFields": [
+                  {
+                    "namespace": "dataframe://in-memory",
+                    "name": "participant_registry_snapshot_df",
+                    "field": "ingested_at_utc",
+                    "transformations": [
+                      {
+                        "type": "DIRECT",
+                        "subtype": "IDENTITY",
+                        "masking": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "producer": "https://openai.com/chatgpt/generate-etl-lineage",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+  }
+]
